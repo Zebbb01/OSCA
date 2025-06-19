@@ -15,18 +15,21 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(cuid())
-  name        String? 
-  firstName   String 
-  lastName    String 
-  middleName  String?
-  contactNo   String 
-  bday        DateTime 
-  username    String    @unique
-  email       String    @unique
-  password    String
-  role        Role      @default(USER)
-  sessions    Session[]
+  id                String    @id @default(cuid())
+  name              String?
+  firstName         String
+  lastName          String
+  middleName        String?
+  contactNo         String
+  bday              DateTime
+  username          String    @unique
+  email             String    @unique
+  password          String
+  emailVerified     DateTime? // New: To store when the email was verified
+  verificationToken String?   @unique // New: To store the unique token for email verification
+  tokenExpires      DateTime? // New: To store the expiry of the verification token
+  role              Role      @default(USER)
+  sessions          Session[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -53,48 +56,48 @@ model Session {
 
 // SENIOR TABLE SCHEMA
 model Senior {
-  id           Int                    @id @default(autoincrement())
-  lastname     String
-  firstname    String
-  middlename   String? // nullable
-  email        String? // nullable
-  barangay     String
-  purok        String
-  gender       Gender
-  birthdate    DateTime
-  age          String
-  contact_no   String
-  emergency_no String
-  pwd          Boolean   @default(false)
-  remarks_id   Int                    @default(1)
-  remarks      Remarks                @relation(fields: [remarks_id], references: [id], onDelete: NoAction)
-  deletedAt    DateTime?
-  releasedAt       DateTime?
+  id                   Int                    @id @default(autoincrement())
+  lastname             String
+  firstname            String
+  middlename           String? // nullable
+  email                String? // nullable
+  barangay             String
+  purok                String
+  gender               Gender
+  birthdate            DateTime
+  age                  String
+  contact_no           String
+  emergency_no         String
+  pwd                  Boolean                @default(false)
+  remarks_id           Int                    @default(1)
+  remarks              Remarks                @relation(fields: [remarks_id], references: [id], onDelete: NoAction)
+  deletedAt            DateTime?
+  releasedAt           DateTime?
 
-  documents    RegistrationDocument[] // ONE SENIOR COULD HAVE MANY REGISTRATION DOCUMENTS
-  Applications Applications[] // ONE SENIOR COULD HAVE MANY APPLICATIONS
+  documents            RegistrationDocument[] // ONE SENIOR COULD HAVE MANY REGISTRATION DOCUMENTS
+  Applications         Applications[]         // ONE SENIOR COULD HAVE MANY APPLICATIONS
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
 
   @@map("senior")
 }
 
 // REGISTRATION DOCUMENT TABLE SCHEMA
 model RegistrationDocument {
-  id          Int      @id @default(autoincrement())
-  tag         String
-  path        String
-  public_id   String?
-  imageUrl    String?
-  file_name   String
-  seniors_id  Int
-  senior      Senior   @relation(fields: [seniors_id], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                     Int                @id @default(autoincrement())
+  tag                    String
+  path                   String
+  public_id              String?
+  imageUrl               String?
+  file_name              String
+  seniors_id             Int
+  senior                 Senior             @relation(fields: [seniors_id], references: [id], onDelete: Cascade)
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
 
-  benefit_requirement_id   Int?
-  benefitRequirement       BenefitRequirements? @relation(fields: [benefit_requirement_id], references: [id])
+  benefit_requirement_id Int?
+  benefitRequirement     BenefitRequirements? @relation(fields: [benefit_requirement_id], references: [id])
 
   @@map("registration_document")
 }
@@ -135,48 +138,48 @@ model Status {
 
 // BENEFIT TABLE SCHEMA
 model Benefits {
-  id                   Int                   @id @default(autoincrement())
+  id                   Int                    @id @default(autoincrement())
   name                 String
   description          String
   tag                  String
 
-  applications         Applications[] // ONE BENEFIT CAN BE USED IN MANY APPLICATIONS
+  applications         Applications[]         // ONE BENEFIT CAN BE USED IN MANY APPLICATIONS
   benefit_requirements BenefitRequirements[] // ONE BENEFIT CAN BE USED IN MANY BENEFIT REQUIREMENTS
 
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
 
   @@map("benefits")
 }
 
 // BENEFIT TABLE SCHEMA
 model BenefitRequirements {
-  id                      Int                   @id @default(autoincrement())
+  id                      Int                  @id @default(autoincrement())
   name                    String
   benefitsId              Int
-  benefit                 Benefits              @relation(fields: [benefitsId], references: [id], onDelete: Cascade)
-  registrationDocuments   RegistrationDocument[] 
-  createdAt               DateTime              @default(now())
-  updatedAt               DateTime              @updatedAt
+  benefit                 Benefits             @relation(fields: [benefitsId], references: [id], onDelete: Cascade)
+  registrationDocuments   RegistrationDocument[]
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
 
   @@map("benefits_requirements")
 }
 
 // APPLICATIONS TABLE SCHEMA
 model Applications {
-  id          Int           @id @default(autoincrement())
+  id          Int            @id @default(autoincrement())
   benefit_id  Int
   senior_id   Int
   status_id   Int
   category_id Int?
 
-  senior      Senior        @relation(fields: [senior_id], references: [id], onDelete: Cascade)
-  benefit     Benefits      @relation(fields: [benefit_id], references: [id])
-  status      Status        @relation(fields: [status_id], references: [id])
+  senior      Senior         @relation(fields: [senior_id], references: [id], onDelete: Cascade)
+  benefit     Benefits       @relation(fields: [benefit_id], references: [id])
+  status      Status         @relation(fields: [status_id], references: [id])
   category    SeniorCategory? @relation(fields: [category_id], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   @@index([senior_id])
   @@index([benefit_id])

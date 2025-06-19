@@ -15,18 +15,21 @@ datasource db {
 }
 
 model User {
-  id         String    @id @default(cuid())
-  name       String?
-  firstName  String
-  lastName   String
-  middleName String?
-  contactNo  String
-  bday       DateTime
-  username   String    @unique
-  email      String    @unique
-  password   String
-  role       Role      @default(USER)
-  sessions   Session[]
+  id                String    @id @default(cuid())
+  name              String?
+  firstName         String
+  lastName          String
+  middleName        String?
+  contactNo         String
+  bday              DateTime
+  username          String    @unique
+  email             String    @unique
+  password          String
+  emailVerified     DateTime? // New: To store when the email was verified
+  verificationToken String?   @unique // New: To store the unique token for email verification
+  tokenExpires      DateTime? // New: To store the expiry of the verification token
+  role              Role      @default(USER)
+  sessions          Session[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
