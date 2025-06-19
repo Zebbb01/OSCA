@@ -10,8 +10,8 @@ export const seniorsFormSchema = z.object({
         .regex(/^\d{11}$/, 'Contact number must be exactly 11 digits')
         .nonempty('Contact Number is required'),
     emergencyNumber: z.string()
-        .regex(/^\d{11}$/, 'Emergency number must be exactly 11 digits')
-        .nonempty('Emergency Number is required'),
+        .regex(/^\d{11}$/, 'Emergency contact must be exactly 11 digits')
+        .nonempty('Emergency Contact is required'),
 
     age: z.string()
         .refine((val) => {

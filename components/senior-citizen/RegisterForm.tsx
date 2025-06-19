@@ -413,7 +413,7 @@ const RegisterFormComponents = ({
                                         name="emergencyNumber"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Emergency Number</FormLabel>
+                                                <FormLabel>Emergency Contact</FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         type="tel"
@@ -436,6 +436,23 @@ const RegisterFormComponents = ({
 
                                 {/* Address Row */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="purok"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Lot / Block / Street / Purok</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="address"
+                                                        placeholder="Enter purok"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
                                     <FormField
                                         control={form.control}
                                         name="barangay"
@@ -462,23 +479,6 @@ const RegisterFormComponents = ({
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="purok"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Lot / Block / Street / Purok</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="address"
-                                                        placeholder="Enter purok"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}

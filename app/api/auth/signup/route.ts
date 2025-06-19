@@ -1,59 +1,102 @@
 // app/api/auth/signup/route.ts
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { signupSchema } from '@/schema/auth/signup.schema';
 import prisma from '@/prisma/prisma';
-import { hashPassword } from '@/utils/password';
-import { ZodError } from 'zod';
+import bcrypt from 'bcryptjs';
+import { sendVerificationEmail } from '@/lib/email';
+import { v4 as uuidv4 } from 'uuid';
 
-export async function POST(req: Request) {
-    try {
-        const body = await req.json();
-        const { firstName, lastName, middleName, contactNo, username, bday, email, password } = signupSchema.parse(body);
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const validatedData = signupSchema.parse(body);
 
-        // Check if username or email already exists
-        const existingUser = await prisma.user.findFirst({
-            where: {
-                OR: [{ username: username }, { email: email }],
-            },
-        });
+    const {
+      firstName,
+      lastName,
+      middleName,
+      contactNo,
+      username,
+      bday,
+      email,
+      password,
+    } = validatedData;
 
-        if (existingUser) {
-            if (existingUser.username === username) {
-                return NextResponse.json({ message: 'Username already taken' }, { status: 409 });
-            }
-            if (existingUser.email === email) {
-                return NextResponse.json({ message: 'Email already registered' }, { status: 409 });
-            }
-        }
+    // Check if user with email or username already exists
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ email }, { username }],
+      },
+    });
 
-        const SALT_ROUNDS = 10;
-        const hashedPassword = await hashPassword(password, SALT_ROUNDS);
-
-        const newUser = await prisma.user.create({
-            data: {
-                name: `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`,
-                firstName,
-                lastName,
-                middleName,
-                contactNo,
-                bday: new Date(bday),
-                username,
-                email,
-                password: hashedPassword,
-                role: 'USER', 
-            },
-        });
-
-        // Exclude password from the response
-        const { password: _, ...userWithoutPassword } = newUser;
-
-        return NextResponse.json({ message: 'User registered successfully', user: userWithoutPassword }, { status: 201 });
-    } catch (error) {
-        if (error instanceof ZodError) {
-            console.error('Zod Validation Error:', error.errors);
-            return NextResponse.json({ message: 'Validation error', errors: error.errors }, { status: 400 });
-        }
-        console.error('Signup API error:', error);
-        return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    if (existingUser) {
+      if (existingUser.email === email) {
+        return NextResponse.json(
+          { message: 'Email address already registered.' },
+          { status: 409 }
+        );
+      }
+      if (existingUser.username === username) {
+        return NextResponse.json(
+          { message: 'Username already taken.' },
+          { status: 409 }
+        );
+      }
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const verificationToken = uuidv4();
+    const tokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    // Convert bday to ISO 8601 format for Prisma
+    const birthDate = new Date(bday);
+
+    const newUser = await prisma.user.create({
+      data: {
+        firstName,
+        lastName,
+        middleName,
+        contactNo,
+        username,
+        bday: birthDate,
+        email,
+        password: hashedPassword,
+        verificationToken,
+        tokenExpires,
+        emailVerified: null,
+        role: 'USER',
+      },
+    });
+
+    // Send verification email
+    try {
+      await sendVerificationEmail({
+        to: newUser.email,
+        token: verificationToken,
+        username: newUser.username,
+      });
+      console.log('Verification email sent successfully to:', newUser.email);
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+      // Even if email fails, we still created the user successfully
+      // You might want to implement a retry mechanism or manual email sending
+    }
+
+    return NextResponse.json(
+      { message: 'Account created successfully! Please check your email to verify your account.' },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    console.error('Signup error:', error);
+    if (error.name === 'ZodError') {
+      return NextResponse.json(
+        { message: 'Validation failed', errors: error.errors },
+        { status: 400 }
+      );
+    }
+    return NextResponse.json(
+      { message: 'An unexpected error occurred during signup.' },
+      { status: 500 }
+    );
+  }
 }

@@ -21,6 +21,7 @@ export async function seedAdmin() {
                 username: 'admin@admin',
                 email: 'admin@gmail.com',
                 password: hashedPassword,
+                emailVerified: new Date(), // Set emailVerified to the current date
                 role: 'ADMIN',
             },
         })

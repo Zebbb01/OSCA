@@ -1,9 +1,8 @@
 // src/components/senior-citizen/senior-action-buttons.tsx
 'use client';
 
-import React, { JSX } from 'react';
-import { useMutation, useQueryClient, QueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import React from 'react';
+import { QueryClient } from '@tanstack/react-query';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,33 +27,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@radix-ui/react-label';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  AlertTriangleIcon,
-  CalendarIcon,
-  EyeIcon,
-  LandmarkIcon,
-  MailIcon,
-  MapPinIcon,
-  Pencil,
-  PhoneIcon,
-  StickyNoteIcon,
-  Trash,
-  UserCheck,
-  UserIcon,
-} from 'lucide-react';
-import { DocumentViewDialog } from '@/components/senior-documents/document-view-dialog';
-import { formatDateOnly, formatDateTime } from '@/utils/format';
+import { Pencil, Trash } from 'lucide-react';
 import { Seniors } from '@/types/seniors';
-import { useSeniorMutations } from '@/hooks/mutations/use-senior-mutations'; // Import the new hook
-import { PaperPlaneIcon } from '@radix-ui/react-icons'; // Assuming you might use this icon in profile details
+import { useSeniorMutations } from '@/hooks/mutations/use-senior-mutations';
+import { SeniorViewDialog } from './SeniorViewDialog'; // Import the new component
 
 interface SeniorActionButtonsProps {
   senior: Seniors;
-  queryClient: QueryClient; // Explicitly use QueryClient type
+  queryClient: QueryClient;
 }
 
-export const SeniorActionButtons: React.FC<SeniorActionButtonsProps> = ({ senior, queryClient }) => {
-  const [showView, setShowView] = React.useState(false);
+export const SeniorActionButtons: React.FC<SeniorActionButtonsProps> = ({ 
+  senior, 
+  queryClient 
+}) => {
   const [showEdit, setShowEdit] = React.useState(false);
   const [editData, setEditData] = React.useState({
     email: senior.email,
@@ -75,79 +61,24 @@ export const SeniorActionButtons: React.FC<SeniorActionButtonsProps> = ({ senior
     updateSeniorMutation.mutate({ id: senior.id, ...editData });
   };
 
-  const profileDetails = [
-    { icon: <MailIcon className="w-4 h-4 text-muted-foreground" />, label: 'Email', value: senior.email },
-    { icon: <PhoneIcon className="w-4 h-4 text-muted-foreground" />, label: 'Contact No.', value: senior.contact_no },
-    {
-      icon: <AlertTriangleIcon className="w-4 h-4 text-muted-foreground" />,
-      label: 'Emergency No.',
-      value: senior.emergency_no,
-    },
-    {
-      icon: <CalendarIcon className="w-4 h-4 text-muted-foreground" />,
-      label: 'Birthdate',
-      value: formatDateOnly(senior.birthdate),
-    },
-    { icon: <UserIcon className="w-4 h-4 text-muted-foreground" />, label: 'Gender', value: senior.gender },
-    { icon: <MapPinIcon className="w-4 h-4 text-muted-foreground" />, label: 'Barangay', value: senior.barangay },
-    { icon: <LandmarkIcon className="w-4 h-4 text-muted-foreground" />, label: 'Purok', value: senior.purok },
-    { icon: <UserCheck className="w-4 h-4 text-muted-foreground" />, label: 'PWD', value: senior.pwd ? 'Yes' : 'No' },
-    {
-      icon: <StickyNoteIcon className="w-4 h-4 text-muted-foreground" />,
-      label: 'Remarks',
-      value: senior.remarks?.name ?? 'N/A',
-    },
-    senior.releasedAt && {
-      icon: <PaperPlaneIcon className="w-4 h-4 text-muted-foreground" />,
-      label: 'Released On',
-      value: formatDateTime(senior.releasedAt),
-    },
-  ].filter(Boolean) as { icon: JSX.Element; label: string; value: string | null }[];
-
   return (
     <div className="flex gap-2">
-      {/* View Dialog */}
-      <Dialog open={showView} onOpenChange={setShowView}>
-        <DialogTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <EyeIcon className="w-4 h-4" />
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-xl">Senior Profile</DialogTitle>
-            <DialogDescription>Full details of **{senior.firstname} {senior.lastname}**</DialogDescription>
-          </DialogHeader>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-            {profileDetails.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex items-start gap-3 border rounded-lg p-3 bg-muted/50 shadow-sm"
-              >
-                {item.icon}
-                <div>
-                  <p className="text-xs text-muted-foreground uppercase font-semibold tracking-wide">
-                    {item.label}
-                  </p>
-                  <p className="text-sm mt-1">{item.value}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* View Dialog - Now using the separate component */}
+      <SeniorViewDialog senior={senior} />
 
       {/* Edit Dialog */}
       <Dialog open={showEdit} onOpenChange={setShowEdit}>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="cursor-pointer">
             <Pencil className="w-4 h-4" />
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-xl">
           <DialogHeader>
             <DialogTitle>Edit Information</DialogTitle>
-            <DialogDescription>Update contact and location information of the senior.</DialogDescription>
+            <DialogDescription>
+              Update contact and location information of the senior.
+            </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-4">
             <div>
@@ -169,12 +100,12 @@ export const SeniorActionButtons: React.FC<SeniorActionButtonsProps> = ({ senior
               />
             </div>
             <div>
-              <Label htmlFor="emergency_no">Emergency Number</Label>
+              <Label htmlFor="emergency_no">Emergency Contact</Label>
               <Input
                 id="emergency_no"
                 value={editData.emergency_no}
                 onChange={(e) => setEditData({ ...editData, emergency_no: e.target.value })}
-                placeholder="Enter emergency number"
+                placeholder="Enter emergency contact"
               />
             </div>
             <div>
@@ -213,7 +144,11 @@ export const SeniorActionButtons: React.FC<SeniorActionButtonsProps> = ({ senior
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" onClick={handleUpdate} disabled={updateSeniorMutation.isPending}>
+            <Button 
+              type="button" 
+              onClick={handleUpdate} 
+              disabled={updateSeniorMutation.isPending}
+            >
               {updateSeniorMutation.isPending ? 'Saving...' : 'Save'}
             </Button>
           </DialogFooter>
@@ -223,18 +158,24 @@ export const SeniorActionButtons: React.FC<SeniorActionButtonsProps> = ({ senior
       {/* Delete */}
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-700">
+          <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-700 cursor-pointer">
             <Trash className="w-4 h-4" />
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>This will permanently delete the senior record.</AlertDialogDescription>
+            <AlertDialogDescription>
+              This will permanently delete the senior record.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700" disabled={deleteSeniorMutation.isPending}>
+            <AlertDialogAction 
+              onClick={handleDelete} 
+              className="bg-red-600 hover:bg-red-700" 
+              disabled={deleteSeniorMutation.isPending}
+            >
               {deleteSeniorMutation.isPending ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -46,7 +46,7 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
       'PWD',
       'Category',
       'Age',
-      'Emergency No.',
+      'Emergency Contact',
       'Birthdate',
       'Remarks',
       'Released At',

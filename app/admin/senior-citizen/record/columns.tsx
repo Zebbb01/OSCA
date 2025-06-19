@@ -121,7 +121,7 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
     },
     {
       accessorKey: 'emergency_no',
-      header: 'Emergency No.',
+      header: 'Emergency Contact',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
       filterFn: 'includesString',
     },
