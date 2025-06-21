@@ -56,26 +56,27 @@ model Session {
 
 // SENIOR TABLE SCHEMA
 model Senior {
-  id           Int       @id @default(autoincrement())
-  lastname     String
-  firstname    String
-  middlename   String? // nullable
-  email        String? // nullable
-  barangay     String
-  purok        String
-  gender       Gender
-  birthdate    DateTime
-  age          String
-  contact_no   String
-  emergency_no String
-  pwd          Boolean   @default(false)
-  remarks_id   Int       @default(1)
-  remarks      Remarks   @relation(fields: [remarks_id], references: [id], onDelete: NoAction)
-  deletedAt    DateTime?
-  releasedAt   DateTime?
+  id             Int       @id @default(autoincrement())
+  lastname       String
+  firstname      String
+  middlename     String? // nullable
+  email          String? // nullable
+  barangay       String
+  purok          String
+  gender         Gender
+  birthdate      DateTime
+  age            String
+  contact_no     String
+  emergency_no   String
+  contact_person String?
+  pwd            Boolean   @default(false)
+  remarks_id     Int       @default(1)
+  remarks        Remarks   @relation(fields: [remarks_id], references: [id], onDelete: NoAction)
+  deletedAt      DateTime?
+  releasedAt     DateTime?
 
-  documents    RegistrationDocument[] // ONE SENIOR COULD HAVE MANY REGISTRATION DOCUMENTS
-  Applications Applications[] // ONE SENIOR COULD HAVE MANY APPLICATIONS
+  documents    RegistrationDocument[]
+  Applications Applications[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

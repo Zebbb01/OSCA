@@ -18,6 +18,7 @@ export interface SeniorsFormDataType {
     purok: string;
     contactNumber: string;
     emergencyNumber: string;
+    contactPerson: string;
     pwd: boolean;
     birth_certificate?: File | null;
     certificate_of_residency?: File | null;
@@ -71,6 +72,7 @@ export interface Seniors {
     email: string | null; // Use null for nullable fields as per Prisma
     contact_no: string;
     emergency_no: string;
+    contact_person: string;
     birthdate: Date; // Assuming you parse it to Date after fetching from string
     age: string;
     gender: 'male' | 'female'; // Matches Prisma enum

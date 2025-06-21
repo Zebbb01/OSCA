@@ -46,7 +46,6 @@ export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({ senior }
     <Dialog>
       <DialogTrigger asChild>
         <Button className="bg-green-600 hover:bg-green-700">
-          <EyeOpenIcon className="mr-2 h-4 w-4" />
           View All ({senior.documents.length})
         </Button>
       </DialogTrigger>

@@ -4257,6 +4257,7 @@ export namespace Prisma {
     age: string | null
     contact_no: string | null
     emergency_no: string | null
+    contact_person: string | null
     pwd: boolean | null
     remarks_id: number | null
     deletedAt: Date | null
@@ -4278,6 +4279,7 @@ export namespace Prisma {
     age: string | null
     contact_no: string | null
     emergency_no: string | null
+    contact_person: string | null
     pwd: boolean | null
     remarks_id: number | null
     deletedAt: Date | null
@@ -4299,6 +4301,7 @@ export namespace Prisma {
     age: number
     contact_no: number
     emergency_no: number
+    contact_person: number
     pwd: number
     remarks_id: number
     deletedAt: number
@@ -4332,6 +4335,7 @@ export namespace Prisma {
     age?: true
     contact_no?: true
     emergency_no?: true
+    contact_person?: true
     pwd?: true
     remarks_id?: true
     deletedAt?: true
@@ -4353,6 +4357,7 @@ export namespace Prisma {
     age?: true
     contact_no?: true
     emergency_no?: true
+    contact_person?: true
     pwd?: true
     remarks_id?: true
     deletedAt?: true
@@ -4374,6 +4379,7 @@ export namespace Prisma {
     age?: true
     contact_no?: true
     emergency_no?: true
+    contact_person?: true
     pwd?: true
     remarks_id?: true
     deletedAt?: true
@@ -4482,6 +4488,7 @@ export namespace Prisma {
     age: string
     contact_no: string
     emergency_no: string
+    contact_person: string | null
     pwd: boolean
     remarks_id: number
     deletedAt: Date | null
@@ -4522,6 +4529,7 @@ export namespace Prisma {
     age?: boolean
     contact_no?: boolean
     emergency_no?: boolean
+    contact_person?: boolean
     pwd?: boolean
     remarks_id?: boolean
     deletedAt?: boolean
@@ -4547,6 +4555,7 @@ export namespace Prisma {
     age?: boolean
     contact_no?: boolean
     emergency_no?: boolean
+    contact_person?: boolean
     pwd?: boolean
     remarks_id?: boolean
     deletedAt?: boolean
@@ -4569,6 +4578,7 @@ export namespace Prisma {
     age?: boolean
     contact_no?: boolean
     emergency_no?: boolean
+    contact_person?: boolean
     pwd?: boolean
     remarks_id?: boolean
     deletedAt?: boolean
@@ -4591,6 +4601,7 @@ export namespace Prisma {
     age?: boolean
     contact_no?: boolean
     emergency_no?: boolean
+    contact_person?: boolean
     pwd?: boolean
     remarks_id?: boolean
     deletedAt?: boolean
@@ -4599,7 +4610,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type SeniorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "lastname" | "firstname" | "middlename" | "email" | "barangay" | "purok" | "gender" | "birthdate" | "age" | "contact_no" | "emergency_no" | "pwd" | "remarks_id" | "deletedAt" | "releasedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["senior"]>
+  export type SeniorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "lastname" | "firstname" | "middlename" | "email" | "barangay" | "purok" | "gender" | "birthdate" | "age" | "contact_no" | "emergency_no" | "contact_person" | "pwd" | "remarks_id" | "deletedAt" | "releasedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["senior"]>
   export type SeniorInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     remarks?: boolean | RemarksDefaultArgs<ExtArgs>
     documents?: boolean | Senior$documentsArgs<ExtArgs>
@@ -4633,6 +4644,7 @@ export namespace Prisma {
       age: string
       contact_no: string
       emergency_no: string
+      contact_person: string | null
       pwd: boolean
       remarks_id: number
       deletedAt: Date | null
@@ -5077,6 +5089,7 @@ export namespace Prisma {
     readonly age: FieldRef<"Senior", 'String'>
     readonly contact_no: FieldRef<"Senior", 'String'>
     readonly emergency_no: FieldRef<"Senior", 'String'>
+    readonly contact_person: FieldRef<"Senior", 'String'>
     readonly pwd: FieldRef<"Senior", 'Boolean'>
     readonly remarks_id: FieldRef<"Senior", 'Int'>
     readonly deletedAt: FieldRef<"Senior", 'DateTime'>
@@ -13518,6 +13531,7 @@ export namespace Prisma {
     age: 'age',
     contact_no: 'contact_no',
     emergency_no: 'emergency_no',
+    contact_person: 'contact_person',
     pwd: 'pwd',
     remarks_id: 'remarks_id',
     deletedAt: 'deletedAt',
@@ -13915,6 +13929,7 @@ export namespace Prisma {
     age?: StringFilter<"Senior"> | string
     contact_no?: StringFilter<"Senior"> | string
     emergency_no?: StringFilter<"Senior"> | string
+    contact_person?: StringNullableFilter<"Senior"> | string | null
     pwd?: BoolFilter<"Senior"> | boolean
     remarks_id?: IntFilter<"Senior"> | number
     deletedAt?: DateTimeNullableFilter<"Senior"> | Date | string | null
@@ -13939,6 +13954,7 @@ export namespace Prisma {
     age?: SortOrder
     contact_no?: SortOrder
     emergency_no?: SortOrder
+    contact_person?: SortOrderInput | SortOrder
     pwd?: SortOrder
     remarks_id?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
@@ -13966,6 +13982,7 @@ export namespace Prisma {
     age?: StringFilter<"Senior"> | string
     contact_no?: StringFilter<"Senior"> | string
     emergency_no?: StringFilter<"Senior"> | string
+    contact_person?: StringNullableFilter<"Senior"> | string | null
     pwd?: BoolFilter<"Senior"> | boolean
     remarks_id?: IntFilter<"Senior"> | number
     deletedAt?: DateTimeNullableFilter<"Senior"> | Date | string | null
@@ -13990,6 +14007,7 @@ export namespace Prisma {
     age?: SortOrder
     contact_no?: SortOrder
     emergency_no?: SortOrder
+    contact_person?: SortOrderInput | SortOrder
     pwd?: SortOrder
     remarks_id?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
@@ -14019,6 +14037,7 @@ export namespace Prisma {
     age?: StringWithAggregatesFilter<"Senior"> | string
     contact_no?: StringWithAggregatesFilter<"Senior"> | string
     emergency_no?: StringWithAggregatesFilter<"Senior"> | string
+    contact_person?: StringNullableWithAggregatesFilter<"Senior"> | string | null
     pwd?: BoolWithAggregatesFilter<"Senior"> | boolean
     remarks_id?: IntWithAggregatesFilter<"Senior"> | number
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Senior"> | Date | string | null
@@ -14673,6 +14692,7 @@ export namespace Prisma {
     age: string
     contact_no: string
     emergency_no: string
+    contact_person?: string | null
     pwd?: boolean
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
@@ -14696,6 +14716,7 @@ export namespace Prisma {
     age: string
     contact_no: string
     emergency_no: string
+    contact_person?: string | null
     pwd?: boolean
     remarks_id?: number
     deletedAt?: Date | string | null
@@ -14718,6 +14739,7 @@ export namespace Prisma {
     age?: StringFieldUpdateOperationsInput | string
     contact_no?: StringFieldUpdateOperationsInput | string
     emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_person?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14741,6 +14763,7 @@ export namespace Prisma {
     age?: StringFieldUpdateOperationsInput | string
     contact_no?: StringFieldUpdateOperationsInput | string
     emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_person?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
     remarks_id?: IntFieldUpdateOperationsInput | number
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14764,6 +14787,7 @@ export namespace Prisma {
     age: string
     contact_no: string
     emergency_no: string
+    contact_person?: string | null
     pwd?: boolean
     remarks_id?: number
     deletedAt?: Date | string | null
@@ -14784,6 +14808,7 @@ export namespace Prisma {
     age?: StringFieldUpdateOperationsInput | string
     contact_no?: StringFieldUpdateOperationsInput | string
     emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_person?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14804,6 +14829,7 @@ export namespace Prisma {
     age?: StringFieldUpdateOperationsInput | string
     contact_no?: StringFieldUpdateOperationsInput | string
     emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_person?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
     remarks_id?: IntFieldUpdateOperationsInput | number
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -15530,6 +15556,7 @@ export namespace Prisma {
     age?: SortOrder
     contact_no?: SortOrder
     emergency_no?: SortOrder
+    contact_person?: SortOrder
     pwd?: SortOrder
     remarks_id?: SortOrder
     deletedAt?: SortOrder
@@ -15556,6 +15583,7 @@ export namespace Prisma {
     age?: SortOrder
     contact_no?: SortOrder
     emergency_no?: SortOrder
+    contact_person?: SortOrder
     pwd?: SortOrder
     remarks_id?: SortOrder
     deletedAt?: SortOrder
@@ -15577,6 +15605,7 @@ export namespace Prisma {
     age?: SortOrder
     contact_no?: SortOrder
     emergency_no?: SortOrder
+    contact_person?: SortOrder
     pwd?: SortOrder
     remarks_id?: SortOrder
     deletedAt?: SortOrder
@@ -17054,6 +17083,7 @@ export namespace Prisma {
     age: string
     contact_no: string
     emergency_no: string
+    contact_person?: string | null
     pwd?: boolean
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
@@ -17076,6 +17106,7 @@ export namespace Prisma {
     age: string
     contact_no: string
     emergency_no: string
+    contact_person?: string | null
     pwd?: boolean
     remarks_id?: number
     deletedAt?: Date | string | null
@@ -17133,6 +17164,7 @@ export namespace Prisma {
     age?: StringFieldUpdateOperationsInput | string
     contact_no?: StringFieldUpdateOperationsInput | string
     emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_person?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17155,6 +17187,7 @@ export namespace Prisma {
     age?: StringFieldUpdateOperationsInput | string
     contact_no?: StringFieldUpdateOperationsInput | string
     emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_person?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
     remarks_id?: IntFieldUpdateOperationsInput | number
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17202,6 +17235,7 @@ export namespace Prisma {
     age: string
     contact_no: string
     emergency_no: string
+    contact_person?: string | null
     pwd?: boolean
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
@@ -17224,6 +17258,7 @@ export namespace Prisma {
     age: string
     contact_no: string
     emergency_no: string
+    contact_person?: string | null
     pwd?: boolean
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
@@ -17275,6 +17310,7 @@ export namespace Prisma {
     age?: StringFilter<"Senior"> | string
     contact_no?: StringFilter<"Senior"> | string
     emergency_no?: StringFilter<"Senior"> | string
+    contact_person?: StringNullableFilter<"Senior"> | string | null
     pwd?: BoolFilter<"Senior"> | boolean
     remarks_id?: IntFilter<"Senior"> | number
     deletedAt?: DateTimeNullableFilter<"Senior"> | Date | string | null
@@ -17579,6 +17615,7 @@ export namespace Prisma {
     age: string
     contact_no: string
     emergency_no: string
+    contact_person?: string | null
     pwd?: boolean
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
@@ -17601,6 +17638,7 @@ export namespace Prisma {
     age: string
     contact_no: string
     emergency_no: string
+    contact_person?: string | null
     pwd?: boolean
     remarks_id?: number
     deletedAt?: Date | string | null
@@ -17698,6 +17736,7 @@ export namespace Prisma {
     age?: StringFieldUpdateOperationsInput | string
     contact_no?: StringFieldUpdateOperationsInput | string
     emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_person?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17720,6 +17759,7 @@ export namespace Prisma {
     age?: StringFieldUpdateOperationsInput | string
     contact_no?: StringFieldUpdateOperationsInput | string
     emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_person?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
     remarks_id?: IntFieldUpdateOperationsInput | number
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17930,6 +17970,7 @@ export namespace Prisma {
     age: string
     contact_no: string
     emergency_no: string
+    contact_person?: string | null
     pwd?: boolean
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
@@ -17949,6 +17990,7 @@ export namespace Prisma {
     age?: StringFieldUpdateOperationsInput | string
     contact_no?: StringFieldUpdateOperationsInput | string
     emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_person?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17971,6 +18013,7 @@ export namespace Prisma {
     age?: StringFieldUpdateOperationsInput | string
     contact_no?: StringFieldUpdateOperationsInput | string
     emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_person?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17993,6 +18036,7 @@ export namespace Prisma {
     age?: StringFieldUpdateOperationsInput | string
     contact_no?: StringFieldUpdateOperationsInput | string
     emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_person?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

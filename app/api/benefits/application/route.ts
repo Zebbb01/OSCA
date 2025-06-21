@@ -7,12 +7,35 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
         const parsed = benefitApplicationSchema.parse(body)
-        const { benefit_id, selected_senior_ids } = parsed
+        const { benefit_id, selected_senior_ids, status } = parsed // <-- Destructure 'status' from parsed data
+
+        // --- NEW LOGIC: Get the ID for 'PENDING' status ---
+        const pendingStatus = await prisma.status.findUnique({
+            where: {
+                name: 'PENDING',
+            },
+            select: {
+                id: true,
+            },
+        })
+
+        if (!pendingStatus) {
+            // This should ideally not happen if your database is seeded correctly
+            console.error("Error: 'PENDING' status not found in the database. Please ensure it exists.");
+            return NextResponse.json(
+                { msg: 'Server configuration error: PENDING status not found.', code: 500 },
+                { status: 500 }
+            )
+        }
+
+        const pendingStatusId = pendingStatus.id; // This will be 2 based on your Status table
+
+        // --- END NEW LOGIC ---
 
         const applicationsData = selected_senior_ids.map((senior_id) => ({
             benefit_id,
             senior_id,
-            status_id: 1, // DEFAULT STATUS TO AVOID NULL BUT LATER ON GETS UPDATED
+            status_id: pendingStatusId, // <-- Use the dynamically fetched PENDING status ID here
             category_id: null, // DEFAULT CATEGORY TO AVOID NULL BUT LATER ON GETS UPDATED
         }))
 
@@ -32,23 +55,9 @@ export async function GET() {
         const applications = await prisma.applications.findMany({
             include: {
                 senior: {
-                    // Change 'select' to 'include' to get documents, or
-                    // if you still want to select specific fields AND include relations,
-                    // you need to structure it differently.
-                    // Option 1: Include all senior fields and documents (simpler)
                     include: {
                         documents: true, // <--- Add this line!
                     },
-                    // Option 2: Select specific senior fields AND include documents
-                    // select: {
-                    //     firstname: true,
-                    //     middlename: true,
-                    //     lastname: true,
-                    //     email: true,
-                    //     documents: true, // You can put 'documents: true' here too if still using select
-                    //     // Add other senior fields you need for the Senior model for DocumentViewDialog
-                    //     // e.g., id, contact_no, emergency_no, birthdate, age, gender, barangay, purok, pwd, remarks (if needed)
-                    // }
                 },
                 benefit: {
                     select: {

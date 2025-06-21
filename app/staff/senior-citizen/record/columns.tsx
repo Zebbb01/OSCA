@@ -185,7 +185,7 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       // No filterFn here if filtering is only server-side
     },
         {
-      accessorKey: 'contactPerson',
+      accessorKey: 'contact_person',
       header: 'Contact Person',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
       // REMOVED filterFn: 'equals' -> filtering is handled by API

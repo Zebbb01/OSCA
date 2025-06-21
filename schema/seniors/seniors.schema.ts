@@ -1,18 +1,21 @@
-import z from 'zod'
+import z from 'zod';
 
 export const seniorsFormSchema = z.object({
     firstName: z.string().nonempty('First name is required'),
     middleName: z.string().optional(),
     lastName: z.string().nonempty('Last name is required'),
 
+    // Email is optional and can be an empty string
     email: z.string().email('Enter a valid email').optional().or(z.literal('')),
+
     contactNumber: z.string()
         .regex(/^\d{11}$/, 'Contact number must be exactly 11 digits')
         .nonempty('Contact Number is required'),
     emergencyNumber: z.string()
         .regex(/^\d{11}$/, 'Emergency contact must be exactly 11 digits')
         .nonempty('Emergency Contact is required'),
-
+    contactPerson: z.string().nonempty('Contact Person is required'),
+    
     age: z.string()
         .refine((val) => {
             const num = parseInt(val);
@@ -26,6 +29,20 @@ export const seniorsFormSchema = z.object({
     barangay: z.string().nonempty('Barangay is required'),
     purok: z.string().nonempty('Purok is required'),
     pwd: z.boolean().optional(),
-})
+}).superRefine((data, ctx) => {
+    // Check if contactNumber and emergencyNumber are the same
+    if (data.contactNumber && data.emergencyNumber && data.contactNumber === data.emergencyNumber) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Emergency Contact must be different from Contact Number.',
+            path: ['emergencyNumber'], // Add error to emergencyNumber field
+        });
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Contact Number must be different from Emergency Contact.',
+            path: ['contactNumber'], // Add error to contactNumber field
+        });
+    }
+});
 
-export type SeniorsFormData = z.infer<typeof seniorsFormSchema>
+export type SeniorsFormData = z.infer<typeof seniorsFormSchema>;

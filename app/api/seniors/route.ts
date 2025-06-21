@@ -149,6 +149,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                 purok: formData.get('purok') as string,
                 contactNumber: formData.get('contactNumber') as string,
                 emergencyNumber: formData.get('emergencyNumber') as string,
+                contactPerson: formData.get('contactPerson') as string,
                 pwd: formData.get('pwd') === 'true',
             };
 
@@ -165,6 +166,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                     purok: seniorData.purok || '',
                     contact_no: seniorData.contactNumber || '',
                     emergency_no: seniorData.emergencyNumber || '',
+                    contact_person: seniorData.contactPerson || '',
                     pwd: seniorData.pwd ?? false,
                 },
             });
@@ -211,6 +213,13 @@ export async function GET(request: Request): Promise<NextResponse> {
     const { searchParams } = new URL(request.url);
     const nameSearch = searchParams.get('name');
 
+    // --- NEW: Retrieve filter parameters for specific columns ---
+    const genderFilter = searchParams.get('gender'); // Expected: 'male' or 'female'
+    const purokFilter = searchParams.get('purok');
+    const barangayFilter = searchParams.get('barangay');
+    const remarksFilter = searchParams.get('remarks');
+    const releaseStatusFilter = searchParams.get('releaseStatus'); // 'Released' or 'Not Released'
+
     const queryOptions: any = {
       include: {
         remarks: { select: { id: true, name: true } },
@@ -221,13 +230,56 @@ export async function GET(request: Request): Promise<NextResponse> {
           take: 1,
         },
       },
-      where: { deletedAt: null },
+      where: {
+        deletedAt: null, // Always filter out soft-deleted records for this GET
+      },
     };
 
+    // Apply name search filter
     if (nameSearch) {
-      queryOptions.where.OR = ['firstname', 'middlename', 'lastname'].map(field => ({
-        [field]: { contains: nameSearch, mode: 'insensitive' },
-      }));
+      queryOptions.where.OR = [
+        { firstname: { contains: nameSearch, mode: 'insensitive' } },
+        { middlename: { contains: nameSearch, mode: 'insensitive' } },
+        { lastname: { contains: nameSearch, mode: 'insensitive' } },
+        { barangay: { contains: nameSearch, mode: 'insensitive' } }, // Add barangay to global search
+        { purok: { contains: nameSearch, mode: 'insensitive' } },     // Add purok to global search
+      ];
+    }
+
+    // --- NEW: Apply specific column filters to the Prisma query ---
+
+    // Gender filter
+    if (genderFilter) {
+      // Ensure the gender value from URL matches your Prisma Gender enum
+      if (genderFilter === 'male' || genderFilter === 'female') {
+        queryOptions.where.gender = genderFilter as Gender;
+      }
+    }
+
+    // Purok filter
+    if (purokFilter) {
+      queryOptions.where.purok = purokFilter;
+    }
+
+    // Barangay filter
+    if (barangayFilter) {
+      queryOptions.where.barangay = barangayFilter;
+    }
+
+    // Remarks filter
+    if (remarksFilter) {
+        queryOptions.where.remarks = {
+            name: remarksFilter
+        };
+    }
+
+    // Release Status filter
+    if (releaseStatusFilter) {
+      if (releaseStatusFilter === 'Released') {
+        queryOptions.where.releasedAt = { not: null }; // Seniors with a releasedAt date
+      } else if (releaseStatusFilter === 'Not Released') {
+        queryOptions.where.releasedAt = null; // Seniors without a releasedAt date
+      }
     }
 
     const seniors = await prisma.senior.findMany(queryOptions);

@@ -18,6 +18,7 @@ export type BenefitFormData = z.infer<typeof benefitFormSchema>
 export const benefitApplicationSchema = z.object({
     benefit_id: z.number(),
     selected_senior_ids: z.array(z.number()),
+    status: z.enum(['pending', 'approved', 'rejected']).default('pending'),
 })
 
 // Optional: Infer TypeScript type from schema
