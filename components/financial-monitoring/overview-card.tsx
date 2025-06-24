@@ -5,7 +5,7 @@ interface OverviewCardProps {
     title: string;
     value: string;
     description: string;
-    icon: LucideIcon;
+    icon: LucideIcon | React.ComponentType<{ className?: string }>;
     iconColor?: string;
 }
 

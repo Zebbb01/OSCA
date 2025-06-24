@@ -1,4 +1,4 @@
-// app/admin/senior-citizen/record/columns.tsx
+// app/staff/senior-citizen/record/columns.tsx
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
@@ -54,13 +54,11 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       accessorKey: 'purok',
       header: 'Purok',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
-      // REMOVED filterFn: 'equals' -> filtering is handled by API
     },
     {
       accessorKey: 'barangay',
       header: 'Barangay',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
-      // REMOVED filterFn: 'equals' -> filtering is handled by API
     },
     {
       accessorKey: 'gender',
@@ -80,7 +78,6 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       header: 'Remarks',
       cell: ({ row }) => truncateText(row.original.remarks?.name || 'N/A'),
       accessorFn: (row) => row.remarks?.name || 'N/A',
-      // REMOVED filterFn: 'equals' -> filtering is handled by API
     },
     {
       id: 'releaseStatus',
@@ -176,25 +173,21 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       accessorKey: 'age',
       header: 'Age',
       cell: ({ row }) => <div className="text-right">{row.getValue('age')}</div>,
-      // No filterFn here if filtering is only server-side, if client-side needed, use 'equals'
     },
     {
       accessorKey: 'emergency_no',
       header: 'Emergency Contact',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
-      // No filterFn here if filtering is only server-side
     },
         {
       accessorKey: 'contact_person',
       header: 'Contact Person',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
-      // REMOVED filterFn: 'equals' -> filtering is handled by API
     },
     {
       accessorKey: 'birthdate',
       header: 'Birthdate',
       cell: ({ row }) => formatDateOnly(row.getValue('birthdate')),
-      // No filterFn here if filtering is only server-side, if client-side needed, use 'includesString' for dates
     },
     // --- END NEWLY ADDED COLUMNS ---
   ];

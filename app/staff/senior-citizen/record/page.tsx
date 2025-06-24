@@ -1,8 +1,8 @@
-// app\admin\senior-citizen\record\page.tsx
+// app\staff\senior-citizen\record\page.tsx
 'use client';
 
-import { useState, useMemo, useEffect } from 'react'; // Import useEffect
-import { useQuery } from '@tanstack/react-query';
+import { useState, useMemo, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query'; // Import useQueryClient
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useSession } from 'next-auth/react';
@@ -26,7 +26,7 @@ import { Seniors } from '@/types/seniors';
 import { DownloadReleasedSeniorsReport } from '@/components/senior-citizen/download-released-seniors-report';
 
 interface SeniorQueryParams {
-  name?: string; // This will now be explicitly for the global search
+  name?: string;
   gender?: 'male' | 'female';
   purok?: string;
   barangay?: string;
@@ -38,26 +38,26 @@ const RecordPage = () => {
   const { data: session, status: sessionStatus } = useSession();
   const userRole = (session?.user as any)?.role || 'USER';
 
+  const queryClient = useQueryClient(); // Initialize useQueryClient
+
   const [showRegistrationModal, setShowRegistrationModal] = useState<boolean>(false);
   const [showUploadMedicalModal, setShowUploadMedicalModal] = useState<boolean>(false);
 
   const [globalFilter, setGlobalFilter] = useState('');
-  const [debouncedGlobalFilter, setDebouncedGlobalFilter] = useState(''); // NEW: Debounced state for search
+  const [debouncedGlobalFilter, setDebouncedGlobalFilter] = useState('');
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
 
-  // NEW: Debounce effect for globalFilter
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedGlobalFilter(globalFilter);
-    }, 500); // 500ms debounce time
+    }, 500);
 
     return () => {
       clearTimeout(handler);
     };
   }, [globalFilter]);
-
 
   const columns = useMemo(() => {
     return getSeniorRecordsColumns(userRole, sessionStatus);
@@ -67,9 +67,8 @@ const RecordPage = () => {
     return (filters: ColumnFiltersState): SeniorQueryParams => {
       const params: SeniorQueryParams = {};
       filters.forEach(filter => {
-        // Keep this logic for column-specific filters
         if (Array.isArray(filter.value) && filter.value.length > 0) {
-          const value = filter.value[0]; // Assuming single-select for these filters, adjust if multi-select is needed for API
+          const value = filter.value[0];
 
           switch (filter.id) {
             case 'gender':
@@ -101,11 +100,11 @@ const RecordPage = () => {
   const currentQueryParams = generateQueryParams(columnFilters);
 
   const seniorQuery = useQuery<Seniors[]>({
-    queryKey: ['seniors', debouncedGlobalFilter, currentQueryParams], // Use debounced filter here
+    queryKey: ['seniors', debouncedGlobalFilter, currentQueryParams],
     queryFn: async () => {
       const url = new URL('/api/seniors', window.location.origin);
 
-      if (debouncedGlobalFilter) { // Use debounced filter for API call
+      if (debouncedGlobalFilter) {
         url.searchParams.append('name', debouncedGlobalFilter);
       }
 
@@ -130,7 +129,6 @@ const RecordPage = () => {
     const seniorsData = seniorQuery.data ?? [];
 
     return [
-      // Removed 'fullname' as a column filter, it's now handled by global search
       { id: 'gender', title: 'Gender', type: 'select' as const, options: [{ value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }] },
       {
         id: 'purok',
@@ -153,6 +151,11 @@ const RecordPage = () => {
       { id: 'releaseStatus', title: 'Release Status', type: 'select' as const, options: [{ value: 'Released', label: 'Released' }, { value: 'Not Released', label: 'Not Released' }] },
     ];
   }, [seniorQuery.data]);
+
+  // Callback to refresh the table after a successful action (e.g., adding a record)
+  const refreshTable = () => {
+    queryClient.invalidateQueries({ queryKey: ['seniors'] });
+  };
 
   return (
     <div className="container mx-auto p-5 rounded-md mt-8 border border-gray-200 shadow-sm">
@@ -188,7 +191,8 @@ const RecordPage = () => {
                   Complete the form below to register a new senior citizen into the system.
                 </DialogDescription>
               </DialogHeader>
-              <RegisterFormComponents setShowRegistrationModal={setShowRegistrationModal} />
+              {/* Pass queryClient and a callback to close the modal and refresh the table */}
+              <RegisterFormComponents setShowRegistrationModal={setShowRegistrationModal} onRecordAdded={refreshTable} />
             </DialogContent>
           </Dialog>
         )}
@@ -203,9 +207,11 @@ const RecordPage = () => {
           </Button>
         )}
 
+        {/* Pass a callback to refresh the table */}
         <UploadMedicalDocumentsForm
           isOpen={showUploadMedicalModal}
           onClose={() => setShowUploadMedicalModal(false)}
+          onUploadSuccess={refreshTable}
         />
       </div>
 
@@ -225,7 +231,7 @@ const RecordPage = () => {
         <DataTable
           columns={columns}
           data={seniorQuery.data ?? []}
-          globalFilter={globalFilter} // Pass non-debounced filter to DataTable for immediate input update
+          globalFilter={globalFilter}
           setGlobalFilter={setGlobalFilter}
           columnFilters={columnFilters}
           setColumnFilters={setColumnFilters}

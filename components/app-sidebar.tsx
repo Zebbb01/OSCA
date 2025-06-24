@@ -105,6 +105,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         title: 'Government Fund',
                         url: '/admin/applications/financial-monitoring',
                     },
+                    {
+                        title: 'Monthly Release',
+                        url: '#',
+                    },
                 ],
             },
             {

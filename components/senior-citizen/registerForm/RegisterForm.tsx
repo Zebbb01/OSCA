@@ -2,12 +2,12 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
-import { useForm, FormProvider } from 'react-hook-form' // Import FormProvider
+import { useForm, FormProvider } from 'react-hook-form'
 import { AlertDialogComponent } from '../../alert-component'
 import { SeniorsFormData, seniorsFormSchema } from '@/schema/seniors/seniors.schema'
 import { apiService } from '@/lib/axios'
-import { useMutation } from '@tanstack/react-query'
-import { cn } from '@/lib/utils' // Keep if still used elsewhere, though not in the snippet now
+import { useMutation, useQueryClient } from '@tanstack/react-query' // Import useQueryClient
+import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 
@@ -19,7 +19,7 @@ import { RegistrationDocuments } from './components/RegistrationDocuments'
 // shadcn/ui components
 import { Button } from '@/components/ui/button'
 import {
-    Form, // Only import Form from shadcn, not FormProvider
+    Form,
 } from '@/components/ui/form'
 
 type FileData = {
@@ -34,13 +34,19 @@ const DOCUMENT_KEYS = [
     'certificate_of_residency',
     'government_issued_id',
     'membership_certificate',
-] as const; // Added 'as const' for better type inference
+] as const;
+
+interface RegisterFormComponentsProps { // Define props interface
+    setShowRegistrationModal: React.Dispatch<React.SetStateAction<boolean>>;
+    onRecordAdded: () => void; // Add this new prop
+}
 
 const RegisterFormComponents = ({
     setShowRegistrationModal,
-}: {
-    setShowRegistrationModal: React.Dispatch<React.SetStateAction<boolean>>
-}) => {
+    onRecordAdded, // Destructure the new prop
+}: RegisterFormComponentsProps) => { // Use the defined props interface
+    const queryClient = useQueryClient(); // Initialize useQueryClient
+
     const [fileData, setFileData] = useState<FileData>({
         birth_certificate: null,
         certificate_of_residency: null,
@@ -55,7 +61,7 @@ const RegisterFormComponents = ({
             firstName: '',
             middleName: '',
             lastName: '',
-            email: '', // If you decide to add email back, keep this.
+            email: '',
             age: '',
             birthDate: '',
             gender: '',
@@ -73,8 +79,6 @@ const RegisterFormComponents = ({
 
         if (file && !file.type.startsWith('image/')) {
             setIsUploadError(true)
-            // Optionally, clear the file input or reset the specific file in state
-            // to prevent invalid files from being "stuck"
             setFileData((prevData) => ({
                 ...prevData,
                 [tag as keyof FileData]: null,
@@ -86,7 +90,7 @@ const RegisterFormComponents = ({
             ...prevData,
             [tag as keyof FileData]: file,
         }))
-        setIsUploadError(false); // Clear error if a valid file is selected after an error
+        setIsUploadError(false);
     }
 
     const handleNumberInputChange = (
@@ -110,9 +114,11 @@ const RegisterFormComponents = ({
                 certificate_of_residency: null,
                 government_issued_id: null,
                 membership_certificate: null,
-            }); // Reset file data on success
+            });
             setShowRegistrationModal(false)
             toast.success('Senior registered successfully!')
+            queryClient.invalidateQueries({ queryKey: ['seniors'] }); // Invalidate the 'seniors' query
+            onRecordAdded(); // Call the callback from parent to potentially trigger more actions
         },
         onError: (error) => {
             console.error('Error submitting form:', error)
@@ -133,7 +139,6 @@ const RegisterFormComponents = ({
             }
         })
 
-        // Basic validation for documents before submission
         const allDocumentsUploaded = DOCUMENT_KEYS.every(key => fileData[key] !== null);
         if (!allDocumentsUploaded) {
             toast.error('Please upload all required registration documents.');
@@ -149,17 +154,11 @@ const RegisterFormComponents = ({
 
     return (
         <>
-            <div className="max-h-[80vh] overflow-y-auto">
-                {/* FormProvider allows child components to access the form context */}
+            <div className="max-h-[80vh]">
                 <FormProvider {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-1">
-                        {/* Personal Information Section */}
                         <PersonalInformation />
-
-                        {/* Contact & Address Section */}
                         <ContactAddress handleNumberInputChange={handleNumberInputChange} />
-
-                        {/* Documents Section */}
                         <RegistrationDocuments
                             fileData={fileData}
                             handleFileChange={handleFileChange}
@@ -167,8 +166,7 @@ const RegisterFormComponents = ({
                             isUploadError={isUploadError}
                         />
 
-                        {/* Submit Button */}
-                        <div className="flex justify-end gap-4 pt-4">
+                        <div className="flex justify-end gap-4 pt-4 pb-4">
                             <Button
                                 type="button"
                                 variant="outline"
@@ -200,8 +198,6 @@ const RegisterFormComponents = ({
                 <AlertDialogComponent
                     dialogTitle="Failed to Upload File"
                     dialogMessage="Only Image Type is Allowed"
-                    // Add a way to close the dialog, e.g., onOpenChange prop or a state setter
-                    // For now, it will just show if isUploadError is true
                 />
             )}
         </>
