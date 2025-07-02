@@ -53,7 +53,6 @@ export default function FinancialMonitoringPage() {
                                 icon={() => (
                                     <span className="text-l text-green-600">₱</span>
                                 )}
-                                iconColor=""
                             />
 
                             <OverviewCard

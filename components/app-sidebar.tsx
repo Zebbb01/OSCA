@@ -93,6 +93,30 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         title: 'Not Release',
                         url: '/admin/applications/not-release-monitoring',
                     },
+                    {
+                        title: 'Category',
+                        url: '/admin/applications/category',
+                    },
+                ],
+            },
+            {
+                title: 'Monitoring',
+                url: '#',
+                icon: faDesktop,
+                roles: ['USER'],
+                items: [
+                    {
+                        title: 'Release',
+                        url: '/staff/applications/release-monitoring',
+                    },
+                    {
+                        title: 'Not Release',
+                        url: '/staff/applications/not-release-monitoring',
+                    },
+                    {
+                        title: 'Category',
+                        url: '/staff/applications/category',
+                    },
                 ],
             },
             {

@@ -58,6 +58,7 @@ interface DataTableProps<TData, TValue> {
   setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
   isFilterDropdownOpen: boolean;
   setIsFilterDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  initialVisibleColumns?: string[];
 }
 
 export function DataTable<TData, TValue>({
@@ -70,11 +71,13 @@ export function DataTable<TData, TValue>({
   setColumnFilters,
   isFilterDropdownOpen,
   setIsFilterDropdownOpen,
+  initialVisibleColumns = [],
 }: DataTableProps<TData, TValue>) {
 
-  const initialColumnVisibility: VisibilityState = React.useMemo(() => {
+const initialColumnVisibility: VisibilityState = React.useMemo(() => {
     const visibility: VisibilityState = {};
-    const alwaysVisibleColumns = ['fullname', 'contact_no', 'barangay', 'purok', 'gender', 'releaseStatus', 'actions', 'user-actions', 'documents']; // Add all necessary default visible columns here
+    // Use the prop here instead of a hardcoded array
+    const columnsToDisplay = initialVisibleColumns.length > 0 ? initialVisibleColumns : columns.map(col => (col as any).accessorKey || (col as any).id).filter(Boolean); // If no initialVisibleColumns are provided, make all columns visible by default.
 
     columns.forEach((column) => {
       const columnId = (column as any).accessorKey || (column as any).id;
@@ -82,13 +85,13 @@ export function DataTable<TData, TValue>({
         // By default, set all columns to false (hidden)
         visibility[columnId] = false;
         // Then, explicitly set only the desired columns to true (visible)
-        if (alwaysVisibleColumns.includes(columnId)) {
+        if (columnsToDisplay.includes(columnId)) {
           visibility[columnId] = true;
         }
       }
     });
     return visibility;
-  }, [columns]);
+  }, [columns, initialVisibleColumns]); // Add initialVisibleColumns to dependency array
 
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(initialColumnVisibility);
 
@@ -100,11 +103,13 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
       columnVisibility,
       columnFilters,
+      globalFilter,
     },
   })
 
@@ -121,7 +126,7 @@ export function DataTable<TData, TValue>({
         <div className="relative flex-grow max-w-sm">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search Full Name..."
+            placeholder="Search Full Name etc..."
             value={globalFilter}
             onChange={(event) => setGlobalFilter(event.target.value)}
             className="pl-9 pr-3 py-2 border rounded-md w-full"
@@ -150,6 +155,7 @@ export function DataTable<TData, TValue>({
                 const column = table.getColumn(filterableCol.id);
                 if (!column) return null;
 
+                // Ensure currentFilterValue is always an array for multi-selects
                 const currentFilterValue = (column.getFilterValue() || []) as string[];
 
                 return (
@@ -170,20 +176,12 @@ export function DataTable<TData, TValue>({
                               key={option.value}
                               checked={currentFilterValue.includes(String(option.value))}
                               onCheckedChange={(checked) => {
-                                const isSingleSelect = ['gender', 'releaseStatus'].includes(column.id);
-
                                 if (checked) {
-                                  if (isSingleSelect) {
-                                    column.setFilterValue([String(option.value)]);
-                                  } else {
-                                    column.setFilterValue([...currentFilterValue, String(option.value)]);
-                                  }
+                                  // Add the value if checked
+                                  column.setFilterValue([...currentFilterValue, String(option.value)]);
                                 } else {
-                                  if (isSingleSelect) {
-                                    column.setFilterValue([]);
-                                  } else {
-                                    column.setFilterValue(currentFilterValue.filter((v) => v !== String(option.value)));
-                                  }
+                                  // Remove the value if unchecked
+                                  column.setFilterValue(currentFilterValue.filter((v) => v !== String(option.value)));
                                 }
                               }}
                               onSelect={(e) => e.preventDefault()}
@@ -232,7 +230,7 @@ export function DataTable<TData, TValue>({
                     table.getAllColumns().forEach(column => {
                       const columnId = (column as any).accessorKey || (column as any).id;
                       if (columnId) {
-                         newVisibility[columnId] = true; // Set all found columns to visible
+                          newVisibility[columnId] = true; // Set all found columns to visible
                       }
                     });
                     table.setColumnVisibility(newVisibility);

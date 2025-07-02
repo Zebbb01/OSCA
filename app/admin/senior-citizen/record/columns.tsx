@@ -82,6 +82,42 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       accessorFn: (row) => row.remarks?.name || 'N/A',
       // REMOVED filterFn: 'equals' -> filtering is handled by API
     },
+    
+    // --- NEWLY ADDED COLUMNS ---
+    {
+      accessorKey: 'senior_category',
+      header: 'Category',
+      cell: ({ row }) => {
+        const latestApplication = row.original.Applications?.[0]; // Assuming latest application is at index 0
+        const categoryName = latestApplication?.category?.name || 'N/A';
+
+        const categoryStyles: Record<string, string> = {
+          'Regular senior citizens': 'bg-green-600 text-white',
+          'Special assistance cases': 'bg-yellow-500 text-black', // Changed text to black for yellow background for better contrast
+        };
+
+        return (
+          <div>
+            <span
+              className={`px-3 py-1 rounded-md text-xs font-semibold ${
+                categoryStyles[categoryName] || 'bg-gray-400 text-white'
+              }`}
+            >
+              {truncateText(categoryName)}
+            </span>
+          </div>
+        );
+      },
+      accessorFn: (row) => row.Applications?.[0]?.category?.name || 'N/A', // Ensure this matches your data structure
+      filterFn: (row, columnId, filterValue) => { // Adapted for potential array filter from DataTable
+        const latestCategoryName = row.original.Applications?.[0]?.category?.name;
+        if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) {
+            return true; // No filter applied, show all
+        }
+        // Assuming filterValue will be an array like ['Low-income seniors'] from DataTable's select filter
+        return (filterValue as string[]).includes(latestCategoryName || '');
+      },
+    },
     {
       id: 'releaseStatus',
       accessorKey: 'releaseStatus', // Keep accessorKey for easy access if needed
@@ -129,50 +165,6 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       // No filterFn needed here as this is primarily a display column
     },
     {
-      id: 'documents',
-      header: 'Documents',
-      cell: ({ row }) => {
-        const senior = row.original;
-        return <DocumentViewDialog senior={senior} />;
-      },
-    },
-    // --- NEWLY ADDED COLUMNS ---
-    {
-      accessorKey: 'senior_category',
-      header: 'Category',
-      cell: ({ row }) => {
-        const latestApplication = row.original.Applications?.[0]; // Assuming latest application is at index 0
-        const categoryName = latestApplication?.category?.name || 'N/A';
-
-        const categoryStyles: Record<string, string> = {
-          'Low-income seniors': 'bg-blue-600 text-white',
-          'Regular senior citizens': 'bg-green-600 text-white',
-          'Special assistance cases': 'bg-yellow-500 text-black', // Changed text to black for yellow background for better contrast
-        };
-
-        return (
-          <div>
-            <span
-              className={`px-3 py-1 rounded-md text-xs font-semibold ${
-                categoryStyles[categoryName] || 'bg-gray-400 text-white'
-              }`}
-            >
-              {truncateText(categoryName)}
-            </span>
-          </div>
-        );
-      },
-      accessorFn: (row) => row.Applications?.[0]?.category?.name || 'N/A', // Ensure this matches your data structure
-      filterFn: (row, columnId, filterValue) => { // Adapted for potential array filter from DataTable
-        const latestCategoryName = row.original.Applications?.[0]?.category?.name;
-        if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) {
-            return true; // No filter applied, show all
-        }
-        // Assuming filterValue will be an array like ['Low-income seniors'] from DataTable's select filter
-        return (filterValue as string[]).includes(latestCategoryName || '');
-      },
-    },
-    {
       accessorKey: 'age',
       header: 'Age',
       cell: ({ row }) => <div className="text-right">{row.getValue('age')}</div>,
@@ -195,6 +187,14 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       header: 'Birthdate',
       cell: ({ row }) => formatDateOnly(row.getValue('birthdate')),
       // No filterFn here if filtering is only server-side, if client-side needed, use 'includesString' for dates
+    },    
+    {
+      id: 'documents',
+      header: 'Documents',
+      cell: ({ row }) => {
+        const senior = row.original;
+        return <DocumentViewDialog senior={senior} />;
+      },
     },
     // --- END NEWLY ADDED COLUMNS ---
   ];

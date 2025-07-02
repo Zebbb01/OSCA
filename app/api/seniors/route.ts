@@ -290,52 +290,67 @@ export async function GET(request: Request): Promise<NextResponse> {
 }
 
 export async function PUT(request: NextRequest): Promise<NextResponse> {
-    try {
-        const { searchParams } = new URL(request.url);
-        const action = searchParams.get('action');
-        let seniorId: number;
-        let updateData: any; // Define updateData here
+  try {
+    const { searchParams } = new URL(request.url);
+    const action = searchParams.get('action');
+    let seniorId: number;
+    let updateData: any; // Keep as 'any' for now or define a more precise input DTO for the API
 
-        if (action === 'restore') {
-            const idParam = searchParams.get('id');
-            if (!idParam || isNaN(parseInt(idParam, 10))) {
-                return handleApiError(new Error('Invalid Senior ID for restore.'), 'Senior ID is required for restore action.', 400);
-            }
-            seniorId = parseInt(idParam, 10);
-            updateData = { deletedAt: null }; // Set updateData for restore
-        } else {
-            // Only parse JSON body if it's not a 'restore' action
-            const body = await request.json(); // This is safe now
-            if (body.id === undefined || isNaN(parseInt(body.id))) {
-                return handleApiError(new Error('Invalid Senior ID for update.'), 'Senior ID is required in the request body for update.', 400);
-            }
-            seniorId = parseInt(body.id, 10);
-            updateData = { // Set updateData for regular update
-                email: body.email,
-                contact_no: body.contact_no,
-                emergency_no: body.emergency_no,
-                barangay: body.barangay,
-                purok: body.purok,
-                pwd: body.pwd,
-            };
-        }
+    if (action === 'restore') {
+      const idParam = searchParams.get('id');
+      if (!idParam || isNaN(parseInt(idParam, 10))) {
+        return handleApiError(new Error('Invalid Senior ID for restore.'), 'Senior ID is required for restore action.', 400);
+      }
+      seniorId = parseInt(idParam, 10);
+      updateData = { deletedAt: null }; // Set updateData for restore
+    } else {
+      const body = await request.json();
 
-        const updatedSenior = await prisma.senior.update({
-            where: { id: seniorId },
-            data: updateData, // Use the dynamically set updateData
-        });
+      if (body.id === undefined || isNaN(parseInt(body.id))) {
+        return handleApiError(new Error('Invalid Senior ID for update.'), 'Senior ID is required in the request body for update.', 400);
+      }
+      seniorId = parseInt(body.id, 10);
 
-        return NextResponse.json({ success: true, message: `Senior record ${action === 'restore' ? 'restored' : 'updated'} successfully.`, data: updatedSenior });
-    } catch (error: any) {
-        if (error.code === 'P2025') {
-            return handleApiError(error, 'Senior record not found for the provided ID.', 404);
+      // Define the update payload, matching Prisma schema types
+      updateData = {
+        firstname: body.firstname,
+        middlename: body.middlename,
+        lastname: body.lastname,
+        age: body.age, // Prisma takes string, ensure it's a string here
+        birthdate: body.birthdate, // Prisma takes DateTime, expect ISO string here
+        gender: body.gender, // Prisma takes Gender enum ('male' | 'female')
+        email: body.email,
+        contact_no: body.contact_no,
+        emergency_no: body.emergency_no,
+        barangay: body.barangay,
+        purok: body.purok,
+        pwd: body.pwd,
+        contact_person: body.contact_person, // Corrected to contact_person
+        // Do NOT include fields like remarks, Applications, documents, etc. unless you intend to update them
+      };
+
+      // Filter out undefined values to avoid updating fields not provided
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key] === undefined) {
+          delete updateData[key];
         }
-        // Catch the JSON parsing error specifically if needed, but the above fix should prevent it
-        if (error.message.includes('JSON')) { // This is a general check, but the above refactor is better
-             return handleApiError(error, 'Invalid request body format (expected JSON for update, but none provided or invalid).', 400);
-        }
-        return handleApiError(error, 'Failed to process senior record update/restore.');
+      });
     }
+
+    const updatedSenior = await prisma.senior.update({
+      where: { id: seniorId },
+      data: updateData, // Use the dynamically set updateData
+    });
+
+    return NextResponse.json({ success: true, message: `Senior record ${action === 'restore' ? 'restored' : 'updated'} successfully.`, data: updatedSenior });
+  } catch (error: any) {
+    if (error.code === 'P2025') {
+      return handleApiError(error, 'Senior record not found for the provided ID.', 404);
+    }
+    return handleApiError(error, 'Failed to process senior record update/restore.');
+  } finally {
+    await prisma.$disconnect();
+  }
 }
 
 export async function GET_ARCHIVED(request: Request): Promise<NextResponse> {

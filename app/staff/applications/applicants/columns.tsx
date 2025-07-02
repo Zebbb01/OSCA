@@ -8,9 +8,7 @@ import { DocumentViewDialog } from '@/components/senior-documents/document-view-
 
 import { ApplicantActionButtons } from '@/components/applicants/applicant-action-buttons';
 
-// Change the export to a function that accepts userRole and status
 export const getApplicantsColumns = (userRole: string | undefined, status: string): ColumnDef<any>[] => {
-  // Handle loading state for columns
   if (status === 'loading') {
     return [{
       id: 'loading',
@@ -34,7 +32,7 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
         const fullName = [first, middle, last].filter(Boolean).join(' ');
         return <div>{fullName}</div>;
       },
-      filterFn: 'includesString',
+      filterFn: 'includesString', // This is good for global search
     },
     {
       accessorKey: 'applied_benefit',
@@ -44,7 +42,6 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
         return <div>{benefit}</div>;
       },
       accessorFn: (row) => row.benefit.name,
-      filterFn: 'equals',
     },
     {
       accessorKey: 'senior_category',
@@ -53,7 +50,6 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
         const category = row.original.category;
         const categoryName = category ? category.name : 'N/A';
         const categoryStyles: Record<string, string> = {
-          'Low-income seniors': 'bg-blue-600 text-white',
           'Regular senior citizens': 'bg-green-600 text-white',
           'Special assistance cases': 'bg-yellow-500 text-white',
         };
@@ -70,7 +66,6 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
         );
       },
       accessorFn: (row) => row.category?.name || 'N/A',
-      filterFn: 'equals',
     },
     {
       id: 'documents',
@@ -108,7 +103,6 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
         );
       },
       accessorFn: (row) => row.status.name,
-      filterFn: 'equals',
     },
     {
       accessorKey: 'createdAt',
@@ -116,14 +110,9 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
       cell: ({ row }) => {
         return formatDateTime(row.getValue('createdAt'));
       },
-      filterFn: (row, columnId, filterValue) => {
-        const date = formatDateTime(row.getValue(columnId));
-        return date.includes(filterValue as string);
-      },
     },
   ];
 
-  // Conditionally add the 'actions' column based on userRole
   if (userRole === 'ADMIN') {
     baseColumns.push({
       id: 'actions',
@@ -135,12 +124,6 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
       },
     });
   }
-
-  // If a USER should have different actions, you can add another if condition here
-  // For now, based on your request, only ADMINs will see the ApplicantActionButtons
-  // assuming 'USER' shouldn't have any actions on applicants.
-  // If 'USER' should see some *other* actions, add another 'if (userRole === 'USER')' block
-  // with a different set of action components.
 
   return baseColumns;
 };

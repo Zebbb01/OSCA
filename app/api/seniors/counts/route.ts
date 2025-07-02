@@ -21,11 +21,6 @@ export async function GET() {
             select: { id: true },
         })
 
-        const lowIncomeCategory = await prisma.seniorCategory.findUnique({
-            where: { name: 'Low-income seniors' },
-            select: { id: true },
-        })
-
         const specialSeniorsCount = specialCategory
             ? await prisma.applications.count({
                   where: { category_id: specialCategory.id },
@@ -35,12 +30,6 @@ export async function GET() {
         const regularSeniorsCount = regularCategory
             ? await prisma.applications.count({
                   where: { category_id: regularCategory.id },
-              })
-            : 0
-
-        const lowIncomeSeniorsCount = lowIncomeCategory
-            ? await prisma.applications.count({
-                  where: { category_id: lowIncomeCategory.id },
               })
             : 0
 
@@ -86,7 +75,6 @@ export async function GET() {
                 categoryCounts: {
                     Special: specialSeniorsCount,
                     Regular: regularSeniorsCount,
-                    LowIncome: lowIncomeSeniorsCount,
                 },
                 barangayCounts, // Add barangay counts to the response
                 newlyRegisteredSeniors, // Add newly registered seniors count to the response

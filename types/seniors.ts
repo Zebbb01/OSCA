@@ -1,3 +1,6 @@
+// types\seniors.ts
+import { QueryClient } from "@tanstack/react-query";
+
 export const enum RegistrationDocumentTag {
     BIRTH_CERTIFICATE = 'birth_certificate',
     CERTIFICATE_OF_RESIDENCY = 'certificate_of_residency',
@@ -40,11 +43,11 @@ export interface RegistrationDocument {
     tag: string;
     path: string;
     public_id?: string;
-    imageUrl?: string; // Made optional as per schema
+    imageUrl?: string;
     file_name: string;
     seniors_id: number;
-    createdAt: Date; // Should be Date here if you parse it on client, or string if left raw
-    updatedAt: Date; // Should be Date here if you parse it on client, or string if left raw
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface SeniorsDocuments {
@@ -62,36 +65,35 @@ export type Remarks = {
 }
 
 // --- CORE SENIORS INTERFACE ---
-// This should match the Senior model in Prisma, potentially with included relations
-// as they appear when fetched for the general table, not specifically for the report.
+// Make sure this matches your Prisma Senior model closely
 export interface Seniors {
     id: number;
     firstname: string;
-    middlename: string | null; // Use null for nullable fields as per Prisma
+    middlename: string | null;
     lastname: string;
-    email: string | null; // Use null for nullable fields as per Prisma
+    email: string | null;
     contact_no: string;
     emergency_no: string;
-    contact_person: string;
-    birthdate: Date; // Assuming you parse it to Date after fetching from string
-    age: string;
-    gender: 'male' | 'female'; // Matches Prisma enum
+    contact_person: string | null; // Changed to allow null based on schema
+    birthdate: Date;
+    age: string; // Keep as string here if your Prisma schema defines it as String
+    gender: 'male' | 'female';
     barangay: string;
     purok: string;
     pwd: boolean;
     remarks_id: number;
-    remarks: Remarks; // According to your schema, remarks is always related
-    Applications: Array<{ // This is what the general 'Seniors' fetch might include
+    remarks: Remarks;
+    Applications: Array<{
         category: { name: string } | null;
-        status: { name: string }; // Status is not optional in schema
-        benefit: { name: string; description: string; tag: string }; // Add benefit to Seniors.Applications if you fetch it
-        createdAt: Date; // Assuming parsed to Date
+        status: { name: string };
+        benefit: { name: string; description: string; tag: string };
+        createdAt: Date;
     }>;
     documents?: RegistrationDocument[];
     deletedAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
-    releasedAt: Date | null; // Matches schema
+    releasedAt: Date | null;
 }
 
 export type Categories = {
@@ -102,4 +104,93 @@ export type Categories = {
 export type Status = {
     id: number;
     name: string;
+}
+
+// Edit Dialog
+
+// Reusable editable form field component
+export interface EditableFormFieldProps {
+    label: string;
+    id: string;
+    value: string | null | undefined;
+    onChange: (value: string) => void;
+    placeholder?: string;
+    type?: string;
+    readOnly?: boolean;
+}
+// --- UPDATED EditableDateField COMPONENT ---
+export interface EditableDateFieldProps {
+    label: string;
+    id: string;
+    value: Date | null | undefined; // Keep as Date | null | undefined for internal state
+    onChange: (date: Date | null) => void; // react-datepicker passes Date | null
+    placeholder?: string;
+}
+
+// Reusable checkbox field component (for editing)
+export interface EditableCheckboxFieldProps {
+    label: string;
+    id: string;
+    checked: boolean;
+    onCheckedChange: (checked: boolean) => void;
+}
+
+// Section Header (reused from SeniorViewDialog)
+export interface SectionHeaderProps {
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+}
+
+export interface SeniorUpdateData {
+    id: number;
+    firstname: string; // Required by Prisma
+    middlename: string | null; // Optional in Prisma
+    lastname: string; // Required by Prisma
+    age: string; // Required by Prisma (as string)
+    birthdate: string; // Required by Prisma (as DateTime), will be ISO string
+    gender: 'male' | 'female'; // Required by Prisma (as Gender enum)
+    email: string | null; // Optional in Prisma
+    contact_no: string; // Required by Prisma
+    emergency_no: string; // Required by Prisma
+    barangay: string; // Required by Prisma
+    purok: string; // Required by Prisma
+    pwd: boolean; // Required by Prisma (default false, but editable)
+    contact_person: string | null; // Optional in Prisma
+}
+
+
+// Main Senior Edit Dialog Component
+export interface SeniorEditDialogProps {
+    senior: Seniors;
+    queryClient: QueryClient;
+    trigger?: React.ReactNode;
+}
+
+// Define the state type to match the form fields.
+// These should closely reflect the Senior type's editable fields
+// with appropriate types for the React state (e.g., Date for birthdate).
+export interface EditFormState {
+    firstname: string;
+    middlename: string | null;
+    lastname: string;
+    age: number; // Stored as number in React state for numeric input
+    birthdate: Date | null; // Changed to Date | null to match react-datepicker
+    gender: 'male' | 'female' | ''; // Allow empty string for initial state or if unselected
+    email: string | null;
+    contact_no: string;
+    emergency_no: string;
+    barangay: string;
+    purok: string;
+    pwd: boolean;
+    contact_person: string | null;
+}
+
+export interface EditableSelectFieldProps { // Add this new interface
+    label: string;
+    id: string;
+    value: string | null | undefined;
+    onChange: (value: string) => void;
+    options: { value: string; label: string }[];
+    placeholder?: string;
 }

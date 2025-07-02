@@ -1,78 +1,39 @@
 // app\admin\applications\applicants\page.tsx
 'use client'
 
-import { useState, useMemo } from 'react' // Import useMemo
+import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useSession } from 'next-auth/react' // Import useSession for user role
+import { useSession } from 'next-auth/react'
+import { ColumnFiltersState } from '@tanstack/react-table'
 
 import { DataTable } from '@/components/data-table'
-import { getApplicantsColumns } from './columns' // Import the function, not the constant
-import { ListBoxComponent } from '@/components/listbox-component' // Keep if used for other filters
+import { getApplicantsColumns } from './columns'
 import { apiService } from '@/lib/axios'
-import { BenefitApplicationData } from '@/types/application' // Assuming this type is correct
+import { BenefitApplicationData } from '@/types/application'
 
-const dummyApplicantsData = [
-    {
-        id: 1,
-        firstname: 'Maria',
-        middlename: 'Santos',
-        lastname: 'Reyes',
-        email: 'maria.reyes@example.com',
-        benefits: {
-            name: 'Monthly Allowance',
-        },
-
-        status: {
-            name: 'PENDING',
-        },
-
-        category: {
-            name: 'Low-income seniors',
-        },
-        createdAt: new Date('2024-12-01T10:00:00Z'),
-    },
-
-    {
-        id: 1,
-        firstname: 'Maria',
-        middlename: 'Santos',
-        lastname: 'Reyes',
-        email: 'maria.reyes@example.com',
-        benefits: {
-            name: 'Monthly Allowance',
-        },
-
-        status: {
-            name: 'PENDING',
-        },
-
-        category: null,
-        createdAt: new Date('2024-12-01T10:00:00Z'),
-    },
-]
-
-const benefits = [
-    {
-        id: 1,
-        name: 'Monthly Allowance',
-    },
-    {
-        id: 2,
-        name: 'Medical assistance',
-    },
-    {
-        id: 3,
-        name: 'Discount privileges',
-    },
-]
 
 const ApplicantPage = () => {
-    // Get session data and status to determine user role
     const { data: session, status: sessionStatus } = useSession()
-    const userRole = (session?.user as any)?.role || 'USER' // Default to 'USER' if role is not available
+    const userRole = (session?.user as any)?.role || 'USER'
 
-    // USE QUERY FOR FETCHING APPLICATIONS DATA
-    const benefitApplicationQuery = useQuery<BenefitApplicationData[]>({ // Explicitly type useQuery
+    // State for global filter (search)
+    const [globalFilter, setGlobalFilter] = useState<string>('')
+    // State for column filters
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    // State for filter dropdown visibility
+    const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState<boolean>(false)
+
+    const applicantInitialVisibleColumns = [
+        'fullname',
+        'applied_benefit',
+        'senior_category',
+        'status',
+        'createdAt',
+        'documents',
+        'actions', // If admin, actions will be visible
+    ];
+
+    const benefitApplicationQuery = useQuery<BenefitApplicationData[]>({
         queryKey: ['applications'],
         queryFn: async () => {
             const respData = await apiService.get<BenefitApplicationData[]>(
@@ -80,21 +41,55 @@ const ApplicantPage = () => {
             )
             return respData
         },
-        staleTime: 5 * 60 * 1000, // Keep data fresh for 5 minutes
+        staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,
     })
 
     console.log("BenefitApplicationData: ", benefitApplicationQuery.data);
 
-    // Memoize the columns, passing the userRole and sessionStatus
-    // This ensures columns are re-calculated only when userRole or sessionStatus changes
     const columns = useMemo(() => {
         return getApplicantsColumns(userRole, sessionStatus)
     }, [userRole, sessionStatus])
 
+    const filterableColumns = useMemo(() => {
+        const applicationsData = benefitApplicationQuery.data ?? [];
 
-    // SELECTED BENEFIT FILTER STATE (if you intend to use this for filtering the DataTable)
-    const [selected, setSelected] = useState(benefits[2])
+        // Extract unique benefit names
+        const benefitOptions = Array.from(new Set(applicationsData.map(app => app.benefit.name)))
+            .filter(Boolean) // Filter out any undefined or null
+            .map(name => ({ value: name, label: name }));
+
+        // Extract unique category names
+        const categoryOptions = Array.from(new Set(applicationsData.map(app => app.category?.name || 'N/A')))
+            .filter(name => name !== 'N/A') // Filter out 'N/A' if you don't want it as an explicit filter option
+            .map(name => ({ value: name, label: name }));
+
+        // Extract unique status names
+        const statusOptions = Array.from(new Set(applicationsData.map(app => app.status.name)))
+            .filter(Boolean) // Filter out any undefined or null
+            .map(name => ({ value: name, label: name }));
+
+        return [
+            {
+                id: 'applied_benefit', // Corresponds to accessorKey in columns.tsx
+                title: 'Applied Benefit',
+                type: 'select' as const,
+                options: benefitOptions,
+            },
+            {
+                id: 'senior_category', // Corresponds to accessorKey in columns.tsx
+                title: 'Category',
+                type: 'select' as const,
+                options: categoryOptions,
+            },
+            {
+                id: 'status', // Corresponds to accessorKey in columns.tsx
+                title: 'Status',
+                type: 'select' as const,
+                options: statusOptions,
+            },
+        ];
+    }, [benefitApplicationQuery.data]);
 
     return (
         <div className="container mx-auto border-1 border-gray-400 p-5 rounded-md mt-8">
@@ -121,7 +116,18 @@ const ApplicantPage = () => {
             ) : benefitApplicationQuery.data && benefitApplicationQuery.data.length === 0 ? (
                 <div className="py-10 text-gray-400 text-lg text-center">No application records found.</div>
             ) : (
-                <DataTable columns={columns} data={benefitApplicationQuery.data ?? []} />
+                <DataTable
+                    columns={columns}
+                    data={benefitApplicationQuery.data ?? []}
+                    globalFilter={globalFilter}
+                    setGlobalFilter={setGlobalFilter}
+                    columnFilters={columnFilters}
+                    setColumnFilters={setColumnFilters}
+                    filterableColumns={filterableColumns}
+                    isFilterDropdownOpen={isFilterDropdownOpen}
+                    setIsFilterDropdownOpen={setIsFilterDropdownOpen}
+                    initialVisibleColumns={applicantInitialVisibleColumns}
+                />
             )}
         </div>
     )

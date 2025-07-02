@@ -1,4 +1,4 @@
-// app\staff\senior-citizen\record\page.tsx
+// app\admin\senior-citizen\record\page.tsx
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -82,20 +82,23 @@ const RecordPage = () => {
             case 'barangay':
               params.barangay = value as string;
               break;
-            case 'remarks':
-              params.remarks = value as string;
-              break;
-            case 'releaseStatus':
-              if (value === 'Released' || value === 'Not Released') {
-                params.releaseStatus = value;
-              }
-              break;
           }
         }
       });
       return params;
     };
   }, []);
+
+  const seniorRecordInitialVisibleColumns = [
+    'fullname',
+    'contact_no',
+    'purok',
+    'barangay',
+    'gender',
+    'documents',
+    'actions', // If admin, actions will be visible
+    'user-actions', // If user, user-actions will be visible
+  ];
 
   const currentQueryParams = generateQueryParams(columnFilters);
 
@@ -142,13 +145,6 @@ const RecordPage = () => {
         type: 'select' as const,
         options: Array.from(new Set(seniorsData.map(s => s.barangay))).filter(Boolean).map(barangay => ({ value: barangay, label: barangay }))
       },
-      {
-        id: 'remarks',
-        title: 'Remarks',
-        type: 'select' as const,
-        options: Array.from(new Set(seniorsData.map(s => s.remarks?.name || 'N/A'))).filter(r => r !== 'N/A').map(remark => ({ value: remark, label: remark }))
-      },
-      { id: 'releaseStatus', title: 'Release Status', type: 'select' as const, options: [{ value: 'Released', label: 'Released' }, { value: 'Not Released', label: 'Not Released' }] },
     ];
   }, [seniorQuery.data]);
 
@@ -238,6 +234,7 @@ const RecordPage = () => {
           filterableColumns={filterableColumns}
           isFilterDropdownOpen={isFilterDropdownOpen}
           setIsFilterDropdownOpen={setIsFilterDropdownOpen}
+          initialVisibleColumns={seniorRecordInitialVisibleColumns}
         />
       )}
     </div>

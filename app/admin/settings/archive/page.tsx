@@ -1,12 +1,13 @@
 'use client';
 
+import React from 'react'; // Import React
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRotateLeft, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'sonner';
 
 import { DataTable } from '@/components/data-table';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, ColumnFiltersState } from '@tanstack/react-table'; // Import ColumnFiltersState
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -37,43 +38,27 @@ const archivedSeniorColumns: ColumnDef<Seniors>[] = [
     header: 'Last Name',
   },
   {
-    accessorKey: 'email',
-    header: 'Email',
-  },
-  {
     accessorKey: 'contact_no',
     header: 'Contact No.',
-  },
-  {
-    accessorKey: 'barangay',
-    header: 'Barangay',
   },
   {
     accessorKey: 'purok',
     header: 'Purok',
   },
   {
+    accessorKey: 'barangay',
+    header: 'Barangay',
+  },
+  {
     accessorKey: 'gender',
     header: 'Gender',
-  },
-  {
-    accessorKey: 'age',
-    header: 'Age',
-  },
-  {
-    accessorKey: 'birthdate',
-    header: 'Birth Date',
-    cell: ({ row }) => {
-      const date = new Date(row.original.birthdate);
-      return date.toLocaleDateString(); // Format the date nicely
-    },
   },
   {
     accessorKey: 'deletedAt',
     header: 'Archived On',
     cell: ({ row }) => {
       const date = row.original.deletedAt ? new Date(row.original.deletedAt) : null;
-      return date ? date.toLocaleString() : 'N/A'; // Show when it was archived
+      return date ? date.toLocaleString() : 'N/A';
     },
   },
   {
@@ -90,22 +75,20 @@ const archivedSeniorColumns: ColumnDef<Seniors>[] = [
         onSuccess: () => {
           toast.success('Senior record restored successfully.');
           queryClient.invalidateQueries({ queryKey: ['archivedSeniors'] });
-          queryClient.invalidateQueries({ queryKey: ['seniors'] }); // Also invalidate active seniors
+          queryClient.invalidateQueries({ queryKey: ['seniors'] });
         },
         onError: (error) => {
           toast.error(`Failed to restore record: ${error.message}`);
         },
       });
 
-// NEW: Permanent Delete Mutation
       const deletePermanentlyMutation = useMutation({
         mutationFn: async (id: number) => {
-          // Send a DELETE request to the /api/seniors endpoint with the ID and 'action=permanent'
-          await apiService.delete(`/api/seniors?id=${id}&action=permanent`); // <--- CHANGE THIS LINE
+          await apiService.delete(`/api/seniors?id=${id}&action=permanent`);
         },
         onSuccess: () => {
           toast.success('Senior record permanently deleted.');
-          queryClient.invalidateQueries({ queryKey: ['archivedSeniors'] }); // Invalidate archived list
+          queryClient.invalidateQueries({ queryKey: ['archivedSeniors'] });
         },
         onError: (error) => {
           toast.error(`Failed to permanently delete record: ${error.message}`);
@@ -113,7 +96,7 @@ const archivedSeniorColumns: ColumnDef<Seniors>[] = [
       });
 
       return (
-        <div className="flex gap-2"> {/* Use a div to contain both buttons */}
+        <div className="flex gap-2">
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
@@ -144,7 +127,6 @@ const archivedSeniorColumns: ColumnDef<Seniors>[] = [
             </AlertDialogContent>
           </AlertDialog>
 
-          {/* NEW: Permanent Delete AlertDialog */}
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
@@ -181,6 +163,11 @@ const archivedSeniorColumns: ColumnDef<Seniors>[] = [
 ];
 
 const ArchivePage = () => {
+  // State for DataTable filtering and visibility
+  const [globalFilter, setGlobalFilter] = React.useState('');
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = React.useState(false);
+
   const {
     data: archivedSeniors,
     isLoading,
@@ -189,12 +176,46 @@ const ArchivePage = () => {
   } = useQuery<Seniors[]>({
     queryKey: ['archivedSeniors'],
     queryFn: async () => {
-      const response = await apiService.get<Seniors[]>('/api/seniors/archived');
-      return response; // Access data property from axios response
+      return await apiService.get<Seniors[]>('/api/seniors/archived');
     },
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
+
+  // Define filterable columns for the DataTable
+  // You can dynamically generate options if needed, but for now, we'll hardcode some examples.
+  const filterableArchivedColumns = React.useMemo(() => [
+    {
+      id: 'gender',
+      title: 'Gender',
+      type: 'select' as const, // Use 'as const' for literal type
+      options: [
+        { value: 'Male', label: 'Male' },
+        { value: 'Female', label: 'Female' },
+      ],
+    },
+    {
+      id: 'barangay',
+      title: 'Barangay',
+      type: 'select' as const,
+      options: Array.from(new Set((archivedSeniors || []).map(senior => senior.barangay)))
+        .filter(Boolean) // Filter out any undefined/null barangays
+        .sort()
+        .map(barangay => ({ value: barangay, label: barangay })),
+    },
+    // Add more filterable columns as needed
+  ], [archivedSeniors]); // Re-memoize if archivedSeniors changes for dynamic options
+
+  const initialVisibleArchivedColumns = [
+    'firstname',
+    'lastname',
+    'contact_no',
+    'purok',
+    'barangay',
+    'gender',
+    'deletedAt',
+    'actions'
+  ];
 
   return (
     <div className="container mx-auto p-5 rounded-md mt-8 border border-gray-200 shadow-sm">
@@ -220,7 +241,18 @@ const ArchivePage = () => {
       ) : archivedSeniors && archivedSeniors.length === 0 ? (
         <div className="text-center py-10 text-gray-500">No archived senior citizen records found.</div>
       ) : (
-        <DataTable columns={archivedSeniorColumns} data={archivedSeniors || []} />
+        <DataTable
+          columns={archivedSeniorColumns}
+          data={archivedSeniors || []}
+          filterableColumns={filterableArchivedColumns}
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+          columnFilters={columnFilters}
+          setColumnFilters={setColumnFilters}
+          isFilterDropdownOpen={isFilterDropdownOpen}
+          setIsFilterDropdownOpen={setIsFilterDropdownOpen}
+          initialVisibleColumns={initialVisibleArchivedColumns}
+        />
       )}
     </div>
   );
