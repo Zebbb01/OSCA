@@ -1,7 +1,7 @@
 // src/app/admin/applications/applicants/components/applicant-action-buttons.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Pencil, Trash, FileText } from 'lucide-react';
 import { toast } from 'sonner';
@@ -27,8 +27,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import PrimaryButton from '@/components/ui/primary-button'; // Assuming this path is correct
-import { ListBoxComponent } from '@/components/listbox-component'; // Assuming this path is correct
+import PrimaryButton from '@/components/ui/primary-button';
+import { ListBoxComponent } from '@/components/listbox-component';
 
 import { useFetchCategoryAndStatus } from '@/hooks/use-fetch-category-status';
 import { apiService } from '@/lib/axios';
@@ -36,10 +36,10 @@ import { Categories, Status } from '@/types/seniors';
 import { UpdateCategoryData, UpdateStatusData } from '@/types/application';
 import { PUTApiResponse } from '@/types/api';
 
-import { DocumentUploadForm } from './document-upload-form'; // New path for the extracted component
+import { DocumentUploadForm } from './document-upload-form';
 
 interface ApplicantActionButtonsProps {
-  applicant: any; // Consider creating a specific type for applicant if available
+  applicant: any;
   queryClient: ReturnType<typeof useQueryClient>;
 }
 
@@ -50,45 +50,47 @@ export const ApplicantActionButtons: React.FC<ApplicantActionButtonsProps> = ({
   const { categories, status, isCategoryLoading, isStatusLoading } = useFetchCategoryAndStatus();
 
   const [showUpdateDialog, setShowUpdateDialog] = useState<boolean>(false);
-  const [showRequirementsDialog, setShowRequirementsDialog] = useState<boolean>(false);
 
-  const fallbackCategory: Categories = {
-    id: -1,
-    name: 'Select Category',
-  };
-
-  const [selectedCategories, setSelectedCategories] = useState<Categories>(
-    applicant.category ?? fallbackCategory
-  );
+  // Initialize selectedStatus with the current applicant's status
+  // and update it whenever the applicant prop changes.
   const [selectedStatus, setSelectedStatus] = useState<Status>(applicant.status);
+
+  useEffect(() => {
+    // This useEffect will run when the `applicant` prop changes.
+    // It ensures that `selectedStatus` is always in sync with the `applicant.status`
+    // that is passed down, especially after a data re-fetch.
+    if (applicant && applicant.status) {
+      setSelectedStatus(applicant.status);
+    }
+  }, [applicant]); // Dependency array: re-run when 'applicant' object reference changes
 
   // Filter out the "PENDING" status
   const filteredStatus = status?.filter((s) => s.name !== 'PENDING');
-
-  const categoryMutation = useMutation({
-    mutationFn: async (data: UpdateCategoryData) => {
-      return await apiService.put<PUTApiResponse>('/api/seniors/category', data);
-    },
-    onSuccess: (resp) => {
-      toast.success(resp.msg);
-      queryClient.invalidateQueries({ queryKey: ['applications'] });
-    },
-    onError: (error) => {
-      toast.error('Error in Updating Category, please try again!');
-      console.error('Error updating category:', error);
-    },
-  });
 
   const statusMutation = useMutation({
     mutationFn: async (data: UpdateStatusData) => {
       return await apiService.put<PUTApiResponse>('/api/benefits/application/status', data);
     },
-    onSuccess: (resp) => {
+    onSuccess: (resp, variables) => {
       toast.success(resp.msg);
+      // Invalidate queries to refetch data for the entire table.
       queryClient.invalidateQueries({ queryKey: ['applications'] });
+
+      // Optimistic update for the specific applicant if you want more immediate feedback
+      // (This is an optional addition, invalidateQueries handles the eventual consistency)
+      queryClient.setQueryData(['applications'], (oldData: any) => {
+        if (!oldData) return [];
+        return oldData.map((app: any) =>
+          app.id === variables.application_id
+            ? { ...app, status: selectedStatus } // Use selectedStatus as it's the new state
+            : app
+        );
+      });
+
+      // Close the dialog after a short delay
       setTimeout(() => {
         setShowUpdateDialog(false);
-      }, 1000);
+      }, 100); // Reduced delay for better UX
     },
     onError: (error) => {
       toast.error('Error in Updating Status, please try again!');
@@ -113,22 +115,11 @@ export const ApplicantActionButtons: React.FC<ApplicantActionButtonsProps> = ({
   });
 
   const onUpdateApplication = () => {
-    if (selectedCategories.id === -1) {
-      toast.warning('At least select a category to proceed');
-      return;
-    }
-
-    const updateCategoryData: UpdateCategoryData = {
-      application_id: applicant.id,
-      category_id: selectedCategories.id,
-    };
-
     const updateStatusData: UpdateStatusData = {
       application_id: applicant.id,
       status_id: selectedStatus.id,
     };
 
-    categoryMutation.mutate(updateCategoryData);
     statusMutation.mutate(updateStatusData);
   };
 
@@ -138,42 +129,6 @@ export const ApplicantActionButtons: React.FC<ApplicantActionButtonsProps> = ({
 
   return (
     <div className="flex gap-2">
-      {/* Requirements Dialog Trigger */}
-      {/* <Dialog open={showRequirementsDialog} onOpenChange={setShowRequirementsDialog}>
-        <DialogTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <FileText className="w-4 h-4" />
-          </Button>
-        </DialogTrigger>
-        <DialogContent
-          onKeyDown={(e) => e.preventDefault()}
-          onFocusOutside={(e) => e.preventDefault()}
-          className="sm:max-w-lg"
-        >
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold">
-              {applicant.benefit.name} Requirements
-            </DialogTitle>
-            <DialogDescription>
-              Upload required documents for this senior citizen's benefit.
-            </DialogDescription>
-          </DialogHeader>
-
-          <DocumentUploadForm applicant={applicant} queryClient={queryClient} />
-
-          <DialogFooter className="mt-6 flex justify-end gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowRequirementsDialog(false)}
-              className="px-4 py-2"
-            >
-              Cancel
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog> */}
-
       {/* Update Dialog Trigger */}
       <Dialog open={showUpdateDialog} onOpenChange={setShowUpdateDialog}>
         <DialogTrigger asChild>
@@ -188,24 +143,22 @@ export const ApplicantActionButtons: React.FC<ApplicantActionButtonsProps> = ({
           <DialogHeader>
             <DialogTitle>Update Senior Application</DialogTitle>
             <DialogDescription>
-              Categorize and update status of senior application based on eligibility
+              View category and update status of senior application.
             </DialogDescription>
           </DialogHeader>
+
           <div className="flex flex-col">
             <h1>Senior Category</h1>
             {isCategoryLoading ? (
               <h1>Loading Categories...</h1>
             ) : (
-              <ListBoxComponent
-                label=""
-                options={categories}
-                selected={selectedCategories}
-                onChange={setSelectedCategories}
-                getLabel={(category) => category?.name ?? ''}
-                getKey={(category) => category?.id ?? -1}
-              />
+              <div id="category-display" className="px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-700">
+                {/* Display the selected category name or a placeholder if none is set */}
+                {applicant.category?.name || 'Not Assigned'}
+              </div>
             )}
           </div>
+
           <div className="flex flex-col">
             <h1>Status</h1>
             {isStatusLoading ? (
@@ -221,19 +174,20 @@ export const ApplicantActionButtons: React.FC<ApplicantActionButtonsProps> = ({
               />
             )}
           </div>
+
           <DialogFooter>
             <PrimaryButton
               className={
-                categoryMutation.isPending || statusMutation.isPending
+                statusMutation.isPending
                   ? '!bg-gray-500 text-white'
                   : ''
               }
-              disabled={categoryMutation.isPending || statusMutation.isPending}
+              disabled={statusMutation.isPending}
               onClick={onUpdateApplication}
             >
-              {categoryMutation.isPending || statusMutation.isPending
+              {statusMutation.isPending
                 ? 'Updating...'
-                : 'Update'}
+                : 'Update Status'}
             </PrimaryButton>
           </DialogFooter>
         </DialogContent>

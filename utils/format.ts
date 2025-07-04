@@ -11,14 +11,13 @@ export function formatDateOnly(dateInput: Date | string): string {
   const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput
 
   const options: Intl.DateTimeFormatOptions = {
-    month: '2-digit',
-    day: '2-digit',
+    month: 'long', // Changed from '2-digit' to 'long'
+    day: 'numeric', // Changed from '2-digit' to 'numeric' for single-digit days without leading zero
     year: 'numeric',
   }
 
   return date.toLocaleDateString('en-US', options)
 }
-
 
 export function formatDateTime(dateInput: Date | string): string {
     const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput

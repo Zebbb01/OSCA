@@ -86,7 +86,7 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
         overflow: 'linebreak', // Allow text to wrap
       },
       headStyles: {
-        fillColor: [41, 128, 185], // A nice blue for the header
+        fillColor: [34, 139, 34], // A nice blue for the header
         textColor: 255, // White text
         fontStyle: 'bold',
       },

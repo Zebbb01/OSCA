@@ -171,9 +171,9 @@ const ReleaseMonitoringPage = () => {
   return (
     <div className="container mx-auto p-5 rounded-md mt-8 border border-gray-200 shadow-sm">
       <div className="flex flex-col mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Received Benefits Monitoring</h1>
+        <h1 className="text-3xl font-bold text-gray-800">Release Benefits Monitoring</h1>
         <p className="text-gray-600 text-base mt-1">
-          View all senior citizens who have successfully received their benefits.
+          View all senior citizens who have successfully released their benefits.
         </p>
       </div>
 
@@ -190,7 +190,7 @@ const ReleaseMonitoringPage = () => {
           Error loading records: {seniorQuery.error?.message || 'An unexpected error occurred.'}
         </div>
       ) : receivedSeniors.length === 0 ? (
-        <div className="text-center py-10 text-gray-500">No senior citizens have received benefits yet.</div>
+        <div className="text-center py-10 text-gray-500">No senior citizens have released benefits yet.</div>
       ) : (
         <DataTable
           columns={columns}

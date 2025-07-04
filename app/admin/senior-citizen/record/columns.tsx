@@ -23,7 +23,7 @@ const truncateText = (text: string | number | null | undefined, limit: number = 
 
 export const getSeniorRecordsColumns = (userRole: string | undefined, status: string): ColumnDef<Seniors>[] => {
   console.log('Current User Role:', userRole);
-    if (status === 'loading') {
+  if (status === 'loading') {
     return [{
       id: 'loading',
       header: 'Loading...',
@@ -82,7 +82,7 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       accessorFn: (row) => row.remarks?.name || 'N/A',
       // REMOVED filterFn: 'equals' -> filtering is handled by API
     },
-    
+
     // --- NEWLY ADDED COLUMNS ---
     {
       accessorKey: 'senior_category',
@@ -99,9 +99,8 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
         return (
           <div>
             <span
-              className={`px-3 py-1 rounded-md text-xs font-semibold ${
-                categoryStyles[categoryName] || 'bg-gray-400 text-white'
-              }`}
+              className={`px-3 py-1 rounded-md text-xs font-semibold ${categoryStyles[categoryName] || 'bg-gray-400 text-white'
+                }`}
             >
               {truncateText(categoryName)}
             </span>
@@ -112,7 +111,7 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       filterFn: (row, columnId, filterValue) => { // Adapted for potential array filter from DataTable
         const latestCategoryName = row.original.Applications?.[0]?.category?.name;
         if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) {
-            return true; // No filter applied, show all
+          return true; // No filter applied, show all
         }
         // Assuming filterValue will be an array like ['Low-income seniors'] from DataTable's select filter
         return (filterValue as string[]).includes(latestCategoryName || '');
@@ -134,9 +133,8 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
         return (
           <div>
             <span
-              className={`px-3 py-1 rounded-md text-xs font-semibold ${
-                statusStyles[statusText] || 'bg-gray-400 text-white'
-              }`}
+              className={`px-3 py-1 rounded-md text-xs font-semibold ${statusStyles[statusText] || 'bg-gray-400 text-white'
+                }`}
             >
               {statusText}
             </span>
@@ -148,7 +146,7 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
         const releasedAt = row.original.releasedAt;
         const status = releasedAt ? 'Released' : 'Not Released';
         if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) {
-            return true; // No filter applied, show all
+          return true; // No filter applied, show all
         }
         // filterValue should be an array like ['Released'] or ['Not Released']
         return (filterValue as string[]).includes(status);
@@ -176,7 +174,7 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
       // No filterFn here if filtering is only server-side
     },
-        {
+    {
       accessorKey: 'contactPerson',
       header: 'Contact Person',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
@@ -187,7 +185,7 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       header: 'Birthdate',
       cell: ({ row }) => formatDateOnly(row.getValue('birthdate')),
       // No filterFn here if filtering is only server-side, if client-side needed, use 'includesString' for dates
-    },    
+    },
     {
       id: 'documents',
       header: 'Documents',
@@ -221,12 +219,18 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       header: 'Actions',
       cell: ({ row }) => {
         const senior = row.original;
-        console.log(`Senior ${senior.id} releasedAt:`, senior.releasedAt);
         const queryClient = useQueryClient();
+        // Find the latest application for the senior
+        const latestApplication = senior.Applications?.[0]; // Assuming applications are ordered by createdAt DESC
+
+        // Check the status of the latest application
+        const applicationStatus = latestApplication?.status?.name;
+        const showReleaseButton = applicationStatus === 'APPROVED' || applicationStatus === 'REJECT';
+
         return (
           <div className="flex gap-2">
             <SeniorActionButtons senior={senior} queryClient={queryClient} />
-            <ReleaseActionButton senior={senior} queryClient={queryClient} />
+            {showReleaseButton && <ReleaseActionButton senior={senior} queryClient={queryClient} />}
           </div>
         );
       },

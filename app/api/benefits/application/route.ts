@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const parsed = benefitApplicationSchema.parse(body);
-        const { benefit_id, selected_senior_ids, status } = parsed;
+        const { benefit_id, selected_senior_ids } = parsed; // Removed 'status' as it's not directly used for initial POST
 
         const pendingStatus = await prisma.status.findUnique({
             where: {
@@ -28,12 +28,57 @@ export async function POST(request: NextRequest) {
 
         const pendingStatusId = pendingStatus.id;
 
-        const applicationsData = selected_senior_ids.map((senior_id) => ({
-            benefit_id,
-            senior_id,
-            status_id: pendingStatusId,
-            category_id: null,
-        }));
+        // Fetch both senior categories
+        const categories = await prisma.seniorCategory.findMany({
+            where: {
+                name: {
+                    in: ['Regular senior citizens', 'Special assistance cases'],
+                },
+            },
+            select: {
+                id: true,
+                name: true,
+            },
+        });
+
+        const regularCategory = categories.find(cat => cat.name === 'Regular senior citizens');
+        const specialAssistanceCategory = categories.find(cat => cat.name === 'Special assistance cases');
+
+        if (!regularCategory || !specialAssistanceCategory) {
+            console.error("Error: Required senior categories not found in the database.");
+            return NextResponse.json(
+                { msg: 'Server configuration error: Required senior categories not found.', code: 500 },
+                { status: 500 }
+            );
+        }
+
+        // Fetch senior details for all selected_senior_ids to get PWD status
+        const seniors = await prisma.senior.findMany({
+            where: {
+                id: {
+                    in: selected_senior_ids,
+                },
+            },
+            select: {
+                id: true,
+                pwd: true,
+            },
+        });
+
+        const applicationsData = selected_senior_ids.map((senior_id) => {
+            const senior = seniors.find(s => s.id === senior_id);
+            const isPwd = senior?.pwd === true;
+
+            // Set category_id based on PWD status
+            const category_id = isPwd ? specialAssistanceCategory.id : regularCategory.id;
+
+            return {
+                benefit_id,
+                senior_id,
+                status_id: pendingStatusId,
+                category_id: category_id,
+            };
+        });
 
         await prisma.applications.createMany({
             data: applicationsData,
@@ -108,7 +153,12 @@ export async function GET(request: NextRequest) {
             where: whereClause, // Apply the constructed where clause
             include: {
                 senior: {
-                    include: {
+                    select: {
+                        firstname: true,
+                        middlename: true,
+                        lastname: true,
+                        email: true,
+                        pwd: true, // Include PWD field
                         documents: true,
                     },
                 },

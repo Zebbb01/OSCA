@@ -10,201 +10,201 @@ import { NextRequest, NextResponse } from 'next/server';
  * Now includes benefitRequirementId for specific linking.
  */
 async function uploadAndSaveDocument(
-    file: File,
-    seniorId: number,
-    tag: string, // This will be 'medical_assistance'
-    subfolder?: string, // Optional subfolder for organization
-    benefitRequirementId?: number | null // NEW: Optional ID for the specific benefit requirement
+  file: File,
+  seniorId: number,
+  tag: string, // This will be 'medical_assistance'
+  subfolder?: string, // Optional subfolder for organization
+  benefitRequirementId?: number | null // NEW: Optional ID for the specific benefit requirement
 ) {
-    if (!(file instanceof File)) {
-        console.warn(`Skipping upload for non-File object for tag "${tag}".`);
-        return null;
-    }
-
-    const baseFolderPath = `registration/documents/${seniorId}`;
-    const cloudinaryFolderPath = subfolder ? `${baseFolderPath}/${subfolder}` : baseFolderPath;
-    const publicId = `${tag}_${seniorId}_${Date.now()}_${file.name.replace(/\.[^/.]+$/, '')}`;
-
-    try {
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-
-        const uploadResult: any = await new Promise((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-                {
-                    folder: cloudinaryFolderPath,
-                    public_id: publicId,
-                    resource_type: 'auto',
-                },
-                (error, result) => {
-                    if (error) reject(error);
-                    else resolve(result);
-                }
-            );
-            stream.end(buffer);
-        });
-
-        if (uploadResult) {
-            // Modify this to store benefitRequirementId if your schema supports it
-            await prisma.registrationDocument.create({
-                data: {
-                    tag, // This will be 'medical_assistance'
-                    path: cloudinaryFolderPath,
-                    imageUrl: uploadResult.secure_url,
-                    public_id: uploadResult.public_id,
-                    seniors_id: seniorId,
-                    file_name: file.name,
-                    // If you have a `benefitRequirementId` field in `RegistrationDocument`, add it here:
-                    // benefit_requirement_id: benefitRequirementId || null,
-                },
-            });
-            return uploadResult;
-        }
-    } catch (err) {
-        console.error(`Error processing file "${file.name}" for tag "${tag}":`, err);
-        throw err;
-    }
+  if (!(file instanceof File)) {
+    console.warn(`Skipping upload for non-File object for tag "${tag}".`);
     return null;
+  }
+
+  const baseFolderPath = `registration/documents/${seniorId}`;
+  const cloudinaryFolderPath = subfolder ? `${baseFolderPath}/${subfolder}` : baseFolderPath;
+  const publicId = `${tag}_${seniorId}_${Date.now()}_${file.name.replace(/\.[^/.]+$/, '')}`;
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const uploadResult: any = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: cloudinaryFolderPath,
+          public_id: publicId,
+          resource_type: 'auto',
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      stream.end(buffer);
+    });
+
+    if (uploadResult) {
+      // Modify this to store benefitRequirementId if your schema supports it
+      await prisma.registrationDocument.create({
+        data: {
+          tag, // This will be 'medical_assistance'
+          path: cloudinaryFolderPath,
+          imageUrl: uploadResult.secure_url,
+          public_id: uploadResult.public_id,
+          seniors_id: seniorId,
+          file_name: file.name,
+          // If you have a `benefitRequirementId` field in `RegistrationDocument`, add it here:
+          // benefit_requirement_id: benefitRequirementId || null,
+        },
+      });
+      return uploadResult;
+    }
+  } catch (err) {
+    console.error(`Error processing file "${file.name}" for tag "${tag}":`, err);
+    throw err;
+  }
+  return null;
 }
 
 /**
  * Handles the common error response for API routes.
  */
 function handleApiError(error: any, message: string, status: number = 500) {
-    console.error(`❌ API Error: ${message}`, error);
-    return NextResponse.json({ success: false, message, error: error.message || String(error) }, { status });
+  console.error(`❌ API Error: ${message}`, error);
+  return NextResponse.json({ success: false, message, error: error.message || String(error) }, { status });
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-    try {
-        const formData = await request.formData();
-        // --- FIX START ---
-        // Change from 'seniorId' to 'id' to match frontend
-        const seniorIdToUpdate = formData.get('id') as string | null;
-        // --- FIX END ---
-        const applicationId = formData.get('applicationId') as string | null;
+  try {
+    const formData = await request.formData();
+    // --- FIX START ---
+    // Change from 'seniorId' to 'id' to match frontend
+    const seniorIdToUpdate = formData.get('id') as string | null;
+    // --- FIX END ---
+    const applicationId = formData.get('applicationId') as string | null;
 
-        if (seniorIdToUpdate) {
-            // Logic for updating existing senior with new documents for requirements
-            const seniorId = parseInt(seniorIdToUpdate);
-            const senior = await prisma.senior.findUnique({ where: { id: seniorId } });
+    if (seniorIdToUpdate) {
+      // Logic for updating existing senior with new documents for requirements
+      const seniorId = parseInt(seniorIdToUpdate);
+      const senior = await prisma.senior.findUnique({ where: { id: seniorId } });
 
-            if (!senior) {
-                return NextResponse.json({ message: 'Senior not found' }, { status: 404 });
-            }
+      if (!senior) {
+        return NextResponse.json({ message: 'Senior not found' }, { status: 404 });
+      }
 
-            const uploadPromises: Promise<any>[] = [];
+      const uploadPromises: Promise<any>[] = [];
 
-            for (const [key, value] of formData.entries()) {
-                // Ensure 'medical_assistance' is handled correctly and potentially linked to requirements
-                if (key === 'medical_assistance' && value instanceof File) {
-                    // Assuming 'medical_assistance' files are general uploads, not tied to a specific requirement ID via form key
-                    uploadPromises.push(
-                        uploadAndSaveDocument(value, senior.id, 'medical_assistance', 'medical_assistance')
-                    );
-                } else if (key.startsWith('requirement_') && value instanceof File) {
-                    // This handles files specifically for benefit requirements
-                    const requirementId = parseInt(key.replace('requirement_', ''));
-                    uploadPromises.push(
-                        uploadAndSaveDocument(value, senior.id, 'medical_assistance', 'medical_assistance', requirementId)
-                    );
-                }
-            }
-
-
-            if (uploadPromises.length === 0) {
-                // This might be the case if no files were actually appended, or keys didn't match.
-                // Consider if this should be a 400 or a success with a message.
-                // For document uploads, it's usually expected that files are provided.
-                return NextResponse.json({ message: 'No documents provided for benefit requirements or medical assistance.' }, { status: 400 });
-            }
-
-            // Using Promise.allSettled to ensure all uploads are attempted,
-            // even if one fails, others might succeed.
-            const results = await Promise.allSettled(uploadPromises);
-
-            const failedUploads = results.filter(result => result.status === 'rejected');
-            if (failedUploads.length > 0) {
-                 console.error('Some document uploads failed:', failedUploads);
-                 // Optionally return a 500 or 207 (Multi-Status) depending on your error handling preference
-                 return handleApiError(new Error('Partial document upload failure.'), 'Some documents failed to upload. Check server logs.', 500);
-            }
-
-
-            return NextResponse.json(
-                { success: true, message: 'Benefit requirement documents uploaded successfully for existing senior.' },
-                { status: 200 }
-            );
-        } else {
-            // Original logic for creating a new senior (remains the same if not touched by this issue)
-            const seniorData: Partial<SeniorsFormDataType> = {
-                firstName: formData.get('firstName') as string,
-                middleName: formData.get('middleName') as string,
-                lastName: formData.get('lastName') as string,
-                email: formData.get('email') as string,
-                age: formData.get('age') as string,
-                birthDate: formData.get('birthDate') as string,
-                gender: formData.get('gender') as Gender,
-                barangay: formData.get('barangay') as string,
-                purok: formData.get('purok') as string,
-                contactNumber: formData.get('contactNumber') as string,
-                emergencyNumber: formData.get('emergencyNumber') as string,
-                contactPerson: formData.get('contactPerson') as string,
-                pwd: formData.get('pwd') === 'true',
-            };
-
-            const senior = await prisma.senior.create({
-                data: {
-                    firstname: seniorData.firstName || '',
-                    middlename: seniorData.middleName || '',
-                    lastname: seniorData.lastName || '',
-                    email: seniorData.email || '',
-                    age: seniorData.age || '',
-                    birthdate: new Date(seniorData.birthDate || ''),
-                    gender: (seniorData.gender as Gender) || '',
-                    barangay: seniorData.barangay || '',
-                    purok: seniorData.purok || '',
-                    contact_no: seniorData.contactNumber || '',
-                    emergency_no: seniorData.emergencyNumber || '',
-                    contact_person: seniorData.contactPerson || '',
-                    pwd: seniorData.pwd ?? false,
-                },
-            });
-
-            const uploadPromises: Promise<any>[] = [];
-            const fileTags = ['birth_certificate', 'certificate_of_residency', 'government_issued_id', 'membership_certificate'];
-
-            for (const tag of fileTags) {
-                const file = formData.get(tag) as File | null;
-                if (file) uploadPromises.push(uploadAndSaveDocument(file, senior.id, tag));
-            }
-
-            const medicalFiles = formData.getAll('medical_assistance') as File[];
-            for (const file of medicalFiles) {
-                uploadPromises.push(uploadAndSaveDocument(file, senior.id, 'medical_assistance', 'medical_assistance'));
-            }
-
-            for (const [key, value] of formData.entries()) {
-                if (key.startsWith('requirement_') && value instanceof File) {
-                    const requirementId = parseInt(key.replace('requirement_', ''));
-                    uploadPromises.push(
-                        uploadAndSaveDocument(value, senior.id, 'medical_assistance', 'medical_assistance', requirementId)
-                    );
-                }
-            }
-
-            await Promise.allSettled(uploadPromises);
-
-            return NextResponse.json(
-                { success: true, message: 'Senior Registered Successfully', senior: senior },
-                { status: 201 }
-            );
+      for (const [key, value] of formData.entries()) {
+        // Ensure 'medical_assistance' is handled correctly and potentially linked to requirements
+        if (key === 'medical_assistance' && value instanceof File) {
+          // Assuming 'medical_assistance' files are general uploads, not tied to a specific requirement ID via form key
+          uploadPromises.push(
+            uploadAndSaveDocument(value, senior.id, 'medical_assistance', 'medical_assistance')
+          );
+        } else if (key.startsWith('requirement_') && value instanceof File) {
+          // This handles files specifically for benefit requirements
+          const requirementId = parseInt(key.replace('requirement_', ''));
+          uploadPromises.push(
+            uploadAndSaveDocument(value, senior.id, 'medical_assistance', 'medical_assistance', requirementId)
+          );
         }
-    } catch (error: any) {
-        // More specific error logging could be beneficial here
-        console.error('Detailed POST API Error:', error);
-        return handleApiError(error, 'Failed to process senior registration/update.');
+      }
+
+
+      if (uploadPromises.length === 0) {
+        // This might be the case if no files were actually appended, or keys didn't match.
+        // Consider if this should be a 400 or a success with a message.
+        // For document uploads, it's usually expected that files are provided.
+        return NextResponse.json({ message: 'No documents provided for benefit requirements or medical assistance.' }, { status: 400 });
+      }
+
+      // Using Promise.allSettled to ensure all uploads are attempted,
+      // even if one fails, others might succeed.
+      const results = await Promise.allSettled(uploadPromises);
+
+      const failedUploads = results.filter(result => result.status === 'rejected');
+      if (failedUploads.length > 0) {
+        console.error('Some document uploads failed:', failedUploads);
+        // Optionally return a 500 or 207 (Multi-Status) depending on your error handling preference
+        return handleApiError(new Error('Partial document upload failure.'), 'Some documents failed to upload. Check server logs.', 500);
+      }
+
+
+      return NextResponse.json(
+        { success: true, message: 'Benefit requirement documents uploaded successfully for existing senior.' },
+        { status: 200 }
+      );
+    } else {
+      // Original logic for creating a new senior (remains the same if not touched by this issue)
+      const seniorData: Partial<SeniorsFormDataType> = {
+        firstName: formData.get('firstName') as string,
+        middleName: formData.get('middleName') as string,
+        lastName: formData.get('lastName') as string,
+        email: formData.get('email') as string,
+        age: formData.get('age') as string,
+        birthDate: formData.get('birthDate') as string,
+        gender: formData.get('gender') as Gender,
+        barangay: formData.get('barangay') as string,
+        purok: formData.get('purok') as string,
+        contactNumber: formData.get('contactNumber') as string,
+        emergencyNumber: formData.get('emergencyNumber') as string,
+        contactPerson: formData.get('contactPerson') as string,
+        pwd: formData.get('pwd') === 'true',
+      };
+
+      const senior = await prisma.senior.create({
+        data: {
+          firstname: seniorData.firstName || '',
+          middlename: seniorData.middleName || '',
+          lastname: seniorData.lastName || '',
+          email: seniorData.email || '',
+          age: seniorData.age || '',
+          birthdate: new Date(seniorData.birthDate || ''),
+          gender: (seniorData.gender as Gender) || '',
+          barangay: seniorData.barangay || '',
+          purok: seniorData.purok || '',
+          contact_no: seniorData.contactNumber || '',
+          emergency_no: seniorData.emergencyNumber || '',
+          contact_person: seniorData.contactPerson || '',
+          pwd: seniorData.pwd ?? false,
+        },
+      });
+
+      const uploadPromises: Promise<any>[] = [];
+      const fileTags = ['birth_certificate', 'certificate_of_residency', 'government_issued_id', 'membership_certificate'];
+
+      for (const tag of fileTags) {
+        const file = formData.get(tag) as File | null;
+        if (file) uploadPromises.push(uploadAndSaveDocument(file, senior.id, tag));
+      }
+
+      const medicalFiles = formData.getAll('medical_assistance') as File[];
+      for (const file of medicalFiles) {
+        uploadPromises.push(uploadAndSaveDocument(file, senior.id, 'medical_assistance', 'medical_assistance'));
+      }
+
+      for (const [key, value] of formData.entries()) {
+        if (key.startsWith('requirement_') && value instanceof File) {
+          const requirementId = parseInt(key.replace('requirement_', ''));
+          uploadPromises.push(
+            uploadAndSaveDocument(value, senior.id, 'medical_assistance', 'medical_assistance', requirementId)
+          );
+        }
+      }
+
+      await Promise.allSettled(uploadPromises);
+
+      return NextResponse.json(
+        { success: true, message: 'Senior Registered Successfully', senior: senior },
+        { status: 201 }
+      );
     }
+  } catch (error: any) {
+    // More specific error logging could be beneficial here
+    console.error('Detailed POST API Error:', error);
+    return handleApiError(error, 'Failed to process senior registration/update.');
+  }
 }
 
 
@@ -214,24 +214,28 @@ export async function GET(request: Request): Promise<NextResponse> {
     const nameSearch = searchParams.get('name');
 
     // --- NEW: Retrieve filter parameters for specific columns ---
-    const genderFilter = searchParams.get('gender'); // Expected: 'male' or 'female'
+    const genderFilter = searchParams.get('gender');
     const purokFilter = searchParams.get('purok');
     const barangayFilter = searchParams.get('barangay');
     const remarksFilter = searchParams.get('remarks');
-    const releaseStatusFilter = searchParams.get('releaseStatus'); // 'Released' or 'Not Released'
+    const releaseStatusFilter = searchParams.get('releaseStatus');
 
     const queryOptions: any = {
       include: {
         remarks: { select: { id: true, name: true } },
         documents: true,
         Applications: {
-          include: { category: true },
+          include: {
+            category: true,
+            status: true,    // ADD THIS LINE - Include status information
+            benefit: true,   // ADD THIS LINE - Include benefit information if needed
+          },
           orderBy: { createdAt: 'desc' },
           take: 1,
         },
       },
       where: {
-        deletedAt: null, // Always filter out soft-deleted records for this GET
+        deletedAt: null,
       },
     };
 
@@ -241,16 +245,13 @@ export async function GET(request: Request): Promise<NextResponse> {
         { firstname: { contains: nameSearch, mode: 'insensitive' } },
         { middlename: { contains: nameSearch, mode: 'insensitive' } },
         { lastname: { contains: nameSearch, mode: 'insensitive' } },
-        { barangay: { contains: nameSearch, mode: 'insensitive' } }, // Add barangay to global search
-        { purok: { contains: nameSearch, mode: 'insensitive' } },     // Add purok to global search
+        { barangay: { contains: nameSearch, mode: 'insensitive' } },
+        { purok: { contains: nameSearch, mode: 'insensitive' } },
       ];
     }
 
-    // --- NEW: Apply specific column filters to the Prisma query ---
-
     // Gender filter
     if (genderFilter) {
-      // Ensure the gender value from URL matches your Prisma Gender enum
       if (genderFilter === 'male' || genderFilter === 'female') {
         queryOptions.where.gender = genderFilter as Gender;
       }
@@ -268,17 +269,17 @@ export async function GET(request: Request): Promise<NextResponse> {
 
     // Remarks filter
     if (remarksFilter) {
-        queryOptions.where.remarks = {
-            name: remarksFilter
-        };
+      queryOptions.where.remarks = {
+        name: remarksFilter
+      };
     }
 
     // Release Status filter
     if (releaseStatusFilter) {
       if (releaseStatusFilter === 'Released') {
-        queryOptions.where.releasedAt = { not: null }; // Seniors with a releasedAt date
+        queryOptions.where.releasedAt = { not: null };
       } else if (releaseStatusFilter === 'Not Released') {
-        queryOptions.where.releasedAt = null; // Seniors without a releasedAt date
+        queryOptions.where.releasedAt = null;
       }
     }
 
