@@ -4,7 +4,7 @@ import prisma from "../prisma"
 export async function seedAdmin() {
     const existingUser = await prisma.user.findFirst({
         where: {
-            username: 'admin@admin',
+            username: 'Administrator',
         },
     })
 
@@ -13,15 +13,14 @@ export async function seedAdmin() {
 
         const admin = await prisma.user.create({
             data: {
-                name: 'Administrator',
                 firstName: 'Admin',
                 lastName: 'User',
                 contactNo: '09123456789',
                 bday: new Date('1990-01-01'),
-                username: 'admin@admin',
-                email: 'admin@gmail.com',
+                username: 'Administrator',
+                email: 'admin@admin',
                 password: hashedPassword,
-                emailVerified: new Date(), // Set emailVerified to the current date
+                emailVerified: new Date(),
                 role: 'ADMIN',
             },
         })

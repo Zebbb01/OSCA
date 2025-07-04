@@ -4,10 +4,10 @@ import nodemailer from 'nodemailer';
 interface SendVerificationEmailProps {
   to: string;
   token: string;
-  username: string;
+  firstName: string;
 }
 
-export async function sendVerificationEmail({ to, token, username }: SendVerificationEmailProps) {
+export async function sendVerificationEmail({ to, token, firstName }: SendVerificationEmailProps) {
   try {
     console.log('Using Mailtrap credentials...');
     console.log('EMAIL_SERVER_HOST:', process.env.EMAIL_SERVER_HOST);
@@ -39,7 +39,7 @@ export async function sendVerificationEmail({ to, token, username }: SendVerific
           </div>
           
           <div style="background-color: #f9fafb; padding: 30px; border-radius: 8px; margin-bottom: 30px;">
-            <h2 style="color: #374151; margin-bottom: 15px;">Hello ${username},</h2>
+            <h2 style="color: #374151; margin-bottom: 15px;">Hello ${firstName},</h2>
             <p style="color: #6b7280; line-height: 1.6; margin-bottom: 20px;">
               Thank you for signing up for OSCA! To complete your registration and activate your account, 
               please click the button below to verify your email address.
@@ -67,7 +67,7 @@ export async function sendVerificationEmail({ to, token, username }: SendVerific
           </div>
         </div>
       `,
-      text: `Welcome to OSCA!\n\nHello ${username},\n\nVerify your email here: ${verificationUrl}\n\nThis link expires in 24 hours.`,
+      text: `Welcome to OSCA!\n\nHello ${firstName},\n\nVerify your email here: ${verificationUrl}\n\nThis link expires in 24 hours.`,
     };
 
     const info = await transporter.sendMail(mailOptions);

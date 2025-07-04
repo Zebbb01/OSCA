@@ -19,7 +19,7 @@ import { Trash } from 'lucide-react';
 import { Seniors } from '@/types/seniors';
 import { useSeniorMutations } from '@/hooks/mutations/use-senior-mutations';
 import { SeniorViewDialog } from './SeniorViewDialog';
-import { SeniorEditDialog } from './SeniorEditDialog'; // Import the new edit dialog
+import { SeniorEditDialog } from './SeniorEditDialog';
 
 interface SeniorActionButtonsProps {
   senior: Seniors;

@@ -1963,7 +1963,6 @@ export namespace Prisma {
 
   export type UserMinAggregateOutputType = {
     id: string | null
-    name: string | null
     firstName: string | null
     lastName: string | null
     middleName: string | null
@@ -1982,7 +1981,6 @@ export namespace Prisma {
 
   export type UserMaxAggregateOutputType = {
     id: string | null
-    name: string | null
     firstName: string | null
     lastName: string | null
     middleName: string | null
@@ -2001,7 +1999,6 @@ export namespace Prisma {
 
   export type UserCountAggregateOutputType = {
     id: number
-    name: number
     firstName: number
     lastName: number
     middleName: number
@@ -2022,7 +2019,6 @@ export namespace Prisma {
 
   export type UserMinAggregateInputType = {
     id?: true
-    name?: true
     firstName?: true
     lastName?: true
     middleName?: true
@@ -2041,7 +2037,6 @@ export namespace Prisma {
 
   export type UserMaxAggregateInputType = {
     id?: true
-    name?: true
     firstName?: true
     lastName?: true
     middleName?: true
@@ -2060,7 +2055,6 @@ export namespace Prisma {
 
   export type UserCountAggregateInputType = {
     id?: true
-    name?: true
     firstName?: true
     lastName?: true
     middleName?: true
@@ -2152,7 +2146,6 @@ export namespace Prisma {
 
   export type UserGroupByOutputType = {
     id: string
-    name: string | null
     firstName: string
     lastName: string
     middleName: string | null
@@ -2188,7 +2181,6 @@ export namespace Prisma {
 
   export type UserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    name?: boolean
     firstName?: boolean
     lastName?: boolean
     middleName?: boolean
@@ -2209,7 +2201,6 @@ export namespace Prisma {
 
   export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    name?: boolean
     firstName?: boolean
     lastName?: boolean
     middleName?: boolean
@@ -2228,7 +2219,6 @@ export namespace Prisma {
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    name?: boolean
     firstName?: boolean
     lastName?: boolean
     middleName?: boolean
@@ -2247,7 +2237,6 @@ export namespace Prisma {
 
   export type UserSelectScalar = {
     id?: boolean
-    name?: boolean
     firstName?: boolean
     lastName?: boolean
     middleName?: boolean
@@ -2264,7 +2253,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "firstName" | "lastName" | "middleName" | "contactNo" | "bday" | "username" | "email" | "password" | "emailVerified" | "verificationToken" | "tokenExpires" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "middleName" | "contactNo" | "bday" | "username" | "email" | "password" | "emailVerified" | "verificationToken" | "tokenExpires" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -2279,7 +2268,6 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      name: string | null
       firstName: string
       lastName: string
       middleName: string | null
@@ -2719,7 +2707,6 @@ export namespace Prisma {
    */
   interface UserFieldRefs {
     readonly id: FieldRef<"User", 'String'>
-    readonly name: FieldRef<"User", 'String'>
     readonly firstName: FieldRef<"User", 'String'>
     readonly lastName: FieldRef<"User", 'String'>
     readonly middleName: FieldRef<"User", 'String'>
@@ -6764,15 +6751,18 @@ export namespace Prisma {
 
   export type RemarksAvgAggregateOutputType = {
     id: number | null
+    order: number | null
   }
 
   export type RemarksSumAggregateOutputType = {
     id: number | null
+    order: number | null
   }
 
   export type RemarksMinAggregateOutputType = {
     id: number | null
     name: string | null
+    order: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -6780,6 +6770,7 @@ export namespace Prisma {
   export type RemarksMaxAggregateOutputType = {
     id: number | null
     name: string | null
+    order: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -6787,6 +6778,7 @@ export namespace Prisma {
   export type RemarksCountAggregateOutputType = {
     id: number
     name: number
+    order: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -6795,15 +6787,18 @@ export namespace Prisma {
 
   export type RemarksAvgAggregateInputType = {
     id?: true
+    order?: true
   }
 
   export type RemarksSumAggregateInputType = {
     id?: true
+    order?: true
   }
 
   export type RemarksMinAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -6811,6 +6806,7 @@ export namespace Prisma {
   export type RemarksMaxAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -6818,6 +6814,7 @@ export namespace Prisma {
   export type RemarksCountAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -6912,6 +6909,7 @@ export namespace Prisma {
   export type RemarksGroupByOutputType = {
     id: number
     name: string
+    order: number
     createdAt: Date
     updatedAt: Date
     _count: RemarksCountAggregateOutputType | null
@@ -6938,6 +6936,7 @@ export namespace Prisma {
   export type RemarksSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     seniors?: boolean | Remarks$seniorsArgs<ExtArgs>
@@ -6947,6 +6946,7 @@ export namespace Prisma {
   export type RemarksSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["remarks"]>
@@ -6954,6 +6954,7 @@ export namespace Prisma {
   export type RemarksSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["remarks"]>
@@ -6961,11 +6962,12 @@ export namespace Prisma {
   export type RemarksSelectScalar = {
     id?: boolean
     name?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type RemarksOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt", ExtArgs["result"]["remarks"]>
+  export type RemarksOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "createdAt" | "updatedAt", ExtArgs["result"]["remarks"]>
   export type RemarksInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     seniors?: boolean | Remarks$seniorsArgs<ExtArgs>
     _count?: boolean | RemarksCountOutputTypeDefaultArgs<ExtArgs>
@@ -6981,6 +6983,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       name: string
+      order: number
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["remarks"]>
@@ -7409,6 +7412,7 @@ export namespace Prisma {
   interface RemarksFieldRefs {
     readonly id: FieldRef<"Remarks", 'Int'>
     readonly name: FieldRef<"Remarks", 'String'>
+    readonly order: FieldRef<"Remarks", 'Int'>
     readonly createdAt: FieldRef<"Remarks", 'DateTime'>
     readonly updatedAt: FieldRef<"Remarks", 'DateTime'>
   }
@@ -7855,15 +7859,18 @@ export namespace Prisma {
 
   export type SeniorCategoryAvgAggregateOutputType = {
     id: number | null
+    order: number | null
   }
 
   export type SeniorCategorySumAggregateOutputType = {
     id: number | null
+    order: number | null
   }
 
   export type SeniorCategoryMinAggregateOutputType = {
     id: number | null
     name: string | null
+    order: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -7871,6 +7878,7 @@ export namespace Prisma {
   export type SeniorCategoryMaxAggregateOutputType = {
     id: number | null
     name: string | null
+    order: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -7878,6 +7886,7 @@ export namespace Prisma {
   export type SeniorCategoryCountAggregateOutputType = {
     id: number
     name: number
+    order: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -7886,15 +7895,18 @@ export namespace Prisma {
 
   export type SeniorCategoryAvgAggregateInputType = {
     id?: true
+    order?: true
   }
 
   export type SeniorCategorySumAggregateInputType = {
     id?: true
+    order?: true
   }
 
   export type SeniorCategoryMinAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -7902,6 +7914,7 @@ export namespace Prisma {
   export type SeniorCategoryMaxAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -7909,6 +7922,7 @@ export namespace Prisma {
   export type SeniorCategoryCountAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -8003,6 +8017,7 @@ export namespace Prisma {
   export type SeniorCategoryGroupByOutputType = {
     id: number
     name: string
+    order: number
     createdAt: Date
     updatedAt: Date
     _count: SeniorCategoryCountAggregateOutputType | null
@@ -8029,6 +8044,7 @@ export namespace Prisma {
   export type SeniorCategorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     applications?: boolean | SeniorCategory$applicationsArgs<ExtArgs>
@@ -8038,6 +8054,7 @@ export namespace Prisma {
   export type SeniorCategorySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["seniorCategory"]>
@@ -8045,6 +8062,7 @@ export namespace Prisma {
   export type SeniorCategorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["seniorCategory"]>
@@ -8052,11 +8070,12 @@ export namespace Prisma {
   export type SeniorCategorySelectScalar = {
     id?: boolean
     name?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type SeniorCategoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt", ExtArgs["result"]["seniorCategory"]>
+  export type SeniorCategoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "createdAt" | "updatedAt", ExtArgs["result"]["seniorCategory"]>
   export type SeniorCategoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     applications?: boolean | SeniorCategory$applicationsArgs<ExtArgs>
     _count?: boolean | SeniorCategoryCountOutputTypeDefaultArgs<ExtArgs>
@@ -8072,6 +8091,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       name: string
+      order: number
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["seniorCategory"]>
@@ -8500,6 +8520,7 @@ export namespace Prisma {
   interface SeniorCategoryFieldRefs {
     readonly id: FieldRef<"SeniorCategory", 'Int'>
     readonly name: FieldRef<"SeniorCategory", 'String'>
+    readonly order: FieldRef<"SeniorCategory", 'Int'>
     readonly createdAt: FieldRef<"SeniorCategory", 'DateTime'>
     readonly updatedAt: FieldRef<"SeniorCategory", 'DateTime'>
   }
@@ -8946,15 +8967,18 @@ export namespace Prisma {
 
   export type StatusAvgAggregateOutputType = {
     id: number | null
+    order: number | null
   }
 
   export type StatusSumAggregateOutputType = {
     id: number | null
+    order: number | null
   }
 
   export type StatusMinAggregateOutputType = {
     id: number | null
     name: string | null
+    order: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -8962,6 +8986,7 @@ export namespace Prisma {
   export type StatusMaxAggregateOutputType = {
     id: number | null
     name: string | null
+    order: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -8969,6 +8994,7 @@ export namespace Prisma {
   export type StatusCountAggregateOutputType = {
     id: number
     name: number
+    order: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -8977,15 +9003,18 @@ export namespace Prisma {
 
   export type StatusAvgAggregateInputType = {
     id?: true
+    order?: true
   }
 
   export type StatusSumAggregateInputType = {
     id?: true
+    order?: true
   }
 
   export type StatusMinAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -8993,6 +9022,7 @@ export namespace Prisma {
   export type StatusMaxAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9000,6 +9030,7 @@ export namespace Prisma {
   export type StatusCountAggregateInputType = {
     id?: true
     name?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -9094,6 +9125,7 @@ export namespace Prisma {
   export type StatusGroupByOutputType = {
     id: number
     name: string
+    order: number
     createdAt: Date
     updatedAt: Date
     _count: StatusCountAggregateOutputType | null
@@ -9120,6 +9152,7 @@ export namespace Prisma {
   export type StatusSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     applications?: boolean | Status$applicationsArgs<ExtArgs>
@@ -9129,6 +9162,7 @@ export namespace Prisma {
   export type StatusSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["status"]>
@@ -9136,6 +9170,7 @@ export namespace Prisma {
   export type StatusSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["status"]>
@@ -9143,11 +9178,12 @@ export namespace Prisma {
   export type StatusSelectScalar = {
     id?: boolean
     name?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type StatusOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt", ExtArgs["result"]["status"]>
+  export type StatusOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "order" | "createdAt" | "updatedAt", ExtArgs["result"]["status"]>
   export type StatusInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     applications?: boolean | Status$applicationsArgs<ExtArgs>
     _count?: boolean | StatusCountOutputTypeDefaultArgs<ExtArgs>
@@ -9163,6 +9199,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       name: string
+      order: number
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["status"]>
@@ -9591,6 +9628,7 @@ export namespace Prisma {
   interface StatusFieldRefs {
     readonly id: FieldRef<"Status", 'Int'>
     readonly name: FieldRef<"Status", 'String'>
+    readonly order: FieldRef<"Status", 'Int'>
     readonly createdAt: FieldRef<"Status", 'DateTime'>
     readonly updatedAt: FieldRef<"Status", 'DateTime'>
   }
@@ -13487,7 +13525,6 @@ export namespace Prisma {
 
   export const UserScalarFieldEnum: {
     id: 'id',
-    name: 'name',
     firstName: 'firstName',
     lastName: 'lastName',
     middleName: 'middleName',
@@ -13562,6 +13599,7 @@ export namespace Prisma {
   export const RemarksScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    order: 'order',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -13572,6 +13610,7 @@ export namespace Prisma {
   export const SeniorCategoryScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    order: 'order',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -13582,6 +13621,7 @@ export namespace Prisma {
   export const StatusScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    order: 'order',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -13753,7 +13793,6 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     id?: StringFilter<"User"> | string
-    name?: StringNullableFilter<"User"> | string | null
     firstName?: StringFilter<"User"> | string
     lastName?: StringFilter<"User"> | string
     middleName?: StringNullableFilter<"User"> | string | null
@@ -13773,7 +13812,6 @@ export namespace Prisma {
 
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
-    name?: SortOrderInput | SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
     middleName?: SortOrderInput | SortOrder
@@ -13799,7 +13837,6 @@ export namespace Prisma {
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
-    name?: StringNullableFilter<"User"> | string | null
     firstName?: StringFilter<"User"> | string
     lastName?: StringFilter<"User"> | string
     middleName?: StringNullableFilter<"User"> | string | null
@@ -13816,7 +13853,6 @@ export namespace Prisma {
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
-    name?: SortOrderInput | SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
     middleName?: SortOrderInput | SortOrder
@@ -13841,7 +13877,6 @@ export namespace Prisma {
     OR?: UserScalarWhereWithAggregatesInput[]
     NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"User"> | string
-    name?: StringNullableWithAggregatesFilter<"User"> | string | null
     firstName?: StringWithAggregatesFilter<"User"> | string
     lastName?: StringWithAggregatesFilter<"User"> | string
     middleName?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -14137,6 +14172,7 @@ export namespace Prisma {
     NOT?: RemarksWhereInput | RemarksWhereInput[]
     id?: IntFilter<"Remarks"> | number
     name?: StringFilter<"Remarks"> | string
+    order?: IntFilter<"Remarks"> | number
     createdAt?: DateTimeFilter<"Remarks"> | Date | string
     updatedAt?: DateTimeFilter<"Remarks"> | Date | string
     seniors?: SeniorListRelationFilter
@@ -14145,6 +14181,7 @@ export namespace Prisma {
   export type RemarksOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     seniors?: SeniorOrderByRelationAggregateInput
@@ -14156,6 +14193,7 @@ export namespace Prisma {
     AND?: RemarksWhereInput | RemarksWhereInput[]
     OR?: RemarksWhereInput[]
     NOT?: RemarksWhereInput | RemarksWhereInput[]
+    order?: IntFilter<"Remarks"> | number
     createdAt?: DateTimeFilter<"Remarks"> | Date | string
     updatedAt?: DateTimeFilter<"Remarks"> | Date | string
     seniors?: SeniorListRelationFilter
@@ -14164,6 +14202,7 @@ export namespace Prisma {
   export type RemarksOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: RemarksCountOrderByAggregateInput
@@ -14179,6 +14218,7 @@ export namespace Prisma {
     NOT?: RemarksScalarWhereWithAggregatesInput | RemarksScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Remarks"> | number
     name?: StringWithAggregatesFilter<"Remarks"> | string
+    order?: IntWithAggregatesFilter<"Remarks"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Remarks"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Remarks"> | Date | string
   }
@@ -14189,6 +14229,7 @@ export namespace Prisma {
     NOT?: SeniorCategoryWhereInput | SeniorCategoryWhereInput[]
     id?: IntFilter<"SeniorCategory"> | number
     name?: StringFilter<"SeniorCategory"> | string
+    order?: IntFilter<"SeniorCategory"> | number
     createdAt?: DateTimeFilter<"SeniorCategory"> | Date | string
     updatedAt?: DateTimeFilter<"SeniorCategory"> | Date | string
     applications?: ApplicationsListRelationFilter
@@ -14197,6 +14238,7 @@ export namespace Prisma {
   export type SeniorCategoryOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     applications?: ApplicationsOrderByRelationAggregateInput
@@ -14208,6 +14250,7 @@ export namespace Prisma {
     AND?: SeniorCategoryWhereInput | SeniorCategoryWhereInput[]
     OR?: SeniorCategoryWhereInput[]
     NOT?: SeniorCategoryWhereInput | SeniorCategoryWhereInput[]
+    order?: IntFilter<"SeniorCategory"> | number
     createdAt?: DateTimeFilter<"SeniorCategory"> | Date | string
     updatedAt?: DateTimeFilter<"SeniorCategory"> | Date | string
     applications?: ApplicationsListRelationFilter
@@ -14216,6 +14259,7 @@ export namespace Prisma {
   export type SeniorCategoryOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: SeniorCategoryCountOrderByAggregateInput
@@ -14231,6 +14275,7 @@ export namespace Prisma {
     NOT?: SeniorCategoryScalarWhereWithAggregatesInput | SeniorCategoryScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"SeniorCategory"> | number
     name?: StringWithAggregatesFilter<"SeniorCategory"> | string
+    order?: IntWithAggregatesFilter<"SeniorCategory"> | number
     createdAt?: DateTimeWithAggregatesFilter<"SeniorCategory"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"SeniorCategory"> | Date | string
   }
@@ -14241,6 +14286,7 @@ export namespace Prisma {
     NOT?: StatusWhereInput | StatusWhereInput[]
     id?: IntFilter<"Status"> | number
     name?: StringFilter<"Status"> | string
+    order?: IntFilter<"Status"> | number
     createdAt?: DateTimeFilter<"Status"> | Date | string
     updatedAt?: DateTimeFilter<"Status"> | Date | string
     applications?: ApplicationsListRelationFilter
@@ -14249,6 +14295,7 @@ export namespace Prisma {
   export type StatusOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     applications?: ApplicationsOrderByRelationAggregateInput
@@ -14260,6 +14307,7 @@ export namespace Prisma {
     AND?: StatusWhereInput | StatusWhereInput[]
     OR?: StatusWhereInput[]
     NOT?: StatusWhereInput | StatusWhereInput[]
+    order?: IntFilter<"Status"> | number
     createdAt?: DateTimeFilter<"Status"> | Date | string
     updatedAt?: DateTimeFilter<"Status"> | Date | string
     applications?: ApplicationsListRelationFilter
@@ -14268,6 +14316,7 @@ export namespace Prisma {
   export type StatusOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: StatusCountOrderByAggregateInput
@@ -14283,6 +14332,7 @@ export namespace Prisma {
     NOT?: StatusScalarWhereWithAggregatesInput | StatusScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Status"> | number
     name?: StringWithAggregatesFilter<"Status"> | string
+    order?: IntWithAggregatesFilter<"Status"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Status"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Status"> | Date | string
   }
@@ -14490,7 +14540,6 @@ export namespace Prisma {
 
   export type UserCreateInput = {
     id?: string
-    name?: string | null
     firstName: string
     lastName: string
     middleName?: string | null
@@ -14510,7 +14559,6 @@ export namespace Prisma {
 
   export type UserUncheckedCreateInput = {
     id?: string
-    name?: string | null
     firstName: string
     lastName: string
     middleName?: string | null
@@ -14530,7 +14578,6 @@ export namespace Prisma {
 
   export type UserUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     middleName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14550,7 +14597,6 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     middleName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14570,7 +14616,6 @@ export namespace Prisma {
 
   export type UserCreateManyInput = {
     id?: string
-    name?: string | null
     firstName: string
     lastName: string
     middleName?: string | null
@@ -14589,7 +14634,6 @@ export namespace Prisma {
 
   export type UserUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     middleName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14608,7 +14652,6 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     middleName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14926,6 +14969,7 @@ export namespace Prisma {
 
   export type RemarksCreateInput = {
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
     seniors?: SeniorCreateNestedManyWithoutRemarksInput
@@ -14934,6 +14978,7 @@ export namespace Prisma {
   export type RemarksUncheckedCreateInput = {
     id?: number
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
     seniors?: SeniorUncheckedCreateNestedManyWithoutRemarksInput
@@ -14941,6 +14986,7 @@ export namespace Prisma {
 
   export type RemarksUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     seniors?: SeniorUpdateManyWithoutRemarksNestedInput
@@ -14949,6 +14995,7 @@ export namespace Prisma {
   export type RemarksUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     seniors?: SeniorUncheckedUpdateManyWithoutRemarksNestedInput
@@ -14957,12 +15004,14 @@ export namespace Prisma {
   export type RemarksCreateManyInput = {
     id?: number
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type RemarksUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14970,12 +15019,14 @@ export namespace Prisma {
   export type RemarksUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SeniorCategoryCreateInput = {
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
     applications?: ApplicationsCreateNestedManyWithoutCategoryInput
@@ -14984,6 +15035,7 @@ export namespace Prisma {
   export type SeniorCategoryUncheckedCreateInput = {
     id?: number
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
     applications?: ApplicationsUncheckedCreateNestedManyWithoutCategoryInput
@@ -14991,6 +15043,7 @@ export namespace Prisma {
 
   export type SeniorCategoryUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     applications?: ApplicationsUpdateManyWithoutCategoryNestedInput
@@ -14999,6 +15052,7 @@ export namespace Prisma {
   export type SeniorCategoryUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     applications?: ApplicationsUncheckedUpdateManyWithoutCategoryNestedInput
@@ -15007,12 +15061,14 @@ export namespace Prisma {
   export type SeniorCategoryCreateManyInput = {
     id?: number
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type SeniorCategoryUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15020,12 +15076,14 @@ export namespace Prisma {
   export type SeniorCategoryUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StatusCreateInput = {
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
     applications?: ApplicationsCreateNestedManyWithoutStatusInput
@@ -15034,6 +15092,7 @@ export namespace Prisma {
   export type StatusUncheckedCreateInput = {
     id?: number
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
     applications?: ApplicationsUncheckedCreateNestedManyWithoutStatusInput
@@ -15041,6 +15100,7 @@ export namespace Prisma {
 
   export type StatusUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     applications?: ApplicationsUpdateManyWithoutStatusNestedInput
@@ -15049,6 +15109,7 @@ export namespace Prisma {
   export type StatusUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     applications?: ApplicationsUncheckedUpdateManyWithoutStatusNestedInput
@@ -15057,12 +15118,14 @@ export namespace Prisma {
   export type StatusCreateManyInput = {
     id?: number
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type StatusUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15070,6 +15133,7 @@ export namespace Prisma {
   export type StatusUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15337,7 +15401,6 @@ export namespace Prisma {
 
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
     middleName?: SortOrder
@@ -15356,7 +15419,6 @@ export namespace Prisma {
 
   export type UserMaxOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
     middleName?: SortOrder
@@ -15375,7 +15437,6 @@ export namespace Prisma {
 
   export type UserMinOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
     firstName?: SortOrder
     lastName?: SortOrder
     middleName?: SortOrder
@@ -15754,17 +15815,20 @@ export namespace Prisma {
   export type RemarksCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type RemarksAvgOrderByAggregateInput = {
     id?: SortOrder
+    order?: SortOrder
   }
 
   export type RemarksMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -15772,28 +15836,33 @@ export namespace Prisma {
   export type RemarksMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type RemarksSumOrderByAggregateInput = {
     id?: SortOrder
+    order?: SortOrder
   }
 
   export type SeniorCategoryCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type SeniorCategoryAvgOrderByAggregateInput = {
     id?: SortOrder
+    order?: SortOrder
   }
 
   export type SeniorCategoryMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -15801,28 +15870,33 @@ export namespace Prisma {
   export type SeniorCategoryMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type SeniorCategorySumOrderByAggregateInput = {
     id?: SortOrder
+    order?: SortOrder
   }
 
   export type StatusCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type StatusAvgOrderByAggregateInput = {
     id?: SortOrder
+    order?: SortOrder
   }
 
   export type StatusMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -15830,12 +15904,14 @@ export namespace Prisma {
   export type StatusMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type StatusSumOrderByAggregateInput = {
     id?: SortOrder
+    order?: SortOrder
   }
 
   export type BenefitRequirementsListRelationFilter = {
@@ -16818,7 +16894,6 @@ export namespace Prisma {
 
   export type UserCreateWithoutSessionsInput = {
     id?: string
-    name?: string | null
     firstName: string
     lastName: string
     middleName?: string | null
@@ -16837,7 +16912,6 @@ export namespace Prisma {
 
   export type UserUncheckedCreateWithoutSessionsInput = {
     id?: string
-    name?: string | null
     firstName: string
     lastName: string
     middleName?: string | null
@@ -16872,7 +16946,6 @@ export namespace Prisma {
 
   export type UserUpdateWithoutSessionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     middleName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16891,7 +16964,6 @@ export namespace Prisma {
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     middleName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -16910,6 +16982,7 @@ export namespace Prisma {
 
   export type RemarksCreateWithoutSeniorsInput = {
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16917,6 +16990,7 @@ export namespace Prisma {
   export type RemarksUncheckedCreateWithoutSeniorsInput = {
     id?: number
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16999,6 +17073,7 @@ export namespace Prisma {
 
   export type RemarksUpdateWithoutSeniorsInput = {
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17006,6 +17081,7 @@ export namespace Prisma {
   export type RemarksUncheckedUpdateWithoutSeniorsInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17679,6 +17755,7 @@ export namespace Prisma {
 
   export type StatusCreateWithoutApplicationsInput = {
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17686,6 +17763,7 @@ export namespace Prisma {
   export type StatusUncheckedCreateWithoutApplicationsInput = {
     id?: number
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17697,6 +17775,7 @@ export namespace Prisma {
 
   export type SeniorCategoryCreateWithoutApplicationsInput = {
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17704,6 +17783,7 @@ export namespace Prisma {
   export type SeniorCategoryUncheckedCreateWithoutApplicationsInput = {
     id?: number
     name: string
+    order: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17812,6 +17892,7 @@ export namespace Prisma {
 
   export type StatusUpdateWithoutApplicationsInput = {
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17819,6 +17900,7 @@ export namespace Prisma {
   export type StatusUncheckedUpdateWithoutApplicationsInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17836,6 +17918,7 @@ export namespace Prisma {
 
   export type SeniorCategoryUpdateWithoutApplicationsInput = {
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17843,6 +17926,7 @@ export namespace Prisma {
   export type SeniorCategoryUncheckedUpdateWithoutApplicationsInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

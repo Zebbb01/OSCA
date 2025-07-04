@@ -241,12 +241,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 ) : session?.user ? (
                     <NavUser
                         user={{
-                            name: session.user.name ?? '',
+                            username: session.user.username ?? '',
                             email: session.user.email ?? '',
-                            username:
-                                (session.user as any).username ??
-                                session.user.name?.split(' ').join('').toLowerCase() ??
-                                '',
                             role: (session.user as any).role ?? 'USER',
                         }}
                     />

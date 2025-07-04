@@ -16,7 +16,6 @@ datasource db {
 
 model User {
   id                String    @id @default(cuid())
-  name              String?
   firstName         String
   lastName          String
   middleName        String?
@@ -107,6 +106,7 @@ model RegistrationDocument {
 model Remarks {
   id        Int      @id @default(autoincrement())
   name      String   @unique
+  order     Int      // New: ordering field
   seniors   Senior[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -114,28 +114,33 @@ model Remarks {
   @@map("remarks")
 }
 
+
 // ------------------------------------ UNMIGRATED TABLES BELOW ---------------------------
 
 model SeniorCategory {
   id           Int            @id @default(autoincrement())
   name         String         @unique
-  applications Applications[] // ONE CATEGORY CAN BE USE IN MANY APPLICATIONS
+  order        Int            // New: ordering field
+  applications Applications[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
   @@map("senior_category")
 }
 
+
 // REMARKS TABLE SCHEMA
 model Status {
   id           Int            @id @default(autoincrement())
   name         String         @unique
-  applications Applications[] // ONE STATUS CAN BE USE IN MANY APPLICATIONS
+  order        Int            // New: ordering field
+  applications Applications[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
   @@map("status")
 }
+
 
 // BENEFIT TABLE SCHEMA
 model Benefits {

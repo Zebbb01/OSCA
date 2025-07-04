@@ -153,6 +153,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         pwd: formData.get('pwd') === 'true',
       };
 
+      // --- Start of added logic for remarks_id ---
+      // Fetch the 'NEW' remarks record
+      const newRemark = await prisma.remarks.findFirst({
+        where: { order: 1 }, // Assuming 'NEW' always has order 1 based on your seedRemarks
+      });
+
+      if (!newRemark) {
+        // This scenario indicates a problem with your database seeding or remarks setup
+        return handleApiError(new Error('Remarks "NEW" not found.'), 'Failed to assign default remarks for new senior.', 500);
+      }
+      // --- End of added logic for remarks_id ---
+
       const senior = await prisma.senior.create({
         data: {
           firstname: seniorData.firstName || '',
@@ -168,6 +180,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           emergency_no: seniorData.emergencyNumber || '',
           contact_person: seniorData.contactPerson || '',
           pwd: seniorData.pwd ?? false,
+          remarks_id: newRemark.id, // Set the remarks_id to 'NEW' remark's ID
         },
       });
 
