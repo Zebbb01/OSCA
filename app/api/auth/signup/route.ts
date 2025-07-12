@@ -1,7 +1,7 @@
 // app/api/auth/signup/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { signupSchema } from '@/schema/auth/signup.schema';
-import prisma from '@/prisma/prisma';
+import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { sendVerificationEmail } from '@/lib/email';
 import { v4 as uuidv4 } from 'uuid';
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
       await sendVerificationEmail({
         to: newUser.email,
         token: verificationToken,
-        username: newUser.username,
+        firstName: newUser.username,
       });
       console.log('Verification email sent successfully to:', newUser.email);
     } catch (emailError) {

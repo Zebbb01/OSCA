@@ -152,7 +152,7 @@ const AddBenefitForm = ({
                             type="text"
                             id="tag"
                             readOnly
-                            className="font-medium block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm/6"
+                            className="font-medium block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm/6"
                         />
                         {errors.tag && (
                             <span className="text-red-500 text-xs">{errors.tag.message}</span>
@@ -173,7 +173,7 @@ const AddBenefitForm = ({
                                     })}
                                     type="text"
                                     placeholder={`Requirement ${index + 1}`}
-                                    className="flex-1 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-green-600 sm:text-sm"
+                                    className="flex-1 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-green-600 sm:text-sm"
                                 />
                                 <button
                                     type="button"
@@ -201,8 +201,7 @@ const AddBenefitForm = ({
                                     mutation.isPending ? 'bg-gray-500' : ''
                                 )}
                             >
-                                <FontAwesomeIcon icon={faCirclePlus} className="size-3" /> Add
-                                Requirement
+                                <FontAwesomeIcon icon={faCirclePlus} className="size-3" /> Add Req.
                             </PrimaryButton>
                         </div>
                     </div>
@@ -214,7 +213,7 @@ const AddBenefitForm = ({
                             onClick={() => setIsAddBenefitModalOpen(false)}
                             disabled={mutation.isPending}
                             className={cn(
-                                'rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600',
+                                'rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-sm  focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-green-600',
                                 mutation.isPending
                                     ? 'bg-gray-500'
                                     : 'bg-gray-900 hover:bg-gray-800 hover:cursor-pointer'
@@ -227,7 +226,7 @@ const AddBenefitForm = ({
                             type="submit"
                             disabled={mutation.isPending}
                             className={cn(
-                                'rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600',
+                                'rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-sm  focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-green-600',
                                 mutation.isPending
                                     ? 'bg-gray-500'
                                     : ''

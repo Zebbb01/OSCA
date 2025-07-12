@@ -1,5 +1,5 @@
 import { hashPassword } from '@/utils/password'
-import prisma from './prisma'
+import prisma from '../lib/prisma'
 import bcrypt from 'bcryptjs'
 import { seedAdmin } from './seeders/user'
 import { seedRemarks } from './seeders/remarks'

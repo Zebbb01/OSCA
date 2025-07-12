@@ -1,4 +1,4 @@
-import prisma from "../prisma"
+import prisma from "../../lib/prisma"
 
 export async function seedRemarks() {
     const remarks = ['NEW', 'TRANSFER', 'UPDATED', 'DECEASED']

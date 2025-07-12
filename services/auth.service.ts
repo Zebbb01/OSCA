@@ -3,7 +3,7 @@ import { ZodError } from 'zod';
 import { comparePassword } from '@/utils/password';
 import { loginSchema } from '@/schema/auth/login.schema';
 import { AUTH_ERROR_CODES, createAuthError } from '@/utils/auth-errors';
-import prisma from '@/prisma/prisma';
+import prisma from '@/lib/prisma';
 
 export class AuthService {
   static async validateCredentials(credentials: any) {

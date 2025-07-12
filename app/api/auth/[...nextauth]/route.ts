@@ -2,7 +2,7 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import prisma from '@/prisma/prisma';
+import prisma from '@/lib/prisma';
 import { AuthService } from '@/services/auth.service';
 import { CustomAuthError, AUTH_ERROR_CODES, createAuthError } from '@/utils/auth-errors';
 
@@ -22,7 +22,7 @@ const { handlers } = NextAuth({
           if (err instanceof CustomAuthError) {
             throw new Error(err.code); // NextAuth will use this as the error type
           }
-          
+
           console.error('Authorization error:', err);
           throw new Error(AUTH_ERROR_CODES.UNEXPECTED_ERROR);
         }

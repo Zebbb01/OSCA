@@ -1,5 +1,5 @@
 // app/api/seniors/release/route.ts
-import prisma from '@/prisma/prisma';
+import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
 

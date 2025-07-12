@@ -1,4 +1,4 @@
-// pages/auth/verification-success.tsx
+// emails\verification-success.tsx
 'use client';
 
 import Link from 'next/link';

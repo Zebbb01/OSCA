@@ -1,5 +1,5 @@
 // app\api\seniors\counts\route.ts
-import prisma from '@/prisma/prisma'
+import prisma from '@/lib/prisma'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
@@ -23,14 +23,14 @@ export async function GET() {
 
         const specialSeniorsCount = specialCategory
             ? await prisma.applications.count({
-                  where: { category_id: specialCategory.id },
-              })
+                where: { category_id: specialCategory.id },
+            })
             : 0
 
         const regularSeniorsCount = regularCategory
             ? await prisma.applications.count({
-                  where: { category_id: regularCategory.id },
-              })
+                where: { category_id: regularCategory.id },
+            })
             : 0
 
         // --- NEWLY ADDED LOGIC ---

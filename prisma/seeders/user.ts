@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs"
-import prisma from "../prisma"
+import prisma from "../../lib/prisma"
 
 export async function seedAdmin() {
     const existingUser = await prisma.user.findFirst({
