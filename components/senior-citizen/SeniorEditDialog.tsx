@@ -31,7 +31,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { SELECT_OPTIONS } from '@/constants/select-options';
-
+import { formatDateTime } from '@/utils/format'; // Import formatDateTime
 
 const EditableFormField: React.FC<EditableFormFieldProps> = ({
   label,
@@ -154,12 +154,14 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
     birthdate: senior.birthdate ? new Date(senior.birthdate) : null,
     gender: senior.gender || '',
     email: senior.email,
-    contact_no: senior.contact_no,
-    emergency_no: senior.emergency_no,
+    contact_no: senior.contact_no || '',
+    emergency_no: senior.emergency_no || '',
     barangay: senior.barangay,
     purok: senior.purok,
     pwd: senior.pwd,
-    contact_person: senior.contact_person,
+    low_income: senior.low_income,
+    contact_person: senior.contact_person || '',
+    contact_relationship: senior.contact_relationship || '',
     releasedAt: senior.releasedAt ? new Date(senior.releasedAt) : null, // Initialize releasedAt
   });
 
@@ -174,12 +176,14 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
       birthdate: senior.birthdate ? new Date(senior.birthdate) : null,
       gender: senior.gender || '',
       email: senior.email,
-      contact_no: senior.contact_no,
-      emergency_no: senior.emergency_no,
+      contact_no: senior.contact_no || '',
+      emergency_no: senior.emergency_no || '',
       barangay: senior.barangay,
       purok: senior.purok,
       pwd: senior.pwd,
-      contact_person: senior.contact_person,
+      low_income: senior.low_income,
+      contact_person: senior.contact_person || '',
+      contact_relationship: senior.contact_relationship || '',
       releasedAt: senior.releasedAt ? new Date(senior.releasedAt) : null, // Update on senior change
     });
   }, [senior]);
@@ -202,7 +206,9 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
       barangay: editData.barangay || '',
       purok: editData.purok || '',
       pwd: editData.pwd,
-      contact_person: editData.contact_person,
+      low_income: editData.low_income,
+      contact_person: editData.contact_person || '',
+      contact_relationship: editData.contact_relationship || '',
       // Conditionally add releasedAt to payload if it's an admin and the value has changed
       ...(isAdmin && { releasedAt: editData.releasedAt ? editData.releasedAt.toISOString() : null }),
     };
@@ -238,6 +244,10 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
       <DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl">Edit Senior Profile</DialogTitle>
+          {/* Display Registered On date here */}
+          <p className="text-gray-500 text-sm mt-1">
+            Registered On: <span className="font-medium">{formatDateTime(senior.createdAt)}</span>
+          </p>
           <DialogDescription>
             Update full details for {senior.firstname} {senior.lastname}.
           </DialogDescription>
@@ -302,12 +312,18 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
               </div>
 
               {/* PWD Status */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <EditableCheckboxField
                   label="Are you a PWD?"
                   id="pwd"
                   checked={editData.pwd}
                   onCheckedChange={(checked) => setEditData({ ...editData, pwd: !!checked })}
+                />
+                <EditableCheckboxField
+                  label="Are you a Low Income?"
+                  id="low_income"
+                  checked={editData.low_income}
+                  onCheckedChange={(checked) => setEditData({ ...editData, low_income: !!checked })}
                 />
               </div>
             </div>
@@ -339,6 +355,22 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
                 />
               </div>
 
+              {/* Email and Contact Person Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <EditableFormField
+                  label="Contact Person"
+                  id="contact_person"
+                  value={editData.contact_person}
+                  onChange={(value) => setEditData({ ...editData, contact_person: value })}
+                />
+                <EditableFormField
+                  label="Contact Relationships"
+                  id="contact_relationship"
+                  value={editData.contact_relationship}
+                  onChange={(value) => setEditData({ ...editData, contact_relationship: value })}
+                />
+              </div>
+
               {/* Address Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <EditableSelectField
@@ -354,16 +386,6 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
                   id="purok"
                   value={editData.purok}
                   onChange={(value) => setEditData({ ...editData, purok: value })}
-                />
-              </div>
-
-              {/* Email and Contact Person Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <EditableFormField
-                  label="Contact Person"
-                  id="contact_person"
-                  value={editData.contact_person}
-                  onChange={(value) => setEditData({ ...editData, contact_person: value })}
                 />
               </div>
             </div>

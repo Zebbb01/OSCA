@@ -104,7 +104,7 @@ export const ContactAddress = ({ handleNumberInputChange }: ContactAddressProps)
                 </div>
 
                 {/* Contact Person Row */}
-                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                         control={form.control}
                         name="contactPerson"
@@ -115,6 +115,23 @@ export const ContactAddress = ({ handleNumberInputChange }: ContactAddressProps)
                                     <Input
                                         type="text" 
                                         placeholder="Enter Contact Person"
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="contactRelationship"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Contact Relationship</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="text" 
+                                        placeholder="Enter Contact Relationship"
                                         {...field}
                                     />
                                 </FormControl>

@@ -94,13 +94,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         roles: ['ADMIN']
                     },
                     {
-                        title: 'Release',
-                        url: '/admin/applications/release-monitoring',
+                        title: 'Released',
+                        url: '/admin/applications/released-monitoring',
                         roles: ['ADMIN']
                     },
                     {
-                        title: 'Not Release',
-                        url: '/admin/applications/not-release-monitoring',
+                        title: 'Unreleased',
+                        url: '/admin/applications/unreleased-monitoring',
                         roles: ['ADMIN']
                     },
                     {
@@ -116,12 +116,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     },
                     {
                         title: 'Release',
-                        url: '/staff/applications/release-monitoring',
+                        url: '/staff/applications/released-monitoring',
                         roles: ['USER']
                     },
                     {
                         title: 'Not Release',
-                        url: '/staff/applications/not-release-monitoring',
+                        url: '/staff/applications/unreleased-monitoring',
                         roles: ['USER']
                     },
                     {
@@ -139,7 +139,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 items: [
                     {
                         title: 'Government Fund',
-                        url: '/admin/applications/financial-monitoring',
+                        url: '/admin/applications/government-fund',
                     },
                     {
                         title: 'Monthly Release',

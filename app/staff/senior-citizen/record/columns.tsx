@@ -1,6 +1,7 @@
 // app/admin/senior-citizen/record/columns.tsx
 'use client';
 
+import React from 'react'; // Import React for JSX elements in cell
 import { ColumnDef } from '@tanstack/react-table';
 import { useQueryClient } from '@tanstack/react-query';
 import { DocumentViewDialog } from '@/components/senior-documents/document-view-dialog';
@@ -9,7 +10,7 @@ import { ReleaseActionButton } from '@/components/senior-citizen/release-action-
 import { formatDateOnly, formatDateTime } from '@/utils/format';
 import { Seniors } from '@/types/seniors';
 
-// Helper function to truncate text (can be moved to a utils file if used elsewhere)
+// Helper function to truncate text (kept for other columns)
 const truncateText = (text: string | number | null | undefined, limit: number = 20): string | number | null | undefined => {
   if (typeof text === 'string' && text.length > limit) {
     return text.substring(0, limit) + '...';
@@ -41,32 +42,27 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
         const fullName = [firstname, middlename, lastname].filter(Boolean).join(' ');
         return <div>{truncateText(fullName)}</div>;
       },
-      // Keep filterFn for fullname as it's part of the global filter (client-side)
       filterFn: 'includesString',
     },
     {
       accessorKey: 'contact_no',
       header: 'Contact No.',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
-      // No filterFn needed here if filtering is only server-side
     },
     {
       accessorKey: 'purok',
       header: 'Purok',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
-      // REMOVED filterFn: 'equals' -> filtering is handled by API
     },
     {
       accessorKey: 'barangay',
       header: 'Barangay',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
-      // REMOVED filterFn: 'equals' -> filtering is handled by API
     },
     {
       accessorKey: 'gender',
       header: 'Gender',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
-      // Retain custom filterFn for gender as it expects array and is consistent
       filterFn: (row, columnId, filterValue) => {
         const rowGender = row.getValue(columnId) as string;
         if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) {
@@ -80,10 +76,8 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       header: 'Remarks',
       cell: ({ row }) => truncateText(row.original.remarks?.name || 'N/A'),
       accessorFn: (row) => row.remarks?.name || 'N/A',
-      // REMOVED filterFn: 'equals' -> filtering is handled by API
     },
 
-    // --- NEWLY ADDED COLUMNS ---
     {
       accessorKey: 'senior_category',
       header: 'Category',
@@ -93,7 +87,9 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
 
         const categoryStyles: Record<string, string> = {
           'Regular senior citizens': 'bg-green-600 text-white',
-          'Special assistance cases': 'bg-yellow-500 text-black', // Changed text to black for yellow background for better contrast
+          'Special assistance cases': 'bg-yellow-500 text-black',
+          'Low income assistance': 'bg-blue-500 text-white',
+          'Combined assistance cases': 'bg-purple-600 text-white',
         };
 
         return (
@@ -107,27 +103,68 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
           </div>
         );
       },
-      accessorFn: (row) => row.Applications?.[0]?.category?.name || 'N/A', // Ensure this matches your data structure
-      filterFn: (row, columnId, filterValue) => { // Adapted for potential array filter from DataTable
+      accessorFn: (row) => row.Applications?.[0]?.category?.name || 'N/A',
+      filterFn: (row, columnId, filterValue) => {
         const latestCategoryName = row.original.Applications?.[0]?.category?.name;
         if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) {
-          return true; // No filter applied, show all
+          return true;
         }
-        // Assuming filterValue will be an array like ['Low-income seniors'] from DataTable's select filter
         return (filterValue as string[]).includes(latestCategoryName || '');
       },
     },
     {
+      accessorKey: 'benefits',
+      header: 'Benefit(s)',
+      cell: ({ row }) => {
+        const benefitElements = row.original.Applications
+          ?.filter(app => app.benefit?.name) // Ensure benefit name exists
+          .map((app, index, array) => {
+            const benefitName = app.benefit?.name;
+            const statusName = app.status?.name;
+            let textColorClass = '';
+
+            if (statusName === 'APPROVED') {
+              textColorClass = 'text-green-600 font-medium';
+            } else if (statusName === 'REJECT') { // Changed from 'REJECTED' to 'REJECT'
+              textColorClass = 'text-red-600 font-medium';
+            }
+            // If status is not APPROVED or REJECT, no specific color class will be applied.
+
+            return (
+              // Corrected key to avoid TypeScript error and ensure uniqueness
+              <React.Fragment key={`${row.id}-benefit-${index}`}>
+                <span className={textColorClass}>
+                  {benefitName}
+                </span>
+                {index < array.length - 1 && ', '} {/* Add comma if not the last item */}
+              </React.Fragment>
+            );
+          });
+
+        // If no benefits are found (after filtering for existing names), return 'N/A'
+        if (!benefitElements || benefitElements.length === 0) {
+          return 'N/A';
+        }
+
+        return <div>{benefitElements}</div>;
+      },
+      accessorFn: (row) =>
+        row.Applications
+          ?.map(app => app.benefit?.name)
+          .filter(Boolean)
+          .join(', ') || 'N/A',
+    },
+    {
       id: 'releaseStatus',
-      accessorKey: 'releaseStatus', // Keep accessorKey for easy access if needed
-      header: 'Release Status',
+      accessorKey: 'releaseStatus',
+      header: 'Released Status',
       cell: ({ row }) => {
         const releasedAt = row.original.releasedAt;
-        const statusText = releasedAt ? 'Released' : 'Not Released';
+        const statusText = releasedAt ? 'Released' : 'Unreleased';
 
         const statusStyles: Record<string, string> = {
           'Released': 'bg-green-500 text-white',
-          'Not Released': 'bg-red-500 text-white',
+          'Unreleased': 'bg-red-500 text-white',
         };
 
         return (
@@ -141,14 +178,12 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
           </div>
         );
       },
-      // Adjust filterFn for releaseStatus to handle array for consistency with DataTable's single-select logic
       filterFn: (row, columnId, filterValue) => {
         const releasedAt = row.original.releasedAt;
-        const status = releasedAt ? 'Released' : 'Not Released';
+        const status = releasedAt ? 'Released' : 'Unreleased';
         if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) {
-          return true; // No filter applied, show all
+          return true;
         }
-        // filterValue should be an array like ['Released'] or ['Not Released']
         return (filterValue as string[]).includes(status);
       },
     },
@@ -160,31 +195,26 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
         const releasedAt = row.original.releasedAt;
         return releasedAt ? formatDateTime(releasedAt) : 'N/A';
       },
-      // No filterFn needed here as this is primarily a display column
     },
     {
       accessorKey: 'age',
       header: 'Age',
       cell: ({ row }) => <div className="text-right">{row.getValue('age')}</div>,
-      // No filterFn here if filtering is only server-side, if client-side needed, use 'equals'
     },
     {
       accessorKey: 'emergency_no',
       header: 'Emergency Contact',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
-      // No filterFn here if filtering is only server-side
     },
     {
       accessorKey: 'contactPerson',
       header: 'Contact Person',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
-      // REMOVED filterFn: 'equals' -> filtering is handled by API
     },
     {
       accessorKey: 'birthdate',
       header: 'Birthdate',
       cell: ({ row }) => formatDateOnly(row.getValue('birthdate')),
-      // No filterFn here if filtering is only server-side, if client-side needed, use 'includesString' for dates
     },
     {
       id: 'documents',
@@ -194,9 +224,7 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
         return <DocumentViewDialog senior={senior} />;
       },
     },
-    // --- END NEWLY ADDED COLUMNS ---
   ];
-
 
   if (userRole === 'ADMIN' || userRole === 'USER') {
     baseColumns.push({
@@ -206,7 +234,7 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
         const senior = row.original;
         const queryClient = useQueryClient();
         // Find the latest application for the senior
-        const latestApplication = senior.Applications?.[0]; // Assuming applications are ordered by createdAt DESC
+        const latestApplication = senior.Applications?.[0];
 
         // Check the status of the latest application
         const applicationStatus = latestApplication?.status?.name;

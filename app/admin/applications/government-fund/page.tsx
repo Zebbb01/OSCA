@@ -21,7 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { formatDateOnly } from '@/utils/format';
 
-export default function FinancialMonitoringPage() {
+export default function GovernmentFundPage() {
     const [transactions, setTransactions] = useState<FinancialTransaction[]>(staticTransactions)
     const [isAddTransactionDialogOpen, setIsAddTransactionDialogOpen] = useState(false)
 
@@ -49,7 +49,7 @@ export default function FinancialMonitoringPage() {
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
             <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
                 <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent lg:h-[--nav-height] lg:px-6">
-                    <h1 className="text-2xl font-semibold">Financial Monitoring</h1>
+                    <h1 className="text-2xl font-semibold">Government Fund</h1>
                 </header>
 
                 <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
@@ -69,7 +69,7 @@ export default function FinancialMonitoringPage() {
                             />
 
                             <OverviewCard
-                                title="Total Release"
+                                title="Total Released"
                                 value={`PHP ${totalIncome.toLocaleString('en-PH', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2,
@@ -79,7 +79,7 @@ export default function FinancialMonitoringPage() {
                                 iconColor="text-green-600"
                             />
                             <OverviewCard
-                                title="Total Not Released"
+                                title="Total Unreleased"
                                 value={`PHP ${totalExpenses.toLocaleString('en-PH', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2,

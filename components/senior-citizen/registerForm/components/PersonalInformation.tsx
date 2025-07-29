@@ -156,7 +156,7 @@ export const PersonalInformation = () => {
                     />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <FormField
                         control={form.control}
                         name="gender"
@@ -205,6 +205,30 @@ export const PersonalInformation = () => {
                                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                     >
                                         Are you a PWD?
+                                    </label>
+                                </div>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="lowIncome"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-col justify-end">
+                                <div className="flex items-center space-x-2 pb-2">
+                                    <Checkbox
+                                        id="lowIncome"
+                                        checked={field.value}
+                                        onCheckedChange={(checked) =>
+                                            field.onChange(!!checked)
+                                        }
+                                    />
+                                    <label
+                                        htmlFor="lowIncome"
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
+                                        Are you a Low Income?
                                     </label>
                                 </div>
                                 <FormMessage />

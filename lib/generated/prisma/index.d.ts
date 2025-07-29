@@ -4245,7 +4245,9 @@ export namespace Prisma {
     contact_no: string | null
     emergency_no: string | null
     contact_person: string | null
+    contact_relationship: string | null
     pwd: boolean | null
+    low_income: boolean | null
     remarks_id: number | null
     deletedAt: Date | null
     releasedAt: Date | null
@@ -4267,7 +4269,9 @@ export namespace Prisma {
     contact_no: string | null
     emergency_no: string | null
     contact_person: string | null
+    contact_relationship: string | null
     pwd: boolean | null
+    low_income: boolean | null
     remarks_id: number | null
     deletedAt: Date | null
     releasedAt: Date | null
@@ -4289,7 +4293,9 @@ export namespace Prisma {
     contact_no: number
     emergency_no: number
     contact_person: number
+    contact_relationship: number
     pwd: number
+    low_income: number
     remarks_id: number
     deletedAt: number
     releasedAt: number
@@ -4323,7 +4329,9 @@ export namespace Prisma {
     contact_no?: true
     emergency_no?: true
     contact_person?: true
+    contact_relationship?: true
     pwd?: true
+    low_income?: true
     remarks_id?: true
     deletedAt?: true
     releasedAt?: true
@@ -4345,7 +4353,9 @@ export namespace Prisma {
     contact_no?: true
     emergency_no?: true
     contact_person?: true
+    contact_relationship?: true
     pwd?: true
+    low_income?: true
     remarks_id?: true
     deletedAt?: true
     releasedAt?: true
@@ -4367,7 +4377,9 @@ export namespace Prisma {
     contact_no?: true
     emergency_no?: true
     contact_person?: true
+    contact_relationship?: true
     pwd?: true
+    low_income?: true
     remarks_id?: true
     deletedAt?: true
     releasedAt?: true
@@ -4473,10 +4485,12 @@ export namespace Prisma {
     gender: $Enums.Gender
     birthdate: Date
     age: string
-    contact_no: string
-    emergency_no: string
+    contact_no: string | null
+    emergency_no: string | null
     contact_person: string | null
+    contact_relationship: string | null
     pwd: boolean
+    low_income: boolean
     remarks_id: number
     deletedAt: Date | null
     releasedAt: Date | null
@@ -4517,7 +4531,9 @@ export namespace Prisma {
     contact_no?: boolean
     emergency_no?: boolean
     contact_person?: boolean
+    contact_relationship?: boolean
     pwd?: boolean
+    low_income?: boolean
     remarks_id?: boolean
     deletedAt?: boolean
     releasedAt?: boolean
@@ -4543,7 +4559,9 @@ export namespace Prisma {
     contact_no?: boolean
     emergency_no?: boolean
     contact_person?: boolean
+    contact_relationship?: boolean
     pwd?: boolean
+    low_income?: boolean
     remarks_id?: boolean
     deletedAt?: boolean
     releasedAt?: boolean
@@ -4566,7 +4584,9 @@ export namespace Prisma {
     contact_no?: boolean
     emergency_no?: boolean
     contact_person?: boolean
+    contact_relationship?: boolean
     pwd?: boolean
+    low_income?: boolean
     remarks_id?: boolean
     deletedAt?: boolean
     releasedAt?: boolean
@@ -4589,7 +4609,9 @@ export namespace Prisma {
     contact_no?: boolean
     emergency_no?: boolean
     contact_person?: boolean
+    contact_relationship?: boolean
     pwd?: boolean
+    low_income?: boolean
     remarks_id?: boolean
     deletedAt?: boolean
     releasedAt?: boolean
@@ -4597,7 +4619,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type SeniorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "lastname" | "firstname" | "middlename" | "email" | "barangay" | "purok" | "gender" | "birthdate" | "age" | "contact_no" | "emergency_no" | "contact_person" | "pwd" | "remarks_id" | "deletedAt" | "releasedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["senior"]>
+  export type SeniorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "lastname" | "firstname" | "middlename" | "email" | "barangay" | "purok" | "gender" | "birthdate" | "age" | "contact_no" | "emergency_no" | "contact_person" | "contact_relationship" | "pwd" | "low_income" | "remarks_id" | "deletedAt" | "releasedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["senior"]>
   export type SeniorInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     remarks?: boolean | RemarksDefaultArgs<ExtArgs>
     documents?: boolean | Senior$documentsArgs<ExtArgs>
@@ -4629,10 +4651,12 @@ export namespace Prisma {
       gender: $Enums.Gender
       birthdate: Date
       age: string
-      contact_no: string
-      emergency_no: string
+      contact_no: string | null
+      emergency_no: string | null
       contact_person: string | null
+      contact_relationship: string | null
       pwd: boolean
+      low_income: boolean
       remarks_id: number
       deletedAt: Date | null
       releasedAt: Date | null
@@ -5077,7 +5101,9 @@ export namespace Prisma {
     readonly contact_no: FieldRef<"Senior", 'String'>
     readonly emergency_no: FieldRef<"Senior", 'String'>
     readonly contact_person: FieldRef<"Senior", 'String'>
+    readonly contact_relationship: FieldRef<"Senior", 'String'>
     readonly pwd: FieldRef<"Senior", 'Boolean'>
+    readonly low_income: FieldRef<"Senior", 'Boolean'>
     readonly remarks_id: FieldRef<"Senior", 'Int'>
     readonly deletedAt: FieldRef<"Senior", 'DateTime'>
     readonly releasedAt: FieldRef<"Senior", 'DateTime'>
@@ -13569,7 +13595,9 @@ export namespace Prisma {
     contact_no: 'contact_no',
     emergency_no: 'emergency_no',
     contact_person: 'contact_person',
+    contact_relationship: 'contact_relationship',
     pwd: 'pwd',
+    low_income: 'low_income',
     remarks_id: 'remarks_id',
     deletedAt: 'deletedAt',
     releasedAt: 'releasedAt',
@@ -13962,10 +13990,12 @@ export namespace Prisma {
     gender?: EnumGenderFilter<"Senior"> | $Enums.Gender
     birthdate?: DateTimeFilter<"Senior"> | Date | string
     age?: StringFilter<"Senior"> | string
-    contact_no?: StringFilter<"Senior"> | string
-    emergency_no?: StringFilter<"Senior"> | string
+    contact_no?: StringNullableFilter<"Senior"> | string | null
+    emergency_no?: StringNullableFilter<"Senior"> | string | null
     contact_person?: StringNullableFilter<"Senior"> | string | null
+    contact_relationship?: StringNullableFilter<"Senior"> | string | null
     pwd?: BoolFilter<"Senior"> | boolean
+    low_income?: BoolFilter<"Senior"> | boolean
     remarks_id?: IntFilter<"Senior"> | number
     deletedAt?: DateTimeNullableFilter<"Senior"> | Date | string | null
     releasedAt?: DateTimeNullableFilter<"Senior"> | Date | string | null
@@ -13987,10 +14017,12 @@ export namespace Prisma {
     gender?: SortOrder
     birthdate?: SortOrder
     age?: SortOrder
-    contact_no?: SortOrder
-    emergency_no?: SortOrder
+    contact_no?: SortOrderInput | SortOrder
+    emergency_no?: SortOrderInput | SortOrder
     contact_person?: SortOrderInput | SortOrder
+    contact_relationship?: SortOrderInput | SortOrder
     pwd?: SortOrder
+    low_income?: SortOrder
     remarks_id?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
     releasedAt?: SortOrderInput | SortOrder
@@ -14015,10 +14047,12 @@ export namespace Prisma {
     gender?: EnumGenderFilter<"Senior"> | $Enums.Gender
     birthdate?: DateTimeFilter<"Senior"> | Date | string
     age?: StringFilter<"Senior"> | string
-    contact_no?: StringFilter<"Senior"> | string
-    emergency_no?: StringFilter<"Senior"> | string
+    contact_no?: StringNullableFilter<"Senior"> | string | null
+    emergency_no?: StringNullableFilter<"Senior"> | string | null
     contact_person?: StringNullableFilter<"Senior"> | string | null
+    contact_relationship?: StringNullableFilter<"Senior"> | string | null
     pwd?: BoolFilter<"Senior"> | boolean
+    low_income?: BoolFilter<"Senior"> | boolean
     remarks_id?: IntFilter<"Senior"> | number
     deletedAt?: DateTimeNullableFilter<"Senior"> | Date | string | null
     releasedAt?: DateTimeNullableFilter<"Senior"> | Date | string | null
@@ -14040,10 +14074,12 @@ export namespace Prisma {
     gender?: SortOrder
     birthdate?: SortOrder
     age?: SortOrder
-    contact_no?: SortOrder
-    emergency_no?: SortOrder
+    contact_no?: SortOrderInput | SortOrder
+    emergency_no?: SortOrderInput | SortOrder
     contact_person?: SortOrderInput | SortOrder
+    contact_relationship?: SortOrderInput | SortOrder
     pwd?: SortOrder
+    low_income?: SortOrder
     remarks_id?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
     releasedAt?: SortOrderInput | SortOrder
@@ -14070,10 +14106,12 @@ export namespace Prisma {
     gender?: EnumGenderWithAggregatesFilter<"Senior"> | $Enums.Gender
     birthdate?: DateTimeWithAggregatesFilter<"Senior"> | Date | string
     age?: StringWithAggregatesFilter<"Senior"> | string
-    contact_no?: StringWithAggregatesFilter<"Senior"> | string
-    emergency_no?: StringWithAggregatesFilter<"Senior"> | string
+    contact_no?: StringNullableWithAggregatesFilter<"Senior"> | string | null
+    emergency_no?: StringNullableWithAggregatesFilter<"Senior"> | string | null
     contact_person?: StringNullableWithAggregatesFilter<"Senior"> | string | null
+    contact_relationship?: StringNullableWithAggregatesFilter<"Senior"> | string | null
     pwd?: BoolWithAggregatesFilter<"Senior"> | boolean
+    low_income?: BoolWithAggregatesFilter<"Senior"> | boolean
     remarks_id?: IntWithAggregatesFilter<"Senior"> | number
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Senior"> | Date | string | null
     releasedAt?: DateTimeNullableWithAggregatesFilter<"Senior"> | Date | string | null
@@ -14733,10 +14771,12 @@ export namespace Prisma {
     gender: $Enums.Gender
     birthdate: Date | string
     age: string
-    contact_no: string
-    emergency_no: string
+    contact_no?: string | null
+    emergency_no?: string | null
     contact_person?: string | null
+    contact_relationship?: string | null
     pwd?: boolean
+    low_income?: boolean
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
     createdAt?: Date | string
@@ -14757,10 +14797,12 @@ export namespace Prisma {
     gender: $Enums.Gender
     birthdate: Date | string
     age: string
-    contact_no: string
-    emergency_no: string
+    contact_no?: string | null
+    emergency_no?: string | null
     contact_person?: string | null
+    contact_relationship?: string | null
     pwd?: boolean
+    low_income?: boolean
     remarks_id?: number
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
@@ -14780,10 +14822,12 @@ export namespace Prisma {
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     age?: StringFieldUpdateOperationsInput | string
-    contact_no?: StringFieldUpdateOperationsInput | string
-    emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_no?: NullableStringFieldUpdateOperationsInput | string | null
+    emergency_no?: NullableStringFieldUpdateOperationsInput | string | null
     contact_person?: NullableStringFieldUpdateOperationsInput | string | null
+    contact_relationship?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
+    low_income?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14804,10 +14848,12 @@ export namespace Prisma {
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     age?: StringFieldUpdateOperationsInput | string
-    contact_no?: StringFieldUpdateOperationsInput | string
-    emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_no?: NullableStringFieldUpdateOperationsInput | string | null
+    emergency_no?: NullableStringFieldUpdateOperationsInput | string | null
     contact_person?: NullableStringFieldUpdateOperationsInput | string | null
+    contact_relationship?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
+    low_income?: BoolFieldUpdateOperationsInput | boolean
     remarks_id?: IntFieldUpdateOperationsInput | number
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14828,10 +14874,12 @@ export namespace Prisma {
     gender: $Enums.Gender
     birthdate: Date | string
     age: string
-    contact_no: string
-    emergency_no: string
+    contact_no?: string | null
+    emergency_no?: string | null
     contact_person?: string | null
+    contact_relationship?: string | null
     pwd?: boolean
+    low_income?: boolean
     remarks_id?: number
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
@@ -14849,10 +14897,12 @@ export namespace Prisma {
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     age?: StringFieldUpdateOperationsInput | string
-    contact_no?: StringFieldUpdateOperationsInput | string
-    emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_no?: NullableStringFieldUpdateOperationsInput | string | null
+    emergency_no?: NullableStringFieldUpdateOperationsInput | string | null
     contact_person?: NullableStringFieldUpdateOperationsInput | string | null
+    contact_relationship?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
+    low_income?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14870,10 +14920,12 @@ export namespace Prisma {
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     age?: StringFieldUpdateOperationsInput | string
-    contact_no?: StringFieldUpdateOperationsInput | string
-    emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_no?: NullableStringFieldUpdateOperationsInput | string | null
+    emergency_no?: NullableStringFieldUpdateOperationsInput | string | null
     contact_person?: NullableStringFieldUpdateOperationsInput | string | null
+    contact_relationship?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
+    low_income?: BoolFieldUpdateOperationsInput | boolean
     remarks_id?: IntFieldUpdateOperationsInput | number
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -15618,7 +15670,9 @@ export namespace Prisma {
     contact_no?: SortOrder
     emergency_no?: SortOrder
     contact_person?: SortOrder
+    contact_relationship?: SortOrder
     pwd?: SortOrder
+    low_income?: SortOrder
     remarks_id?: SortOrder
     deletedAt?: SortOrder
     releasedAt?: SortOrder
@@ -15645,7 +15699,9 @@ export namespace Prisma {
     contact_no?: SortOrder
     emergency_no?: SortOrder
     contact_person?: SortOrder
+    contact_relationship?: SortOrder
     pwd?: SortOrder
+    low_income?: SortOrder
     remarks_id?: SortOrder
     deletedAt?: SortOrder
     releasedAt?: SortOrder
@@ -15667,7 +15723,9 @@ export namespace Prisma {
     contact_no?: SortOrder
     emergency_no?: SortOrder
     contact_person?: SortOrder
+    contact_relationship?: SortOrder
     pwd?: SortOrder
+    low_income?: SortOrder
     remarks_id?: SortOrder
     deletedAt?: SortOrder
     releasedAt?: SortOrder
@@ -17157,10 +17215,12 @@ export namespace Prisma {
     gender: $Enums.Gender
     birthdate: Date | string
     age: string
-    contact_no: string
-    emergency_no: string
+    contact_no?: string | null
+    emergency_no?: string | null
     contact_person?: string | null
+    contact_relationship?: string | null
     pwd?: boolean
+    low_income?: boolean
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
     createdAt?: Date | string
@@ -17180,10 +17240,12 @@ export namespace Prisma {
     gender: $Enums.Gender
     birthdate: Date | string
     age: string
-    contact_no: string
-    emergency_no: string
+    contact_no?: string | null
+    emergency_no?: string | null
     contact_person?: string | null
+    contact_relationship?: string | null
     pwd?: boolean
+    low_income?: boolean
     remarks_id?: number
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
@@ -17238,10 +17300,12 @@ export namespace Prisma {
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     age?: StringFieldUpdateOperationsInput | string
-    contact_no?: StringFieldUpdateOperationsInput | string
-    emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_no?: NullableStringFieldUpdateOperationsInput | string | null
+    emergency_no?: NullableStringFieldUpdateOperationsInput | string | null
     contact_person?: NullableStringFieldUpdateOperationsInput | string | null
+    contact_relationship?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
+    low_income?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17261,10 +17325,12 @@ export namespace Prisma {
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     age?: StringFieldUpdateOperationsInput | string
-    contact_no?: StringFieldUpdateOperationsInput | string
-    emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_no?: NullableStringFieldUpdateOperationsInput | string | null
+    emergency_no?: NullableStringFieldUpdateOperationsInput | string | null
     contact_person?: NullableStringFieldUpdateOperationsInput | string | null
+    contact_relationship?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
+    low_income?: BoolFieldUpdateOperationsInput | boolean
     remarks_id?: IntFieldUpdateOperationsInput | number
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17309,10 +17375,12 @@ export namespace Prisma {
     gender: $Enums.Gender
     birthdate: Date | string
     age: string
-    contact_no: string
-    emergency_no: string
+    contact_no?: string | null
+    emergency_no?: string | null
     contact_person?: string | null
+    contact_relationship?: string | null
     pwd?: boolean
+    low_income?: boolean
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
     createdAt?: Date | string
@@ -17332,10 +17400,12 @@ export namespace Prisma {
     gender: $Enums.Gender
     birthdate: Date | string
     age: string
-    contact_no: string
-    emergency_no: string
+    contact_no?: string | null
+    emergency_no?: string | null
     contact_person?: string | null
+    contact_relationship?: string | null
     pwd?: boolean
+    low_income?: boolean
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
     createdAt?: Date | string
@@ -17384,10 +17454,12 @@ export namespace Prisma {
     gender?: EnumGenderFilter<"Senior"> | $Enums.Gender
     birthdate?: DateTimeFilter<"Senior"> | Date | string
     age?: StringFilter<"Senior"> | string
-    contact_no?: StringFilter<"Senior"> | string
-    emergency_no?: StringFilter<"Senior"> | string
+    contact_no?: StringNullableFilter<"Senior"> | string | null
+    emergency_no?: StringNullableFilter<"Senior"> | string | null
     contact_person?: StringNullableFilter<"Senior"> | string | null
+    contact_relationship?: StringNullableFilter<"Senior"> | string | null
     pwd?: BoolFilter<"Senior"> | boolean
+    low_income?: BoolFilter<"Senior"> | boolean
     remarks_id?: IntFilter<"Senior"> | number
     deletedAt?: DateTimeNullableFilter<"Senior"> | Date | string | null
     releasedAt?: DateTimeNullableFilter<"Senior"> | Date | string | null
@@ -17689,10 +17761,12 @@ export namespace Prisma {
     gender: $Enums.Gender
     birthdate: Date | string
     age: string
-    contact_no: string
-    emergency_no: string
+    contact_no?: string | null
+    emergency_no?: string | null
     contact_person?: string | null
+    contact_relationship?: string | null
     pwd?: boolean
+    low_income?: boolean
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
     createdAt?: Date | string
@@ -17712,10 +17786,12 @@ export namespace Prisma {
     gender: $Enums.Gender
     birthdate: Date | string
     age: string
-    contact_no: string
-    emergency_no: string
+    contact_no?: string | null
+    emergency_no?: string | null
     contact_person?: string | null
+    contact_relationship?: string | null
     pwd?: boolean
+    low_income?: boolean
     remarks_id?: number
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
@@ -17814,10 +17890,12 @@ export namespace Prisma {
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     age?: StringFieldUpdateOperationsInput | string
-    contact_no?: StringFieldUpdateOperationsInput | string
-    emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_no?: NullableStringFieldUpdateOperationsInput | string | null
+    emergency_no?: NullableStringFieldUpdateOperationsInput | string | null
     contact_person?: NullableStringFieldUpdateOperationsInput | string | null
+    contact_relationship?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
+    low_income?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17837,10 +17915,12 @@ export namespace Prisma {
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     age?: StringFieldUpdateOperationsInput | string
-    contact_no?: StringFieldUpdateOperationsInput | string
-    emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_no?: NullableStringFieldUpdateOperationsInput | string | null
+    emergency_no?: NullableStringFieldUpdateOperationsInput | string | null
     contact_person?: NullableStringFieldUpdateOperationsInput | string | null
+    contact_relationship?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
+    low_income?: BoolFieldUpdateOperationsInput | boolean
     remarks_id?: IntFieldUpdateOperationsInput | number
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -18052,10 +18132,12 @@ export namespace Prisma {
     gender: $Enums.Gender
     birthdate: Date | string
     age: string
-    contact_no: string
-    emergency_no: string
+    contact_no?: string | null
+    emergency_no?: string | null
     contact_person?: string | null
+    contact_relationship?: string | null
     pwd?: boolean
+    low_income?: boolean
     deletedAt?: Date | string | null
     releasedAt?: Date | string | null
     createdAt?: Date | string
@@ -18072,10 +18154,12 @@ export namespace Prisma {
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     age?: StringFieldUpdateOperationsInput | string
-    contact_no?: StringFieldUpdateOperationsInput | string
-    emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_no?: NullableStringFieldUpdateOperationsInput | string | null
+    emergency_no?: NullableStringFieldUpdateOperationsInput | string | null
     contact_person?: NullableStringFieldUpdateOperationsInput | string | null
+    contact_relationship?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
+    low_income?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18095,10 +18179,12 @@ export namespace Prisma {
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     age?: StringFieldUpdateOperationsInput | string
-    contact_no?: StringFieldUpdateOperationsInput | string
-    emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_no?: NullableStringFieldUpdateOperationsInput | string | null
+    emergency_no?: NullableStringFieldUpdateOperationsInput | string | null
     contact_person?: NullableStringFieldUpdateOperationsInput | string | null
+    contact_relationship?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
+    low_income?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18118,10 +18204,12 @@ export namespace Prisma {
     gender?: EnumGenderFieldUpdateOperationsInput | $Enums.Gender
     birthdate?: DateTimeFieldUpdateOperationsInput | Date | string
     age?: StringFieldUpdateOperationsInput | string
-    contact_no?: StringFieldUpdateOperationsInput | string
-    emergency_no?: StringFieldUpdateOperationsInput | string
+    contact_no?: NullableStringFieldUpdateOperationsInput | string | null
+    emergency_no?: NullableStringFieldUpdateOperationsInput | string | null
     contact_person?: NullableStringFieldUpdateOperationsInput | string | null
+    contact_relationship?: NullableStringFieldUpdateOperationsInput | string | null
     pwd?: BoolFieldUpdateOperationsInput | boolean
+    low_income?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     releasedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

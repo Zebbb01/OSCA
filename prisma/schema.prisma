@@ -65,10 +65,12 @@ model Senior {
   gender       Gender
   birthdate    DateTime
   age          String
-  contact_no   String
-  emergency_no String
+  contact_no   String?
+  emergency_no String?
   contact_person String?
+  contact_relationship String?
   pwd          Boolean   @default(false)
+  low_income          Boolean   @default(false)
   remarks_id   Int       @default(1)
   remarks      Remarks   @relation(fields: [remarks_id], references: [id], onDelete: NoAction)
   deletedAt    DateTime?

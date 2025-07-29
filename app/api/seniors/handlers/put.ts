@@ -26,12 +26,15 @@ export async function putSeniorsHandler(request: NextRequest): Promise<NextRespo
       }
       seniorId = parseInt(body.id, 10);
 
+      // Construct updateData directly from the body.
+      // The seniorService.updateSenior function is now responsible for handling
+      // the age calculation and prioritization (manual input vs. birthdate-derived).
       updateData = {
         firstname: body.firstname,
         middlename: body.middlename,
         lastname: body.lastname,
-        age: body.age,
-        birthdate: body.birthdate,
+        age: body.age, // Pass age directly from the body
+        birthdate: body.birthdate, // Pass birthdate directly from the body
         gender: body.gender,
         email: body.email,
         contact_no: body.contact_no,
@@ -39,9 +42,13 @@ export async function putSeniorsHandler(request: NextRequest): Promise<NextRespo
         barangay: body.barangay,
         purok: body.purok,
         pwd: body.pwd,
+        low_income: body.low_income,
         contact_person: body.contact_person,
-        remarks_id: body.remarks_id, // If you want to allow updating remarks via PUT
-        releasedAt: body.releasedAt ? new Date(body.releasedAt) : null, // Handle releasedAt if provided
+        contact_relationship: body.contact_relationship,
+        remarks_id: body.remarks_id,
+        // Handle releasedAt if provided. Ensure it's a Date object if needed by Prisma
+        // The service layer might also handle this, but it's safe to convert here.
+        releasedAt: body.releasedAt ? new Date(body.releasedAt) : body.releasedAt === null ? null : undefined,
       };
 
       const updatedSenior = await seniorService.updateSenior(seniorId, updateData);

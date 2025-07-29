@@ -1,3 +1,4 @@
+// components\senior-citizen\SeniorViewDialog.tsx
 'use client';
 
 import React from 'react';
@@ -11,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { EyeIcon, UserIcon, PhoneIcon, StickyNoteIcon } from 'lucide-react';
-import { formatDateOnly, formatDateTime } from '@/utils/format'; // Ensure formatDateOnly is imported
+import { formatDateOnly, formatDateTime } from '@/utils/format';
 import { Seniors } from '@/types/seniors';
 
 // Separate component for form-like field display
@@ -38,12 +39,12 @@ interface CheckboxFieldViewProps {
 
 const CheckboxFieldView: React.FC<CheckboxFieldViewProps> = ({ label, checked }) => (
   <div>
-    <label className="text-sm font-medium">PWD Status</label>
     <div className="flex items-center space-x-2 pt-2">
       <div className={`w-4 h-4 rounded border ${checked ? 'bg-primary border-primary' : 'border-input'}`}>
         {checked && <div className="w-full h-full flex items-center justify-center text-white text-xs">✓</div>}
       </div>
-      <span className="text-sm">{label}</span>
+      {/* Moved the label span inside the flex container */}
+      <span className="text-sm">{label}</span> 
     </div>
   </div>
 );
@@ -95,6 +96,10 @@ export const SeniorViewDialog: React.FC<SeniorViewDialogProps> = ({
       <DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl">Senior Profile</DialogTitle>
+          {/* Display Registered On date here */}
+          <p className="text-gray-500 text-sm mt-1">
+            Registered On: <span className="font-medium">{formatDateTime(senior.createdAt)}</span>
+          </p>
           <DialogDescription>
             Full details of {senior.firstname} {senior.lastname}
           </DialogDescription>
@@ -124,8 +129,9 @@ export const SeniorViewDialog: React.FC<SeniorViewDialogProps> = ({
               </div>
 
               {/* PWD Status */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CheckboxFieldView label="Are you a PWD?" checked={senior.pwd} />
+                <CheckboxFieldView label="Are you a Low Income?" checked={senior.low_income} />
               </div>
             </div>
           </div>
@@ -142,6 +148,11 @@ export const SeniorViewDialog: React.FC<SeniorViewDialogProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormFieldView label="Contact Number" value={senior.contact_no} />
                 <FormFieldView label="Emergency Contact" value={senior.emergency_no} />
+              </div>
+              {/* Contact Relationship Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormFieldView label="Contact Person" value={senior.contact_person} />
+                <FormFieldView label="Contact Relationship" value={senior.contact_relationship} />
               </div>
 
               {/* Address Row */}
@@ -168,7 +179,7 @@ export const SeniorViewDialog: React.FC<SeniorViewDialogProps> = ({
                   {senior.releasedAt && (
                     <FormFieldView 
                       label="Released On" 
-                      value={formatDateOnly(senior.releasedAt)} // Changed to formatDateOnly
+                      value={formatDateOnly(senior.releasedAt)}
                     />
                   )}
                 </div>

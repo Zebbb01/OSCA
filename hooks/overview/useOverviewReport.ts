@@ -119,7 +119,7 @@ export const useOverviewReport = ({
       currentY = 20;
     }
 
-    // SECTION 2: NOT RELEASED BENEFITS
+    // SECTION 2: Unreleased BENEFITS
     if (notReleasedData.length > 0) {
       doc.setFontSize(16);
       doc.text('Pending Benefits Report', 10, currentY);

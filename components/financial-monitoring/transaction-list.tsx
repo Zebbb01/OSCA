@@ -29,8 +29,8 @@ export const columns: ColumnDef<FinancialTransaction>[] = [
         cell: ({ row }) => formatDateOnly(new Date(row.original.date)),
     },
     {
-        accessorKey: 'description',
-        header: 'Description',
+        accessorKey: 'benefits',
+        header: 'Benefits',
     },
     {
         accessorKey: 'category',
@@ -52,7 +52,7 @@ export const columns: ColumnDef<FinancialTransaction>[] = [
         cell: ({ row }) => {
             const type = row.getValue('type') as string;
             return (
-                <span className={`font-medium ${type === 'release' ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`font-medium ${type === 'released' ? 'text-green-600' : 'text-red-600'}`}>
                     {type.charAt(0).toUpperCase() + type.slice(1)}
                 </span>
             );
@@ -82,7 +82,7 @@ export const columns: ColumnDef<FinancialTransaction>[] = [
             }).format(amount);
 
             return (
-                <div className={`text-right font-medium ${type === 'release' ? 'text-green-600' : 'text-red-600'}`}>
+                <div className={`text-right font-medium ${type === 'released' ? 'text-green-600' : 'text-red-600'}`}>
                     {formatted}
                 </div>
             );

@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useSession } from 'next-auth/react';
 import { ColumnFiltersState } from '@tanstack/react-table';
+import { format } from 'date-fns'; // Import format from date-fns
 
 import { Button } from '@/components/ui/button';
 import {
@@ -30,7 +31,7 @@ interface SeniorQueryParams {
     purok?: string;
     barangay?: string;
     remarks?: string;
-    releaseStatus?: 'Released' | 'Not Released';
+    releaseStatus?: 'Released' | 'Unreleased';
 }
 
 interface SeniorRecordsPageContentProps {
@@ -49,6 +50,11 @@ const SeniorRecordsPageContent: React.FC<SeniorRecordsPageContentProps> = ({ use
 
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+
+    // Get today's date and format it once
+    const today = useMemo(() => {
+        return format(new Date(), 'MMMM dd, yyyy'); // e.g., "July 29, 2025"
+    }, []);
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -165,7 +171,7 @@ const SeniorRecordsPageContent: React.FC<SeniorRecordsPageContentProps> = ({ use
                 </p>
             </div>
 
-            <div className="flex justify-end gap-3 mt-8 mb-6">
+            <div className="flex justify-end gap-3 mb-4">
                 {/* Download Report button visible for USER role (staff) */}
                 {(isUser || isAdmin) && seniorQuery.data && (
                     <DownloadReleasedSeniorsReport data={seniorQuery.data} />
@@ -188,6 +194,10 @@ const SeniorRecordsPageContent: React.FC<SeniorRecordsPageContentProps> = ({ use
                         >
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-semibold">Register New Senior Citizen</DialogTitle>
+                                {/* Display Today's Date Here */}
+                                <p className="text-gray-500 text-sm mt-1">
+                                    Today's Date: <span className="font-medium">{today}</span>
+                                </p>
                                 <DialogDescription>
                                     Complete the form below to register a new senior citizen into the system.
                                 </DialogDescription>

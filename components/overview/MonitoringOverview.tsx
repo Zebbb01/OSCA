@@ -1,11 +1,12 @@
 // components/overview/MonitoringOverview.tsx
+// components/overview/MonitoringOverview.tsx
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { DataTable } from '../data-table';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { DownloadOverviewReport } from './DownloadOverviewReport';
-import { useOverviewData } from '@/hooks/overview/useOverviewData'; // Import the new hook
+import { useOverviewData } from '@/hooks/overview/useOverviewData';
 
 interface MonitoringOverviewProps {
   userRole: 'admin' | 'staff';
@@ -29,6 +30,7 @@ export default function MonitoringOverview({
     setColumnFilters,
     isFilterDropdownOpen,
     setIsFilterDropdownOpen,
+    resetFilters, // We'll still keep this for clarity, though its direct call won't be needed here anymore
     releasedSeniors,
     notReleasedSeniors,
     allApplicantsData,
@@ -42,7 +44,18 @@ export default function MonitoringOverview({
     applicationInitialVisibleColumns,
     isLoading,
     hasError,
-  } = useOverviewData({ userRole }); // Use the hook
+  } = useOverviewData({ userRole });
+
+  // --- MODIFIED: Handle tab change and filter reset synchronously ---
+  const handleTabChange = (value: string) => {
+    // If the tab is actually changing, reset filters immediately
+    if (value !== activeTab) {
+      setGlobalFilter(''); // Clear global filter
+      setColumnFilters([]); // Clear column filters
+      setIsFilterDropdownOpen(false); // Close dropdown
+    }
+    setActiveTab(value); // Update the active tab state
+  };
 
   const renderLoadingState = () => (
     <div className="text-center py-10 text-gray-500 flex items-center justify-center">
@@ -69,7 +82,6 @@ export default function MonitoringOverview({
           <p className="text-gray-600 text-base mt-1">{description}</p>
         </div>
 
-        {/* Conditional Download Button */}
         {showDownloadButton && (
           <div className="flex-shrink-0">
             <DownloadOverviewReport
@@ -82,7 +94,7 @@ export default function MonitoringOverview({
       </div>
 
       {/* Tabs Navigation */}
-      <Tabs defaultValue="released" className="w-full" onValueChange={setActiveTab}>
+      <Tabs defaultValue="released" className="w-full" onValueChange={handleTabChange}>
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="released">Released Benefits</TabsTrigger>
           <TabsTrigger value="not-released">Pending Benefits</TabsTrigger>
@@ -97,7 +109,6 @@ export default function MonitoringOverview({
           renderErrorState()
         ) : (
           <>
-            {/* Released Benefits Tab */}
             <TabsContent value="released">
               <div className="mb-4">
                 <h2 className="text-xl font-semibold text-gray-700">Released Benefits ({releasedSeniors.length})</h2>
@@ -121,7 +132,6 @@ export default function MonitoringOverview({
               )}
             </TabsContent>
 
-            {/* Not Released Benefits Tab */}
             <TabsContent value="not-released">
               <div className="mb-4">
                 <h2 className="text-xl font-semibold text-gray-700">Pending Benefits ({notReleasedSeniors.length})</h2>
@@ -145,7 +155,6 @@ export default function MonitoringOverview({
               )}
             </TabsContent>
 
-            {/* All Applications Tab */}
             <TabsContent value="all-applications">
               <div className="mb-4">
                 <h2 className="text-xl font-semibold text-gray-700">All Applications ({allApplicantsData.length})</h2>
@@ -169,7 +178,6 @@ export default function MonitoringOverview({
               )}
             </TabsContent>
 
-            {/* Regular Citizens Tab */}
             <TabsContent value="regular">
               <div className="mb-4">
                 <h2 className="text-xl font-semibold text-gray-700">Regular Senior Citizens ({regularApplications.length})</h2>
@@ -193,7 +201,6 @@ export default function MonitoringOverview({
               )}
             </TabsContent>
 
-            {/* Special Cases Tab */}
             <TabsContent value="special">
               <div className="mb-4">
                 <h2 className="text-xl font-semibold text-gray-700">Special Assistance Cases ({specialApplications.length})</h2>

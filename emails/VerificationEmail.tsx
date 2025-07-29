@@ -23,7 +23,7 @@ interface VerificationEmailProps {
 
 const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000'; // Fallback for local development
+  : 'http://localhost:8000'; // Fallback for local development
 
 export const VerificationEmail = ({
   firstName,

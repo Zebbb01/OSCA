@@ -152,14 +152,15 @@ const NotReleaseMonitoringPage = () => {
       'gender',
       'senior_category',
       'releaseStatus', 
-      'documents',
+      'benefits',
+      // 'documents',
     ];
   }, []);
 
   return (
     <div className="container mx-auto p-5 rounded-md mt-8 border border-gray-200 shadow-sm">
       <div className="flex flex-col mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Not Released Benefits Monitoring</h1>
+        <h1 className="text-3xl font-bold text-gray-800">Unreleased Benefits Monitoring</h1>
         <p className="text-gray-600 text-base mt-1">
           View all senior citizens who have not yet released their benefits.
         </p>

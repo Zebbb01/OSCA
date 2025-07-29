@@ -8,14 +8,20 @@ export const seniorsFormSchema = z.object({
     // Email is optional and can be an empty string
     email: z.string().email('Enter a valid email').optional().or(z.literal('')),
 
+    // Contact numbers are optional
     contactNumber: z.string()
         .regex(/^\d{11}$/, 'Contact number must be exactly 11 digits')
-        .nonempty('Contact Number is required'),
+        .optional()
+        .or(z.literal('')), // Allow empty string for optional number
+
     emergencyNumber: z.string()
-        .regex(/^\d{11}$/, 'Emergency contact must be exactly 11 digits')
-        .nonempty('Emergency Contact is required'),
-    contactPerson: z.string().nonempty('Contact Person is required'),
-    
+        .regex(/^\d{11}$/, 'Emergency contact must be exactly 11 digits') // Corrected this line
+        .optional()
+        .or(z.literal('')), // Allow empty string for optional number
+
+    contactPerson: z.string().optional().or(z.literal('')), // Allow empty string for optional text
+    contactRelationship: z.string().optional().or(z.literal('')), // Allow empty string for optional text
+
     age: z.string()
         .refine((val) => {
             const num = parseInt(val);
@@ -29,8 +35,10 @@ export const seniorsFormSchema = z.object({
     barangay: z.string().nonempty('Barangay is required'),
     purok: z.string().nonempty('Purok is required'),
     pwd: z.boolean().optional(),
+    lowIncome: z.boolean().optional(),
 }).superRefine((data, ctx) => {
     // Check if contactNumber and emergencyNumber are the same
+    // Only compare if both fields have values (are not empty strings or undefined)
     if (data.contactNumber && data.emergencyNumber && data.contactNumber === data.emergencyNumber) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,

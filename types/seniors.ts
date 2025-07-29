@@ -19,10 +19,12 @@ export interface SeniorsFormDataType {
     gender: string;
     barangay: string;
     purok: string;
-    contactNumber: string;
-    emergencyNumber: string;
-    contactPerson: string;
+    contactNumber: string | null;
+    emergencyNumber: string | null;
+    contactPerson: string | null;
+    contactRelationship: string | null;
     pwd: boolean;
+    lowIncome: boolean;
     birth_certificate?: File | null;
     certificate_of_residency?: File | null;
     government_issued_id?: File | null;
@@ -72,18 +74,21 @@ export interface Seniors {
     middlename: string | null;
     lastname: string;
     email: string | null;
-    contact_no: string;
-    emergency_no: string;
+    contact_no: string | null;
+    emergency_no: string | null;
     contact_person: string | null; // Changed to allow null based on schema
+    contact_relationship: string | null; // Changed to allow null based on schema
     birthdate: Date;
     age: string; // Keep as string here if your Prisma schema defines it as String
     gender: 'male' | 'female';
     barangay: string;
     purok: string;
     pwd: boolean;
+    low_income: boolean;
     remarks_id: number;
     remarks: Remarks;
     Applications: Array<{
+        id: string;
         category: { name: string } | null;
         status: { name: string };
         benefit: { name: string; description: string; tag: string };
@@ -157,7 +162,9 @@ export interface SeniorUpdateData {
     barangay: string; // Required by Prisma
     purok: string; // Required by Prisma
     pwd: boolean; // Required by Prisma (default false, but editable)
+    low_income: boolean;
     contact_person: string | null; // Optional in Prisma
+    contact_relationship: string | null; // Optional in Prisma
     releasedAt?: string | null;
 }
 
@@ -186,7 +193,9 @@ export interface EditFormState {
     barangay: string;
     purok: string;
     pwd: boolean;
+    low_income: boolean;
     contact_person: string | null;
+    contact_relationship: string | null;
     releasedAt: Date | null;
 }
 

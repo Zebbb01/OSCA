@@ -70,6 +70,7 @@ const RegisterFormComponents = ({
             contactNumber: '',
             emergencyNumber: '',
             contactPerson: '',
+            contactRelationship: '',
             pwd: false,
         },
     })
