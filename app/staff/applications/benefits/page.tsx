@@ -31,7 +31,7 @@ const BenefitsPage = () => {
     const benefitsQuery = useQuery({
         queryKey: ['benefits'],
         queryFn: async () => {
-            const respData = await apiService.get<Benefit[]>('/api/benefits')
+            const respData = await apiService.get<Benefit[]>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/benefits`)
             console.log('respData benefits: ', respData)
             return respData
         },
@@ -50,7 +50,7 @@ const BenefitsPage = () => {
 
     // FETCHING SENIORS BASED OF SEARCHED NAME. IF EMPTY SEARCH IT RETURNS ALL SENIORS
     const fetchSeniors = async (name?: string | undefined) => {
-        const url = name ? `/api/seniors?name=${encodeURIComponent(name)}` : '/api/seniors'
+        const url = name ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors?name=${encodeURIComponent(name)}` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors`
 
         const respData = await apiService.get<Seniors[]>(url)
         console.log('respData seniors benefits: ', respData)
@@ -72,7 +72,7 @@ const BenefitsPage = () => {
     // MUTATION FOR SUBMITTING BENEFIT APPLICATION
     const mutation = useMutation({
         mutationFn: async (data: BenefitApplicationFormData) => {
-            return await apiService.post<POSTApiResponse>('/api/benefits/application', data)
+            return await apiService.post<POSTApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/benefits/application`, data)
         },
         onSuccess: (resp) => {
             console.log('Success:', resp)

@@ -1,3 +1,4 @@
+// app/admin/page.tsx
 "use client"
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -18,7 +19,7 @@ const AdminRoot = () => {
             router.replace('/staff/senior-citizen/record')
         } else {
             // Handle other roles or unauthenticated users, e.g., redirect to login
-            router.replace('/auth/login'); // Or your login page path
+            router.replace('/'); // Or your login page path
         }
     }, [router, session, status]) // Add session and status to dependencies
 

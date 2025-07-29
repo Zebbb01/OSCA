@@ -2,7 +2,10 @@
 'use client'
 
 import * as React from 'react'
+import Link from 'next/link'
 import { BellRing } from 'lucide-react'
+import { CheckCircle2, UserPlus } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query'; // Import useQuery for data fetching
 
 import { Button } from '@/components/ui/button'
 import {
@@ -14,97 +17,107 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ScrollArea } from '@/components/ui/scroll-area' // Import ScrollArea for long lists
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { formatDateTime } from '@/utils/format'
+import { Seniors } from '@/types/seniors'; // Import the new Notification type and Seniors type
+import { Notification } from '@/types/notification'; // Assuming you have a Notification type defined
 
-export function NotificationDropdown() {
-    // Static notifications for demonstration
-    const notifications = [
-        {
-            id: '1',
-            type: 'senior_pending',
-            message: 'Juan Dela Cruz - Senior Citizen pending verification.',
-            timestamp: '2025-05-29T10:00:00Z',
-            link: '/admin/senior-citizen/record?filter=pending&seniorId=123', // Example link
-        },
-        {
-            id: '2',
-            type: 'senior_pending',
-            message: 'Maria Clara - Senior Citizen pending verification.',
-            timestamp: '2025-05-28T15:30:00Z',
-            link: '/admin/senior-citizen/record?filter=pending&seniorId=456',
-        },
-        {
-            id: '3',
-            type: 'release_approved',
-            message: 'Benefits released for Pedro Penduko.',
-            timestamp: '2025-05-27T09:00:00Z',
-            link: '/admin/applications/release-monitoring?status=released',
-        },
-        {
-            id: '4',
-            type: 'senior_pending',
-            message: 'Jose Rizal - Senior Citizen pending verification.',
-            timestamp: '2025-05-29T10:00:00Z',
-            link: '/admin/senior-citizen/record?filter=pending&seniorId=123', // Example link
-        },
-        {
-            id: '5',
-            type: 'senior_pending',
-            message: 'Gregorio del Pilar - Senior Citizen pending verification.',
-            timestamp: '2025-05-28T15:30:00Z',
-            link: '/admin/senior-citizen/record?filter=pending&seniorId=456',
-        },
-        {
-            id: '6',
-            type: 'release_approved',
-            message: 'Benefits released for Apolinario Mabini.',
-            timestamp: '2025-05-27T09:00:00Z',
-            link: '/admin/applications/release-monitoring?status=released',
-        },
-        {
-            id: '7',
-            type: 'senior_pending',
-            message: 'Lapu-Lapu - Senior Citizen pending verification.',
-            timestamp: '2025-05-29T10:00:00Z',
-            link: '/admin/senior-citizen/record?filter=pending&seniorId=123', // Example link
-        },
-        {
-            id: '8',
-            type: 'senior_pending',
-            message: 'Gabriela Silang - Senior Citizen pending verification.',
-            timestamp: '2025-05-28T15:30:00Z',
-            link: '/admin/senior-citizen/record?filter=pending&seniorId=456',
-        },
-        {
-            id: '9',
-            type: 'release_approved',
-            message: 'Benefits released for Tandang Sora.',
-            timestamp: '2025-05-27T09:00:00Z',
-            link: '/admin/applications/release-monitoring?status=released',
-        },
-    ]
+export function NotificationDropdown({ userRole }: { userRole: 'ADMIN' | 'USER' }) {
+    // --- REAL DATA FETCHING (Conceptual Example) ---
+    const fetchNotifications = async (): Promise<Notification[]> => {
+        try {
+            // Replace with your actual API endpoint for fetching seniors
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const seniorsData: Seniors[] = await response.json();
 
-    // Calculate pending seniors count (static for now, but will be dynamic with real data)
-    const pendingSeniorsCount = notifications.filter(
-        (notif) => notif.type === 'senior_pending'
-    ).length
+            const generatedNotifications: Notification[] = seniorsData.flatMap(senior => {
+                const notifications: Notification[] = [];
 
-    // Function to format timestamp (you can use your existing formatDateTime if preferred)
-    const formatTimeAgo = (timestamp: string) => {
-        const date = new Date(timestamp);
-        const now = new Date();
-        const diffSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+                // Notification for pending seniors
+                if (senior.remarks.name === 'Pending') {
+                    notifications.push({
+                        id: `pending-${senior.id}`,
+                        type: 'senior_pending',
+                        message: `New senior **${senior.firstname} ${senior.lastname}** pending verification.`,
+                        // Ensure your backend sends dates in a format that new Date() can parse
+                        timestamp: new Date(senior.createdAt).toISOString(),
+                        link: `/admin/senior-citizen/record?filter=pending&seniorId=${senior.id}`,
+                        seniorId: senior.id,
+                        seniorName: `${senior.firstname} ${senior.lastname}`,
+                    });
+                }
 
-        if (diffSeconds < 60) return `${diffSeconds}s ago`;
-        const diffMinutes = Math.floor(diffSeconds / 60);
-        if (diffMinutes < 60) return `${diffMinutes}m ago`;
-        const diffHours = Math.floor(diffMinutes / 60);
-        if (diffHours < 24) return `${diffHours}h ago`;
-        const diffDays = Math.floor(diffHours / 24);
-        if (diffDays < 7) return `${diffDays}d ago`;
-        // Fallback to a simple date for older notifications
-        return date.toLocaleDateString();
+                // Notification for recently released seniors
+                // Check if releasedAt exists and is a valid date
+                if (senior.releasedAt) {
+                    notifications.push({
+                        id: `released-${senior.id}`,
+                        type: 'release_approved',
+                        message: `Benefits released for **${senior.firstname} ${senior.lastname}**!`,
+                        // Ensure your backend sends dates in a format that new Date() can parse
+                        timestamp: new Date(senior.releasedAt).toISOString(),
+                        link: `/admin/applications/release-monitoring?status=released&seniorId=${senior.id}`,
+                        seniorId: senior.id,
+                        seniorName: `${senior.firstname} ${senior.lastname}`,
+                    });
+                }
+                return notifications;
+            }).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+            return generatedNotifications;
+
+        } catch (err) {
+            console.error("Failed to fetch seniors for notifications:", err);
+            // You might want to rethrow or return an empty array based on error handling strategy
+            throw err;
+        }
     };
+
+    const { data: notifications, isLoading, error } = useQuery<Notification[]>({
+        queryKey: ['notifications'],
+        queryFn: fetchNotifications,
+        staleTime: 5 * 60 * 1000,
+        refetchInterval: 60 * 1000,
+    });
+
+    // Calculate pending seniors count
+    const pendingSeniorsCount = notifications?.filter(
+        (notif) => notif.type === 'senior_pending'
+    ).length || 0;
+
+    const getNotificationIcon = (type: string) => {
+        switch (type) {
+            case 'release_approved':
+                return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+            case 'senior_pending':
+                return <UserPlus className="h-4 w-4 text-blue-500" />;
+            default:
+                return null;
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <Button variant="ghost" size="icon" className="relative text-white hover:bg-white/20 hover:text-white" disabled>
+                <BellRing className="h-5 w-5 animate-pulse" />
+                <span className="sr-only">Loading Notifications...</span>
+            </Button>
+        );
+    }
+
+    if (error) {
+        // Handle error gracefully, maybe show a tooltip or a different icon
+        console.error("Error fetching notifications:", error);
+        return (
+            <Button variant="ghost" size="icon" className="relative text-white hover:bg-white/20 hover:text-white" title="Error loading notifications">
+                <BellRing className="h-5 w-5 text-red-400" />
+                <span className="sr-only">Error loading notifications</span>
+            </Button>
+        );
+    }
 
 
     return (
@@ -120,23 +133,31 @@ export function NotificationDropdown() {
                     <span className="sr-only">Notifications</span>
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[300px] p-0" align="end" forceMount>
-                <DropdownMenuLabel className="font-semibold text-lg p-3">Notifications</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <ScrollArea className="h-[300px]"> {/* Max height for scrollable content */}
+            <DropdownMenuContent className="w-[350px] p-0" align="end" forceMount>
+                <DropdownMenuLabel className="font-semibold text-lg p-3 border-b">Notifications</DropdownMenuLabel>
+                <ScrollArea className="h-[300px]">
                     <DropdownMenuGroup>
-                        {notifications.length > 0 ? (
+                        {notifications && notifications.length > 0 ? (
                             notifications.map((notification) => (
                                 <DropdownMenuItem key={notification.id} asChild>
-                                    <a
+                                    {/* The Link component must be the direct child of DropdownMenuItem when asChild is used */}
+                                    <Link
                                         href={notification.link}
-                                        className="flex flex-col items-start gap-1 p-3 hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors duration-200"
+                                        className="flex items-start gap-3 p-3 hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors duration-200"
                                     >
-                                        <div className="font-medium text-sm">{notification.message}</div>
-                                        <div className="text-xs text-muted-foreground">
-                                            {formatTimeAgo(notification.timestamp)}
+                                        <div className="flex-shrink-0 pt-1">
+                                            {getNotificationIcon(notification.type)}
                                         </div>
-                                    </a>
+                                        <div className="flex flex-col flex-grow">
+                                            <div
+                                                className="font-medium text-sm leading-tight"
+                                                dangerouslySetInnerHTML={{ __html: notification.message }}
+                                            />
+                                            <div className="text-xs text-muted-foreground mt-0.5">
+                                                {formatDateTime(notification.timestamp)}
+                                            </div>
+                                        </div>
+                                    </Link>
                                 </DropdownMenuItem>
                             ))
                         ) : (
@@ -148,9 +169,15 @@ export function NotificationDropdown() {
                 </ScrollArea>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                    <a href="/admin/notifications" className="block text-center text-sm p-2 text-primary hover:bg-accent hover:text-accent-foreground cursor-pointer">
-                        View All Notifications
-                    </a>
+                    {userRole === 'USER' ? (
+                        <Link href="/staff/applications/release-monitoring" className="block text-center text-sm p-2 text-primary hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                            View All Notifications
+                        </Link>
+                    ) : (
+                        <Link href="/admin/applications/release-monitoring" className="block text-center text-sm p-2 text-primary hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                            View All Notifications
+                        </Link>
+                    )}
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

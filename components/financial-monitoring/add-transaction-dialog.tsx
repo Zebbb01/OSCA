@@ -24,8 +24,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { FinancialTransaction, TransactionType } from '@/lib/static-data';
-import { format } from 'date-fns';
+import { FinancialTransaction, TransactionType } from '@/lib/static-data/static-data';
+import { formatDateOnly } from '@/utils/format';
 
 const addTransactionSchema = z.object({
     date: z.string().nonempty('Date is required'),
@@ -54,7 +54,7 @@ export function AddTransactionDialog({ isOpen, onClose, onAddTransaction }: AddT
     } = useForm<AddTransactionFormInputs>({
         resolver: zodResolver(addTransactionSchema),
         defaultValues: {
-            date: format(new Date(), 'yyyy-MM-dd'), // Default to today's date
+            date: formatDateOnly(new Date()), // Default to today's date
             description: '',
             amount: undefined, // Use undefined for number inputs to start empty
             type: undefined,

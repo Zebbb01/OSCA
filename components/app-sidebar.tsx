@@ -67,15 +67,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 title: 'Applications',
                 url: '#',
                 icon: faFile,
-                roles: ['ADMIN'],
+                roles: ['ADMIN', 'USER'],
                 items: [
                     {
                         title: 'Benefits',
-                        url: '/admin/applications/benefits',
+                        url: '/staff/applications/benefits',
+                        roles: ['USER'],
                     },
                     {
                         title: 'Applicants',
                         url: '/admin/applications/applicants',
+                        roles: ['ADMIN'],
                     },
                 ],
             },
@@ -83,39 +85,49 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 title: 'Monitoring',
                 url: '#',
                 icon: faDesktop,
-                roles: ['ADMIN'],
+                roles: ['ADMIN', 'USER'],
                 items: [
+                    // ADMIN
+                    {
+                        title: 'Overview',
+                        url: '/admin/applications/overview',
+                        roles: ['ADMIN']
+                    },
                     {
                         title: 'Release',
                         url: '/admin/applications/release-monitoring',
+                        roles: ['ADMIN']
                     },
                     {
                         title: 'Not Release',
                         url: '/admin/applications/not-release-monitoring',
+                        roles: ['ADMIN']
                     },
                     {
                         title: 'Category',
                         url: '/admin/applications/category',
+                        roles: ['ADMIN']
                     },
-                ],
-            },
-            {
-                title: 'Monitoring',
-                url: '#',
-                icon: faDesktop,
-                roles: ['USER'],
-                items: [
+                    // STAFF
+                    {
+                        title: 'Overview',
+                        url: '/staff/applications/overview',
+                        roles: ['USER']
+                    },
                     {
                         title: 'Release',
                         url: '/staff/applications/release-monitoring',
+                        roles: ['USER']
                     },
                     {
                         title: 'Not Release',
                         url: '/staff/applications/not-release-monitoring',
+                        roles: ['USER']
                     },
                     {
                         title: 'Category',
                         url: '/staff/applications/category',
+                        roles: ['USER']
                     },
                 ],
             },
@@ -131,7 +143,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     },
                     {
                         title: 'Monthly Release',
-                        url: '#',
+                        url: '/admin/applications/monthly-release',
                     },
                 ],
             },

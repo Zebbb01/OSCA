@@ -32,7 +32,7 @@ export const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({
     if (applicant?.benefit?.id) {
       setIsRequirementsLoading(true);
       apiService
-        .get(`/api/benefits/?benefit_id=${applicant.benefit.id}`)
+        .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/benefits/?benefit_id=${applicant.benefit.id}`)
         .then((resp) => {
           setBenefitRequirements(resp as any[] || []);
         })
@@ -47,7 +47,7 @@ export const DocumentUploadForm: React.FC<DocumentUploadFormProps> = ({
 
   const uploadDocumentsMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      const res = await apiService.post<PUTApiResponse>('/api/seniors', formData);
+      const res = await apiService.post<PUTApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors`, formData);
       return res.data || {};
     },
     onSuccess: (resp: any) => {

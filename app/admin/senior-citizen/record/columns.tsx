@@ -197,23 +197,8 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
     // --- END NEWLY ADDED COLUMNS ---
   ];
 
-  if (userRole === 'ADMIN') {
-    baseColumns.push({
-      id: 'actions',
-      header: 'Actions',
-      cell: ({ row }) => {
-        const senior = row.original;
-        const queryClient = useQueryClient();
-        return (
-          <div className="flex gap-2">
-            <SeniorActionButtons senior={senior} queryClient={queryClient} />
-          </div>
-        );
-      },
-    });
-  }
 
-  if (userRole === 'USER') {
+  if (userRole === 'ADMIN' || userRole === 'USER') {
     baseColumns.push({
       id: 'user-actions',
       header: 'Actions',
@@ -229,8 +214,8 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
 
         return (
           <div className="flex gap-2">
-            <SeniorActionButtons senior={senior} queryClient={queryClient} />
-            {showReleaseButton && <ReleaseActionButton senior={senior} queryClient={queryClient} />}
+            <SeniorActionButtons senior={senior} queryClient={queryClient} userRole={userRole} />
+            {showReleaseButton && <ReleaseActionButton userRole={userRole} senior={senior} queryClient={queryClient} />}
           </div>
         );
       },

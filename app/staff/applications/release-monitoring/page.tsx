@@ -85,7 +85,7 @@ const ReleaseMonitoringPage = () => {
   const seniorQuery = useQuery<Seniors[]>({
     queryKey: ['seniors', debouncedGlobalFilter, currentQueryParams], // Include debouncedGlobalFilter and currentQueryParams
     queryFn: async () => {
-      const url = new URL('/api/seniors', window.location.origin);
+      const url = new URL(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors`, window.location.origin);
 
       // Add global search parameter if available
       if (debouncedGlobalFilter) {

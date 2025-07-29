@@ -59,14 +59,14 @@ export const VerificationEmail = ({
             Verify Email Address
           </Button>
         </Section>
-        <Text style={paragraph}>
+        {/* <Text style={paragraph}>
           If the button doesn't work, you can also copy and paste this link into your browser:
         </Text>
         <Text style={linkText}>
           <Link href={verificationUrl} style={link}>
             {verificationUrl}
           </Link>
-        </Text>
+        </Text> */}
         <Hr style={hr} />
         <Text style={footerText}>
           This verification link will expire in {tokenExpiresInHours} hours.

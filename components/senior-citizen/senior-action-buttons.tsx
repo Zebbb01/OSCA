@@ -24,11 +24,13 @@ import { SeniorEditDialog } from './SeniorEditDialog';
 interface SeniorActionButtonsProps {
   senior: Seniors;
   queryClient: QueryClient;
+  userRole: string | undefined;
 }
 
 export const SeniorActionButtons: React.FC<SeniorActionButtonsProps> = ({
   senior,
-  queryClient
+  queryClient,
+  userRole
 }) => {
   const { deleteSeniorMutation } = useSeniorMutations(queryClient);
 
@@ -42,7 +44,7 @@ export const SeniorActionButtons: React.FC<SeniorActionButtonsProps> = ({
       <SeniorViewDialog senior={senior} />
 
       {/* Edit Dialog - Now using the separate component */}
-      <SeniorEditDialog senior={senior} queryClient={queryClient} />
+      <SeniorEditDialog senior={senior} queryClient={queryClient} userRole={userRole} />
 
       {/* Delete */}
       <AlertDialog>

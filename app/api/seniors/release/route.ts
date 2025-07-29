@@ -1,4 +1,3 @@
-// app/api/seniors/release/route.ts
 import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
@@ -23,16 +22,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Senior is already released.' }, { status: 409 });
     }
 
+    // Apply the 3-day interval here for the releasedAt date
+    const releaseDate = new Date();
+    releaseDate.setDate(releaseDate.getDate() + 3); // <-- THIS IS WHERE YOU APPLY THE 3-DAY INTERVAL
+
     const updatedSenior = await prisma.senior.update({
       where: { id: seniorId },
       data: {
-        releasedAt: new Date(), // Set the current date as the release date
+        releasedAt: releaseDate, // This will now store the date 3 days from the current time
       },
     });
 
+    // For the message, you might want to clarify it's an "effective" release date or "available from"
     return NextResponse.json({
-      message: 'Senior released successfully.',
-      senior: updatedSenior,
+      message: `Senior will be effectively released on ${releaseDate.toDateString()}.`,
+      senior: updatedSenior, // This 'updatedSenior' will contain the future `releasedAt`
     }, { status: 200 });
 
   } catch (error) {

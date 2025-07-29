@@ -42,7 +42,7 @@ const AddBenefitForm = ({
     // ADD SENIOR MUTATION
     const mutation = useMutation({
         mutationFn: async (data: BenefitFormData) => {
-            return await apiService.post<POSTApiResponse>('/api/benefits', data)
+            return await apiService.post<POSTApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/benefits`, data)
         },
         onSuccess: (resp) => {
             console.log('Success:', resp)

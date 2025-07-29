@@ -70,7 +70,7 @@ const archivedSeniorColumns: ColumnDef<Seniors>[] = [
 
       const restoreMutation = useMutation({
         mutationFn: async (id: number) => {
-          await apiService.put(`/api/seniors?id=${id}&action=restore`);
+          await apiService.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors?id=${id}&action=restore`);
         },
         onSuccess: () => {
           toast.success('Senior record restored successfully.');
@@ -84,7 +84,7 @@ const archivedSeniorColumns: ColumnDef<Seniors>[] = [
 
       const deletePermanentlyMutation = useMutation({
         mutationFn: async (id: number) => {
-          await apiService.delete(`/api/seniors?id=${id}&action=permanent`);
+          await apiService.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors?id=${id}&action=permanent`);
         },
         onSuccess: () => {
           toast.success('Senior record permanently deleted.');
@@ -176,7 +176,7 @@ const ArchivePage = () => {
   } = useQuery<Seniors[]>({
     queryKey: ['archivedSeniors'],
     queryFn: async () => {
-      return await apiService.get<Seniors[]>('/api/seniors/archived');
+      return await apiService.get<Seniors[]>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors/archived`);
     },
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,

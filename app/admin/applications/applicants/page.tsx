@@ -37,7 +37,7 @@ const ApplicantPage = () => {
         queryKey: ['applications'],
         queryFn: async () => {
             const respData = await apiService.get<BenefitApplicationData[]>(
-                '/api/benefits/application'
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/benefits/application`
             )
             return respData
         },

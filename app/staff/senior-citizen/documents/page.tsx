@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button'
 import { EyeOpenIcon, DownloadIcon } from '@radix-ui/react-icons'
 import Image from 'next/image'
 import { RegistrationDocument, Seniors } from '@/types/seniors' // Assuming Seniors includes the documents array
-import { formatDateTime, formatDocumentTagName, getDownloadUrl } from '@/utils/format'
+import { formatDateOnly, formatDocumentTagName, getDownloadUrl } from '@/utils/format'
 import { DocumentViewer } from '@/components/senior-documents/document-viewer'
 
 // --- New Component: SeniorDocumentCardDialog ---
@@ -79,7 +79,7 @@ const SeniorDocumentCardDialog: React.FC<SeniorDocumentCardDialogProps> = ({ sen
                                     {formatDocumentTagName(doc.tag)}
                                 </h5>
                                 <p className="text-sm text-gray-500">
-                                    Uploaded: {formatDateTime(doc.createdAt)}
+                                    Uploaded: {formatDateOnly(doc.createdAt)}
                                 </p>
                             </div>
                             <div className="mt-4">
@@ -116,7 +116,7 @@ const DocumentsPage = () => {
     } = useQuery<Seniors[]>({
         queryKey: ['seniors-documents'],
         queryFn: async () => {
-            const respData = await apiService.get<Seniors[]>('/api/seniors')
+            const respData = await apiService.get<Seniors[]>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors`)
             // Filter out seniors without documents to avoid rendering empty cards unnecessarily
             return respData.filter((senior) => senior.documents && senior.documents.length > 0)
         },

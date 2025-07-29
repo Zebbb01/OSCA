@@ -41,6 +41,7 @@ export async function putSeniorsHandler(request: NextRequest): Promise<NextRespo
         pwd: body.pwd,
         contact_person: body.contact_person,
         remarks_id: body.remarks_id, // If you want to allow updating remarks via PUT
+        releasedAt: body.releasedAt ? new Date(body.releasedAt) : null, // Handle releasedAt if provided
       };
 
       const updatedSenior = await seniorService.updateSenior(seniorId, updateData);

@@ -27,7 +27,7 @@ export const DashboardCountsCard = () => {
         const fetchSeniorCounts = async () => {
             try {
                 setLoadingCounts(true)
-                const response = await fetch('/api/seniors/counts')
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors/counts`)
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`)
                 }

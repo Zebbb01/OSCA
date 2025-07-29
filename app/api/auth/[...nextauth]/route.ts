@@ -1,4 +1,5 @@
 // app/api/auth/[...nextauth]/route.ts
+
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@auth/prisma-adapter';
@@ -20,9 +21,8 @@ const { handlers } = NextAuth({
           return await AuthService.authenticateUser(username, password);
         } catch (err) {
           if (err instanceof CustomAuthError) {
-            throw new Error(err.code); // NextAuth will use this as the error type
+            throw new Error(err.code);
           }
-
           console.error('Authorization error:', err);
           throw new Error(AUTH_ERROR_CODES.UNEXPECTED_ERROR);
         }
@@ -32,9 +32,9 @@ const { handlers } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.username = user.username;
-        token.email = user.email;
+        token.id = user.id as string;
+        token.username = user.username as string;
+        token.email = user.email as string;
         token.role = (user as any).role;
         token.emailVerified = (user as any).emailVerified;
       }
@@ -50,10 +50,22 @@ const { handlers } = NextAuth({
       }
       return session;
     },
+    // Add this redirect callback
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
   },
   session: {
     strategy: 'jwt',
   },
+  pages: {
+    signIn: '/', // Your login page
+  },
+  trustHost: true, // Important for dev tunnels
 });
 
 export const { GET, POST } = handlers;

@@ -7,13 +7,15 @@ export async function GET(req: NextRequest) {
   const token = searchParams.get('token');
 
   if (!token || typeof token !== 'string') {
-    return NextResponse.json(
-      { message: 'Invalid verification token.' },
-      { status: 400 }
+    console.log('❌ Invalid or missing token');
+    return NextResponse.redirect(
+      new URL('/auth/verification-error?message=invalid_token', req.url)
     );
   }
 
   try {
+    console.log('🔍 Looking for user with token:', token);
+    
     const user = await prisma.user.findFirst({
       where: {
         verificationToken: token,
@@ -21,26 +23,28 @@ export async function GET(req: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { message: 'Verification token not found or already used.' },
-        { status: 404 }
+      console.log('❌ User not found with token:', token);
+      return NextResponse.redirect(
+        new URL('/auth/verification-error?message=token_not_found', req.url)
       );
     }
 
     if (user.emailVerified) {
-      return NextResponse.json(
-        { message: 'Email already verified.' },
-        { status: 400 }
+      console.log('⚠️ Email already verified for user:', user.email);
+      return NextResponse.redirect(
+        new URL('/auth/verification-error?message=already_verified', req.url)
       );
     }
 
     if (user.tokenExpires && user.tokenExpires < new Date()) {
-      return NextResponse.json(
-        { message: 'Verification token has expired. Please sign up again or request a new verification email.' },
-        { status: 400 }
+      console.log('⏰ Token expired for user:', user.email);
+      return NextResponse.redirect(
+        new URL('/auth/verification-error?message=token_expired', req.url)
       );
     }
 
+    console.log('✅ Verifying email for user:', user.email);
+    
     // Verify the user's email
     await prisma.user.update({
       where: { id: user.id },
@@ -51,14 +55,17 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    // Redirect to a success page
-    return NextResponse.redirect(new URL('/auth/verification-success', req.url));
+    console.log('🎉 Email verification successful for:', user.email);
+    
+    // Redirect to success page
+    return NextResponse.redirect(
+      new URL('/auth/verification-success', req.url)
+    );
 
   } catch (error) {
-    console.error('Email verification error:', error);
-    return NextResponse.json(
-      { message: 'An unexpected error occurred during email verification.' },
-      { status: 500 }
+    console.error('❌ Email verification error:', error);
+    return NextResponse.redirect(
+      new URL('/auth/verification-error?message=unexpected_error', req.url)
     );
   }
 }

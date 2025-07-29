@@ -6,7 +6,7 @@ export const useFetchCategoryAndStatus = () => {
     const categoryQuery = useQuery({
         queryKey: ['category'],
         queryFn: async () => {
-            const respData = await apiService.get<Categories[]>('/api/seniors/category')
+            const respData = await apiService.get<Categories[]>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors/category`)
             return respData
         },
     })
@@ -14,7 +14,7 @@ export const useFetchCategoryAndStatus = () => {
     const statusQuery = useQuery({
         queryKey: ['status'],
         queryFn: async () => {
-            const respData = await apiService.get<Status[]>('/api/benefits/application/status')
+            const respData = await apiService.get<Status[]>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/benefits/application/status`)
             return respData
         },
     })

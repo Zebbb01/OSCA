@@ -93,7 +93,7 @@ export interface Seniors {
     deletedAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
-    releasedAt: Date | null;
+    releasedAt?: Date | null;
 }
 
 export type Categories = {
@@ -125,6 +125,7 @@ export interface EditableDateFieldProps {
     value: Date | null | undefined; // Keep as Date | null | undefined for internal state
     onChange: (date: Date | null) => void; // react-datepicker passes Date | null
     placeholder?: string;
+    readOnly?: boolean;
 }
 
 // Reusable checkbox field component (for editing)
@@ -157,12 +158,14 @@ export interface SeniorUpdateData {
     purok: string; // Required by Prisma
     pwd: boolean; // Required by Prisma (default false, but editable)
     contact_person: string | null; // Optional in Prisma
+    releasedAt?: string | null;
 }
 
 
 // Main Senior Edit Dialog Component
 export interface SeniorEditDialogProps {
     senior: Seniors;
+    userRole: string | undefined;
     queryClient: QueryClient;
     trigger?: React.ReactNode;
 }
@@ -184,6 +187,7 @@ export interface EditFormState {
     purok: string;
     pwd: boolean;
     contact_person: string | null;
+    releasedAt: Date | null;
 }
 
 export interface EditableSelectFieldProps { // Add this new interface

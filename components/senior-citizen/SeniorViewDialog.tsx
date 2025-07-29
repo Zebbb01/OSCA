@@ -1,4 +1,3 @@
-// src/components/senior-citizen/SeniorViewDialog.tsx
 'use client';
 
 import React from 'react';
@@ -12,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { EyeIcon, UserIcon, PhoneIcon, StickyNoteIcon } from 'lucide-react';
-import { formatDateOnly, formatDateTime } from '@/utils/format';
+import { formatDateOnly, formatDateTime } from '@/utils/format'; // Ensure formatDateOnly is imported
 import { Seniors } from '@/types/seniors';
 
 // Separate component for form-like field display
@@ -150,11 +149,6 @@ export const SeniorViewDialog: React.FC<SeniorViewDialogProps> = ({
                 <FormFieldView label="Barangay" value={senior.barangay} />
                 <FormFieldView label="Lot / Block / Street / Purok" value={senior.purok} />
               </div>
-
-              {/* Email Row */}
-              {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormFieldView label="Email Address" value={senior.email} />
-              </div> */}
             </div>
           </div>
 
@@ -172,7 +166,10 @@ export const SeniorViewDialog: React.FC<SeniorViewDialogProps> = ({
                     <FormFieldView label="Remarks" value={senior.remarks.name} />
                   )}
                   {senior.releasedAt && (
-                    <FormFieldView label="Released On" value={formatDateTime(senior.releasedAt)} />
+                    <FormFieldView 
+                      label="Released On" 
+                      value={formatDateOnly(senior.releasedAt)} // Changed to formatDateOnly
+                    />
                   )}
                 </div>
               </div>

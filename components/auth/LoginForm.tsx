@@ -1,11 +1,11 @@
+// components/auth/LoginForm.tsx
 'use client'
 
 import { LoginFormData, loginSchema } from '@/schema/auth/login.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { signIn, useSession } from 'next-auth/react' // Import useSession
+import { signIn } from 'next-auth/react'
 import { toast } from 'sonner'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -29,9 +29,7 @@ const LoginForm = ({ onGoToSignUp }: LoginFormProps) => {
 
     const [isLoggingIn, setIsLoggingIn] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
-    const router = useRouter()
     const { getErrorMessage } = useAuthErrors()
-    const { data: session } = useSession(); // Get session data
 
     const onLogin = async (data: LoginFormData) => {
         setIsLoggingIn(true)
@@ -39,9 +37,9 @@ const LoginForm = ({ onGoToSignUp }: LoginFormProps) => {
 
         try {
             const result = await signIn('credentials', {
-                redirect: false, // Important: Keep redirect: false to handle redirection manually
                 username: data.username,
                 password: data.password,
+                redirect: false,
             })
 
             if (result?.error) {
@@ -50,9 +48,12 @@ const LoginForm = ({ onGoToSignUp }: LoginFormProps) => {
                 toast.error(errorMessage)
                 return
             }
-            toast.success('Login successful! Redirecting...')
-            router.push('/admin'); // This will then be handled by app/admin/page.tsx or app/staff/page.tsx based on role
 
+            if (result?.ok) {
+                toast.success('Login successful!')
+                // Force a hard redirect to ensure proper navigation
+                window.location.href = '/admin'
+            }
         } catch (error) {
             const errorMessage = getErrorMessage('UNEXPECTED_ERROR')
             setError('root.serverError', { type: 'manual', message: errorMessage })

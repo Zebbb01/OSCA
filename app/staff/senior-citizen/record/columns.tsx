@@ -1,5 +1,4 @@
 // app/admin/senior-citizen/record/columns.tsx
-
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
@@ -42,27 +41,32 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
         const fullName = [firstname, middlename, lastname].filter(Boolean).join(' ');
         return <div>{truncateText(fullName)}</div>;
       },
+      // Keep filterFn for fullname as it's part of the global filter (client-side)
       filterFn: 'includesString',
     },
     {
       accessorKey: 'contact_no',
       header: 'Contact No.',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
+      // No filterFn needed here if filtering is only server-side
     },
     {
       accessorKey: 'purok',
       header: 'Purok',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
+      // REMOVED filterFn: 'equals' -> filtering is handled by API
     },
     {
       accessorKey: 'barangay',
       header: 'Barangay',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
+      // REMOVED filterFn: 'equals' -> filtering is handled by API
     },
     {
       accessorKey: 'gender',
       header: 'Gender',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
+      // Retain custom filterFn for gender as it expects array and is consistent
       filterFn: (row, columnId, filterValue) => {
         const rowGender = row.getValue(columnId) as string;
         if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) {
@@ -76,6 +80,7 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       header: 'Remarks',
       cell: ({ row }) => truncateText(row.original.remarks?.name || 'N/A'),
       accessorFn: (row) => row.remarks?.name || 'N/A',
+      // REMOVED filterFn: 'equals' -> filtering is handled by API
     },
 
     // --- NEWLY ADDED COLUMNS ---
@@ -83,12 +88,12 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       accessorKey: 'senior_category',
       header: 'Category',
       cell: ({ row }) => {
-        const latestApplication = row.original.Applications?.[0];
+        const latestApplication = row.original.Applications?.[0]; // Assuming latest application is at index 0
         const categoryName = latestApplication?.category?.name || 'N/A';
 
         const categoryStyles: Record<string, string> = {
           'Regular senior citizens': 'bg-green-600 text-white',
-          'Special assistance cases': 'bg-yellow-500 text-black',
+          'Special assistance cases': 'bg-yellow-500 text-black', // Changed text to black for yellow background for better contrast
         };
 
         return (
@@ -102,18 +107,19 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
           </div>
         );
       },
-      accessorFn: (row) => row.Applications?.[0]?.category?.name || 'N/A',
-      filterFn: (row, columnId, filterValue) => {
+      accessorFn: (row) => row.Applications?.[0]?.category?.name || 'N/A', // Ensure this matches your data structure
+      filterFn: (row, columnId, filterValue) => { // Adapted for potential array filter from DataTable
         const latestCategoryName = row.original.Applications?.[0]?.category?.name;
         if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) {
-          return true;
+          return true; // No filter applied, show all
         }
+        // Assuming filterValue will be an array like ['Low-income seniors'] from DataTable's select filter
         return (filterValue as string[]).includes(latestCategoryName || '');
       },
     },
     {
       id: 'releaseStatus',
-      accessorKey: 'releaseStatus',
+      accessorKey: 'releaseStatus', // Keep accessorKey for easy access if needed
       header: 'Release Status',
       cell: ({ row }) => {
         const releasedAt = row.original.releasedAt;
@@ -135,12 +141,14 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
           </div>
         );
       },
+      // Adjust filterFn for releaseStatus to handle array for consistency with DataTable's single-select logic
       filterFn: (row, columnId, filterValue) => {
         const releasedAt = row.original.releasedAt;
         const status = releasedAt ? 'Released' : 'Not Released';
         if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) {
-          return true;
+          return true; // No filter applied, show all
         }
+        // filterValue should be an array like ['Released'] or ['Not Released']
         return (filterValue as string[]).includes(status);
       },
     },
@@ -152,26 +160,31 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
         const releasedAt = row.original.releasedAt;
         return releasedAt ? formatDateTime(releasedAt) : 'N/A';
       },
+      // No filterFn needed here as this is primarily a display column
     },
     {
       accessorKey: 'age',
       header: 'Age',
       cell: ({ row }) => <div className="text-right">{row.getValue('age')}</div>,
+      // No filterFn here if filtering is only server-side, if client-side needed, use 'equals'
     },
     {
       accessorKey: 'emergency_no',
       header: 'Emergency Contact',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
+      // No filterFn here if filtering is only server-side
     },
     {
       accessorKey: 'contactPerson',
       header: 'Contact Person',
       cell: ({ cell }) => truncateText(cell.getValue() as string | number | null | undefined),
+      // REMOVED filterFn: 'equals' -> filtering is handled by API
     },
     {
       accessorKey: 'birthdate',
       header: 'Birthdate',
       cell: ({ row }) => formatDateOnly(row.getValue('birthdate')),
+      // No filterFn here if filtering is only server-side, if client-side needed, use 'includesString' for dates
     },
     {
       id: 'documents',
@@ -184,49 +197,25 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
     // --- END NEWLY ADDED COLUMNS ---
   ];
 
-  if (userRole === 'ADMIN') {
-    baseColumns.push({
-      id: 'actions',
-      header: 'Actions',
-      cell: ({ row }) => {
-        const senior = row.original;
-        const queryClient = useQueryClient();
-        return (
-          <div className="flex gap-2">
-            <SeniorActionButtons senior={senior} queryClient={queryClient} />
-          </div>
-        );
-      },
-    });
-  }
 
-  if (userRole === 'USER') {
+  if (userRole === 'ADMIN' || userRole === 'USER') {
     baseColumns.push({
       id: 'user-actions',
       header: 'Actions',
       cell: ({ row }) => {
         const senior = row.original;
         const queryClient = useQueryClient();
-        
-        // Debug logging to see the data structure
-        console.log('Senior data:', senior);
-        console.log('Applications:', senior.Applications);
-        
         // Find the latest application for the senior
-        const latestApplication = senior.Applications?.[0];
-        console.log('Latest application:', latestApplication);
-        
+        const latestApplication = senior.Applications?.[0]; // Assuming applications are ordered by createdAt DESC
+
         // Check the status of the latest application
         const applicationStatus = latestApplication?.status?.name;
-        console.log('Application status:', applicationStatus);
-        
         const showReleaseButton = applicationStatus === 'APPROVED' || applicationStatus === 'REJECT';
-        console.log('Show release button:', showReleaseButton);
 
         return (
           <div className="flex gap-2">
-            <SeniorActionButtons senior={senior} queryClient={queryClient} />
-            {showReleaseButton && <ReleaseActionButton senior={senior} queryClient={queryClient} />}
+            <SeniorActionButtons senior={senior} queryClient={queryClient} userRole={userRole} />
+            {showReleaseButton && <ReleaseActionButton userRole={userRole} senior={senior} queryClient={queryClient} />}
           </div>
         );
       },

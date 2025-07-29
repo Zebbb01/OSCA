@@ -69,7 +69,7 @@ export const ApplicantActionButtons: React.FC<ApplicantActionButtonsProps> = ({
 
   const statusMutation = useMutation({
     mutationFn: async (data: UpdateStatusData) => {
-      return await apiService.put<PUTApiResponse>('/api/benefits/application/status', data);
+      return await apiService.put<PUTApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/benefits/application/status`, data);
     },
     onSuccess: (resp, variables) => {
       toast.success(resp.msg);
@@ -101,7 +101,7 @@ export const ApplicantActionButtons: React.FC<ApplicantActionButtonsProps> = ({
   const deleteMutation = useMutation({
     mutationFn: async (applicationId: number) => {
       return await apiService.delete(
-        `/api/benefits/application?application_id=${applicationId}`
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/benefits/application?application_id=${applicationId}`
       );
     },
     onSuccess: () => {

@@ -104,7 +104,7 @@ const RegisterFormComponents = ({
 
     const mutation = useMutation({
         mutationFn: async (formData: FormData) => {
-            return await apiService.post('/api/seniors', formData)
+            return await apiService.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors`, formData)
         },
         onSuccess: (data) => {
             console.log('Success:', data)

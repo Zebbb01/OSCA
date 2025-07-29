@@ -15,10 +15,14 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 import { usePathname } from 'next/navigation'
 import { formatSegment } from '@/utils/segment'
 import { NotificationDropdown } from '@/components/notification-dropdown'
+import { useSession } from 'next-auth/react'
+
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
     const pathSegments = (pathname ?? '').split('/').filter(Boolean)
+    const { data: session, status: sessionStatus } = useSession();
+    const userRole = (session?.user as any)?.role || 'USER';
 
     return (
         <SidebarProvider
@@ -76,7 +80,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         </div>
 
                         <div className="px-3 py-1 rounded-full">
-                            <NotificationDropdown />
+                            <NotificationDropdown userRole={userRole} />
                         </div>
                     </div>
                 </header>

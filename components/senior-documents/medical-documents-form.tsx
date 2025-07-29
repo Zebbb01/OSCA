@@ -51,7 +51,8 @@ export const UploadMedicalDocumentsForm: React.FC<UploadMedicalDocumentsFormProp
     } = useQuery<Seniors[]>({
         queryKey: ['allSeniorsForMedicalUpload'],
         queryFn: async () => {
-            const response = await apiService.get<Seniors[]>('/api/seniors');
+            const response = await apiService.get<Seniors[]>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors`);
+            console.log('Seniors response:', response);
             return response.filter((s) => s.firstname && s.lastname);
         },
         staleTime: 10 * 60 * 1000,
@@ -59,7 +60,8 @@ export const UploadMedicalDocumentsForm: React.FC<UploadMedicalDocumentsFormProp
 
     const uploadMutation = useMutation({
         mutationFn: async (formData: FormData) => {
-            const res = await apiService.post('/api/seniors', formData);
+            const res = await apiService.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors`, formData);
+            console.log('Upload response:', res);
             return (res as { data: any }).data;
         },
         onSuccess: () => {

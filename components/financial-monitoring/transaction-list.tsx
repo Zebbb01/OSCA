@@ -3,10 +3,10 @@
 import * as React from 'react';
 import { ColumnDef, SortingState, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { FinancialTransaction } from '@/lib/static-data';
+import { FinancialTransaction } from '@/lib/static-data/static-data';
 import { ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
+import { formatDateOnly } from '@/utils/format';
 
 interface TransactionListProps {
     transactions: FinancialTransaction[];
@@ -26,7 +26,7 @@ export const columns: ColumnDef<FinancialTransaction>[] = [
                 </Button>
             );
         },
-        cell: ({ row }) => format(new Date(row.original.date), 'MMM dd, yyyy'),
+        cell: ({ row }) => formatDateOnly(new Date(row.original.date)),
     },
     {
         accessorKey: 'description',
@@ -52,7 +52,7 @@ export const columns: ColumnDef<FinancialTransaction>[] = [
         cell: ({ row }) => {
             const type = row.getValue('type') as string;
             return (
-                <span className={`font-medium ${type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`font-medium ${type === 'release' ? 'text-green-600' : 'text-red-600'}`}>
                     {type.charAt(0).toUpperCase() + type.slice(1)}
                 </span>
             );
@@ -82,7 +82,7 @@ export const columns: ColumnDef<FinancialTransaction>[] = [
             }).format(amount);
 
             return (
-                <div className={`text-right font-medium ${type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                <div className={`text-right font-medium ${type === 'release' ? 'text-green-600' : 'text-red-600'}`}>
                     {formatted}
                 </div>
             );

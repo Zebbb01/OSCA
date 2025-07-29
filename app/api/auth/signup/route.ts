@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { signupSchema } from '@/schema/auth/signup.schema';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
-import { sendVerificationEmail } from '@/lib/email';
+import { sendVerificationEmail } from '@/lib/email-nodemailer'; 
 import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(req: NextRequest) {

@@ -1,4 +1,4 @@
-// src/components/senior-citizen/SeniorEditDialog.tsx
+// components\senior-citizen\SeniorEditDialog.tsx
 'use client';
 
 import React from 'react';
@@ -16,12 +16,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@radix-ui/react-label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Pencil, UserIcon, PhoneIcon, StickyNoteIcon } from 'lucide-react';
-import { EditableCheckboxFieldProps, EditableDateFieldProps, EditableFormFieldProps, EditableSelectFieldProps, EditFormState, SectionHeaderProps, SeniorEditDialogProps, Seniors, SeniorUpdateData } from '@/types/seniors'; // Ensure this path is correct
+import {
+  EditableCheckboxFieldProps,
+  EditableDateFieldProps,
+  EditableFormFieldProps,
+  EditableSelectFieldProps,
+  EditFormState,
+  SectionHeaderProps,
+  SeniorEditDialogProps,
+  SeniorUpdateData,
+} from '@/types/seniors';
 import { useSeniorMutations } from '@/hooks/mutations/use-senior-mutations';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css'; 
-import { SELECT_OPTIONS } from '@/constants/select-options'; 
+import 'react-datepicker/dist/react-datepicker.css';
+import { SELECT_OPTIONS } from '@/constants/select-options';
+
 
 const EditableFormField: React.FC<EditableFormFieldProps> = ({
   label,
@@ -61,7 +71,7 @@ const EditableSelectField: React.FC<EditableSelectFieldProps> = ({
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        {options.map(option => (
+        {options.map((option) => (
           <SelectItem key={option.value} value={option.value}>
             {option.label}
           </SelectItem>
@@ -76,26 +86,33 @@ const EditableDateField: React.FC<EditableDateFieldProps> = ({
   id,
   value,
   onChange,
-  placeholder = 'MM/DD/YYYY',
+  placeholder = 'Month Day, YYYY', 
+  readOnly = false,
 }) => (
-  <div>
-    <Label htmlFor={id}>{label}</Label>
+  <div className="flex flex-col"> 
+    <Label htmlFor={id}> 
+      {label}
+    </Label>
     <DatePicker
       selected={value}
       onChange={onChange}
+      // Reordered dateFormat to prioritize 'MMMM d, yyyy'
       dateFormat={[
+        'MMMM d, yyyy', // This is the primary format for "May 3, 2003"
         'MM/dd/yyyy',
         'yyyy-MM-dd',
-        'MMMM d, yyyy',
         'MMM d, yyyy',
         'MMMM dd, yyyy',
-        'MMMM d, yyyy',
       ]}
       placeholderText={placeholder}
       showYearDropdown
       showMonthDropdown
       dropdownMode="select"
-      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+        readOnly ? 'bg-gray-100 cursor-not-allowed' : ''
+      }`}
+      readOnly={readOnly} // Pass readOnly to DatePicker
+      disabled={readOnly} // Disable interaction
     />
   </div>
 );
@@ -104,11 +121,7 @@ const EditableCheckboxField: React.FC<EditableCheckboxFieldProps> = ({ label, id
   <div className="flex flex-col space-y-1">
     <Label htmlFor={id}>{label}</Label>
     <div className="flex items-center space-x-2 pt-2">
-      <Checkbox
-        id={id}
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-      />
+      <Checkbox id={id} checked={checked} onCheckedChange={onCheckedChange} />
       <label
         htmlFor={id}
         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -129,20 +142,17 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ icon, title, description 
   </div>
 );
 
-export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({
-  senior,
-  queryClient,
-  trigger
-}) => {
+export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, senior, queryClient, trigger }) => {
   const [open, setOpen] = React.useState(false);
+  const isAdmin = userRole === 'ADMIN';
 
   const [editData, setEditData] = React.useState<EditFormState>({
     firstname: senior.firstname,
     middlename: senior.middlename,
     lastname: senior.lastname,
-    age: parseInt(senior.age, 10) || 0, // Convert age from string to number for state
-    birthdate: senior.birthdate ? new Date(senior.birthdate) : null, // Initialize with Date object or null
-    gender: senior.gender || '', // Initialize with senior.gender or empty string
+    age: parseInt(senior.age, 10) || 0,
+    birthdate: senior.birthdate ? new Date(senior.birthdate) : null,
+    gender: senior.gender || '',
     email: senior.email,
     contact_no: senior.contact_no,
     emergency_no: senior.emergency_no,
@@ -150,18 +160,18 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({
     purok: senior.purok,
     pwd: senior.pwd,
     contact_person: senior.contact_person,
+    releasedAt: senior.releasedAt ? new Date(senior.releasedAt) : null, // Initialize releasedAt
   });
 
   const { updateSeniorMutation } = useSeniorMutations(queryClient);
 
   React.useEffect(() => {
-    // Reset editData if the senior prop changes (e.g., when a different senior is selected for edit)
     setEditData({
       firstname: senior.firstname,
       middlename: senior.middlename,
       lastname: senior.lastname,
       age: parseInt(senior.age, 10) || 0,
-      birthdate: senior.birthdate ? new Date(senior.birthdate) : null, // Initialize with Date object or null
+      birthdate: senior.birthdate ? new Date(senior.birthdate) : null,
       gender: senior.gender || '',
       email: senior.email,
       contact_no: senior.contact_no,
@@ -170,56 +180,61 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({
       purok: senior.purok,
       pwd: senior.pwd,
       contact_person: senior.contact_person,
+      releasedAt: senior.releasedAt ? new Date(senior.releasedAt) : null, // Update on senior change
     });
   }, [senior]);
 
-
   const handleUpdate = () => {
-    const finalGender: 'male' | 'female' = editData.gender === 'male' || editData.gender === 'female'
-      ? editData.gender
-      : 'male'; // Or 'female', or handle error if neither is selected
+    const finalGender: 'male' | 'female' =
+      editData.gender === 'male' || editData.gender === 'female' ? editData.gender : 'male';
 
     const payload: SeniorUpdateData = {
       id: senior.id,
-      firstname: editData.firstname || '', // Ensure string
+      firstname: editData.firstname || '',
       middlename: editData.middlename,
-      lastname: editData.lastname || '', // Ensure string
-      age: editData.age.toString(), // Convert number back to string for Prisma
+      lastname: editData.lastname || '',
+      age: editData.age.toString(),
       birthdate: editData.birthdate ? editData.birthdate.toISOString() : new Date().toISOString(),
       gender: finalGender,
       email: editData.email,
-      contact_no: editData.contact_no || '', // Ensure string
-      emergency_no: editData.emergency_no || '', // Ensure string
-      barangay: editData.barangay || '', // Ensure string
-      purok: editData.purok || '', // Ensure string
+      contact_no: editData.contact_no || '',
+      emergency_no: editData.emergency_no || '',
+      barangay: editData.barangay || '',
+      purok: editData.purok || '',
       pwd: editData.pwd,
       contact_person: editData.contact_person,
+      // Conditionally add releasedAt to payload if it's an admin and the value has changed
+      ...(isAdmin && { releasedAt: editData.releasedAt ? editData.releasedAt.toISOString() : null }),
     };
 
     updateSeniorMutation.mutate(payload, {
       onSuccess: () => {
-        setOpen(false); // Close dialog on success
-      }
+        setOpen(false);
+        // Invalidate relevant queries to refetch updated data
+        // This is crucial for your UI to reflect the category change
+        queryClient.invalidateQueries({ queryKey: ['seniors', senior.id] }); // Invalidate specific senior
+        queryClient.invalidateQueries({ queryKey: ['applications'] }); // Invalidate all applications or specific ones if needed
+      },
     });
   };
 
   const defaultTrigger = (
-    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-md bg-background cursor-pointer text-sm ring-offset-background hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+    <Button
+      variant="ghost"
+      size="icon"
+      className="h-10 w-10 rounded-md bg-background cursor-pointer text-sm ring-offset-background hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    >
       <Pencil className="h-5 w-5 text-blue-600" />
     </Button>
   );
 
-  const genderOptions = [
-    { value: 'male', label: 'Male' }, // Changed to lowercase to match Prisma enum
-    { value: 'female', label: 'Female' }, // Changed to lowercase to match Prisma enum
-    // { value: 'Other', label: 'Other' }, // Removed 'Other' if Prisma only supports 'male'|'female'
-  ];
+  const genderOptions = [{ value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }];
+  // Determine if the "Additional Information" section should be displayed
+  const shouldShowAdditionalInfoSection = senior.remarks?.name || senior.releasedAt;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || defaultTrigger}
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
       <DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl">Edit Senior Profile</DialogTitle>
@@ -264,25 +279,22 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({
                 <EditableFormField
                   label="Age"
                   id="age"
-                  value={editData.age?.toString()} // Convert number back to string for input value
+                  value={editData.age?.toString()}
                   onChange={(value) => setEditData({ ...editData, age: parseInt(value, 10) || 0 })}
                   type="number"
                 />
-                {/* --- Birth Date Field Using react-datepicker --- */}
                 <EditableDateField
                   label="Birth Date"
                   id="birthdate"
                   value={editData.birthdate}
                   onChange={(date) => setEditData({ ...editData, birthdate: date })}
                 />
-                {/* --- End Birth Date Field --- */}
                 <EditableSelectField
                   label="Gender"
                   id="gender"
                   value={editData.gender}
                   onChange={(value) => {
-                    // Only allow 'male' or 'female' for direct assignment
-                    const newGender = (value === 'male' || value === 'female') ? value : '';
+                    const newGender = value === 'male' || value === 'female' ? value : '';
                     setEditData({ ...editData, gender: newGender });
                   }}
                   options={genderOptions}
@@ -329,13 +341,12 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({
 
               {/* Address Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Modified Barangay field to use EditableSelectField */}
                 <EditableSelectField
                   label="Barangay"
                   id="barangay"
                   value={editData.barangay}
                   onChange={(value) => setEditData({ ...editData, barangay: value })}
-                  options={SELECT_OPTIONS.barangay} // Use SELECT_OPTIONS.barangay here
+                  options={SELECT_OPTIONS.barangay}
                   placeholder="Select barangay"
                 />
                 <EditableFormField
@@ -348,13 +359,6 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({
 
               {/* Email and Contact Person Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* <EditableFormField
-                  label="Email Address"
-                  id="email"
-                  value={editData.email}
-                  onChange={(value) => setEditData({ ...editData, email: value })}
-                  type="email"
-                /> */}
                 <EditableFormField
                   label="Contact Person"
                   id="contact_person"
@@ -365,13 +369,14 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({
             </div>
           </div>
 
-          {/* Additional Information Section (Read-only for Remarks/Release Date) */}
-          {(senior.remarks?.name || senior.releasedAt) && (
+          {/* Additional Information Section (Remarks and Released On) */}
+          {/* Hide the entire section if neither remarks nor releasedAt has a value */}
+          {shouldShowAdditionalInfoSection && (
             <div className="border rounded-lg">
               <SectionHeader
                 icon={<StickyNoteIcon className="h-5 w-5 text-green-600" />}
-                title="Additional Information (Read-Only)"
-                description="Additional notes and status information cannot be edited here."
+                title="Additional Information"
+                description="Status information and release details."
               />
               <div className="px-6 pb-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -380,17 +385,18 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({
                       label="Remarks"
                       id="remarks"
                       value={senior.remarks.name}
-                      onChange={() => {}} // Read-only, no change handler
+                      onChange={() => {}} // Read-only
                       readOnly
                     />
                   )}
-                  {senior.releasedAt && (
-                    <EditableFormField
+                  {/* Conditionally render Released On field only if it has a value OR if the user is an admin */}
+                  {(senior.releasedAt || isAdmin) && (
+                    <EditableDateField
                       label="Released On"
                       id="releasedAt"
-                      value={senior.releasedAt ? new Date(senior.releasedAt).toLocaleString() : ''} // Ensure null handling
-                      onChange={() => {}} // Read-only, no change handler
-                      readOnly
+                      value={editData.releasedAt}
+                      onChange={(date) => setEditData({ ...editData, releasedAt: date })}
+                      readOnly={!isAdmin} // Read-only if not an admin
                     />
                   )}
                 </div>
@@ -400,11 +406,7 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({
         </div>
 
         <DialogFooter>
-          <Button
-            type="button"
-            onClick={handleUpdate}
-            disabled={updateSeniorMutation.isPending}
-          >
+          <Button type="button" onClick={handleUpdate} disabled={updateSeniorMutation.isPending}>
             {updateSeniorMutation.isPending ? 'Saving...' : 'Save Changes'}
           </Button>
         </DialogFooter>
