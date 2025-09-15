@@ -312,19 +312,19 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
               </div>
 
               {/* PWD Status */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                 <EditableCheckboxField
                   label="Are you a PWD?"
                   id="pwd"
                   checked={editData.pwd}
                   onCheckedChange={(checked) => setEditData({ ...editData, pwd: !!checked })}
                 />
-                <EditableCheckboxField
+                {/* <EditableCheckboxField
                   label="Are you a Low Income?"
                   id="low_income"
                   checked={editData.low_income}
                   onCheckedChange={(checked) => setEditData({ ...editData, low_income: !!checked })}
-                />
+                /> */}
               </div>
             </div>
           </div>

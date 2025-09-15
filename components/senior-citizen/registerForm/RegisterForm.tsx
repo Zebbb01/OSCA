@@ -6,7 +6,7 @@ import { useForm, FormProvider } from 'react-hook-form'
 import { AlertDialogComponent } from '../../alert-component'
 import { SeniorsFormData, seniorsFormSchema } from '@/schema/seniors/seniors.schema'
 import { apiService } from '@/lib/axios'
-import { useMutation, useQueryClient } from '@tanstack/react-query' // Import useQueryClient
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
@@ -27,31 +27,44 @@ type FileData = {
     certificate_of_residency: File | null
     government_issued_id: File | null
     membership_certificate: File | null
+    low_income: File | null
 }
 
+// DOCUMENT_KEYS should list all possible document keys
 const DOCUMENT_KEYS = [
+    'birth_certificate',
+    'certificate_of_residency',
+    'government_issued_id',
+    'membership_certificate',
+    'low_income', // Keep low_income here as it's a key in FileData
+] as const;
+
+// Define required document keys separately
+const REQUIRED_DOCUMENT_KEYS = [
     'birth_certificate',
     'certificate_of_residency',
     'government_issued_id',
     'membership_certificate',
 ] as const;
 
-interface RegisterFormComponentsProps { // Define props interface
+
+interface RegisterFormComponentsProps {
     setShowRegistrationModal: React.Dispatch<React.SetStateAction<boolean>>;
-    onRecordAdded: () => void; // Add this new prop
+    onRecordAdded: () => void;
 }
 
 const RegisterFormComponents = ({
     setShowRegistrationModal,
-    onRecordAdded, // Destructure the new prop
-}: RegisterFormComponentsProps) => { // Use the defined props interface
-    const queryClient = useQueryClient(); // Initialize useQueryClient
+    onRecordAdded,
+}: RegisterFormComponentsProps) => {
+    const queryClient = useQueryClient();
 
     const [fileData, setFileData] = useState<FileData>({
         birth_certificate: null,
         certificate_of_residency: null,
         government_issued_id: null,
         membership_certificate: null,
+        low_income: null,
     })
     const [isUploadError, setIsUploadError] = useState<boolean>(false)
 
@@ -68,9 +81,9 @@ const RegisterFormComponents = ({
             barangay: '',
             purok: '',
             contactNumber: '',
-            emergencyNumber: '',
             contactPerson: '',
             contactRelationship: '',
+            emergencyNumber: '',
             pwd: false,
         },
     })
@@ -115,11 +128,12 @@ const RegisterFormComponents = ({
                 certificate_of_residency: null,
                 government_issued_id: null,
                 membership_certificate: null,
+                low_income: null
             });
             setShowRegistrationModal(false)
             toast.success('Senior registered successfully!')
-            queryClient.invalidateQueries({ queryKey: ['seniors'] }); // Invalidate the 'seniors' query
-            onRecordAdded(); // Call the callback from parent to potentially trigger more actions
+            queryClient.invalidateQueries({ queryKey: ['seniors'] });
+            onRecordAdded();
         },
         onError: (error) => {
             console.error('Error submitting form:', error)
@@ -140,8 +154,9 @@ const RegisterFormComponents = ({
             }
         })
 
-        const allDocumentsUploaded = DOCUMENT_KEYS.every(key => fileData[key] !== null);
-        if (!allDocumentsUploaded) {
+        // Check only the required documents
+        const allRequiredDocumentsUploaded = REQUIRED_DOCUMENT_KEYS.every(key => fileData[key] !== null);
+        if (!allRequiredDocumentsUploaded) {
             toast.error('Please upload all required registration documents.');
             return;
         }
@@ -150,7 +165,8 @@ const RegisterFormComponents = ({
     }
 
     const getUploadedFileCount = () => {
-        return Object.values(fileData).filter((file) => file !== null).length
+        // Count only the required documents for the badge
+        return REQUIRED_DOCUMENT_KEYS.filter((key) => fileData[key] !== null).length;
     }
 
     return (

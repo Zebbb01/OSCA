@@ -63,7 +63,7 @@ export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({ senior }
         <Tabs defaultValue={defaultTab} className="flex flex-col flex-grow overflow-hidden">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="other_documents">
-              Other Documents ({otherDocuments.length})
+              Required Documents ({otherDocuments.length})
             </TabsTrigger>
             <TabsTrigger value="medical_assistance">
               Medical Assistance ({medicalAssistanceDocuments.length})
@@ -127,7 +127,7 @@ export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({ senior }
                 ))}
               </div>
             ) : (
-              <p className="text-center text-gray-500 mt-8">No other documents available.</p>
+              <p className="text-center text-gray-500 mt-8">No required documents available.</p>
             )}
           </TabsContent>
 

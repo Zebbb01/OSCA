@@ -54,12 +54,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 icon: faPersonCane,
                 isActive: true,
                 url: '#',
-                roles: ['ADMIN', 'USER'], // Both ADMIN and USER can see this parent item
+                roles: ['ADMIN', 'USER'],
                 items: [
                     {
                         title: 'Record',
-                        url: '/admin/senior-citizen/record', // This will be dynamically changed
-                        roles: ['ADMIN', 'USER'], // Both can access, but URL changes for USER
+                        url: '/admin/senior-citizen/record',
+                        roles: ['ADMIN', 'USER'],
                     },
                 ],
             },
@@ -115,12 +115,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         roles: ['USER']
                     },
                     {
-                        title: 'Release',
+                        title: 'Released',
                         url: '/staff/applications/released-monitoring',
                         roles: ['USER']
                     },
                     {
-                        title: 'Not Release',
+                        title: 'Unreleased',
                         url: '/staff/applications/unreleased-monitoring',
                         roles: ['USER']
                     },
@@ -172,22 +172,33 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         if (subItem.title === 'Record') {
                             return {
                                 ...subItem,
-                                url: userRole === 'USER' ? '/staff/senior-citizen/record' : '/admin/senior-citizen/record'
-                            };
+                                url: userRole === 'USER'
+                                    ? '/staff/senior-citizen/record'
+                                    : '/admin/senior-citizen/record'
+                            }
                         }
-                        return subItem;
+                        return subItem
                     })
-                };
+                }
             }
-            return navItem;
+            return navItem
         })
-    };
+    }
 
-
-    const dashboardLink = (
+    // Dashboard links
+    const adminDashboardLink = (
         <SidebarMenuButton>
             <LayoutDashboard />
             <a href={'/admin/dashboard'}>
+                <span>Dashboard</span>
+            </a>
+        </SidebarMenuButton>
+    )
+
+    const staffDashboardLink = (
+        <SidebarMenuButton>
+            <LayoutDashboard />
+            <a href={'/staff/dashboard'}>
                 <span>Dashboard</span>
             </a>
         </SidebarMenuButton>
@@ -242,7 +253,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarHeader>
 
             <SidebarContent>
-                {userRole === 'ADMIN' && dashboardLink}
+                {userRole === 'ADMIN' && adminDashboardLink}
+                {userRole === 'USER' && staffDashboardLink}
 
                 <CollapsibleNavLinks items={filteredNav} />
             </SidebarContent>

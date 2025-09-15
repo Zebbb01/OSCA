@@ -131,7 +131,7 @@ export const SeniorViewDialog: React.FC<SeniorViewDialogProps> = ({
               {/* PWD Status */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CheckboxFieldView label="Are you a PWD?" checked={senior.pwd} />
-                <CheckboxFieldView label="Are you a Low Income?" checked={senior.low_income} />
+                {/* <CheckboxFieldView label="Are you a Low Income?" checked={senior.low_income} /> */}
               </div>
             </div>
           </div>

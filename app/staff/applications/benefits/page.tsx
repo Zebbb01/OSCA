@@ -28,14 +28,14 @@ import { toast } from 'sonner'
 
 const BenefitsPage = () => {
     // BENEFIT DATA QUERY
-    const benefitsQuery = useQuery({
-        queryKey: ['benefits'],
-        queryFn: async () => {
+  const benefitsQuery = useQuery({
+    queryKey: ['benefits'],
+    queryFn: async () => {
             const respData = await apiService.get<Benefit[]>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/benefits`)
             console.log('respData benefits: ', respData)
             return respData
-        },
-    })
+    },
+  })
 
     // STATE HANDLING DIALOG OPEN / CLOSE
     const [isAddBenefitModalOpen, setIsAddBenefitModalOpen] = useState<boolean>(false)
@@ -95,10 +95,10 @@ const BenefitsPage = () => {
     })
 
     const onShowBenefitApplicationModal = (benefitID: number, benefitName: string) => {
-        setIsBenefitApplicationModalOpen(true)
-        setSelectedBenefit({
-            id: benefitID,
-            name: benefitName,
+    setIsBenefitApplicationModalOpen(true)
+    setSelectedBenefit({
+      id: benefitID,
+      name: benefitName,
         })
     }
 
@@ -114,45 +114,45 @@ const BenefitsPage = () => {
         }
 
         mutation.mutate(data)
-    }
+  }
 
-    return (
-        <div className="container mx-auto p-4 max-w-7xl">
+  return (
+    <div className="container mx-auto p-4 max-w-7xl">
             {/* Header Section */}
-            <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-800">Benefits Management</h1>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">Benefits Management</h1>
                     <p className="text-gray-600 mt-1">
                         Track and manage benefits for senior citizens
                     </p>
-                </div>
-                
+        </div>
+
                 {/* Add New Benefit Button */}
-                <Dialog open={isAddBenefitModalOpen} onOpenChange={setIsAddBenefitModalOpen}>
-                    <DialogTrigger
-                        onClick={() => setIsAddBenefitModalOpen(true)}
-                        className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 font-medium"
-                    >
-                        <FontAwesomeIcon icon={faCirclePlus} className="w-4 h-4" />
-                        Add New Benefit
-                    </DialogTrigger>
+        <Dialog open={isAddBenefitModalOpen} onOpenChange={setIsAddBenefitModalOpen}>
+          <DialogTrigger
+            onClick={() => setIsAddBenefitModalOpen(true)}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 font-medium"
+          >
+            <FontAwesomeIcon icon={faCirclePlus} className="w-4 h-4" />
+            Add New Benefit
+          </DialogTrigger>
 
                     <DialogContent
                         onEscapeKeyDown={(e) => e.preventDefault()}
                         onPointerDownOutside={(e) => e.preventDefault()}
                         className="max-w-2xl"
                     >
-                        <DialogHeader>
-                            <DialogTitle>Add New Benefit</DialogTitle>
+            <DialogHeader>
+              <DialogTitle>Add New Benefit</DialogTitle>
                             <DialogDescription>
                                 Fill out the form below to create a new benefit program.
                             </DialogDescription>
-                        </DialogHeader>
+            </DialogHeader>
 
-                        <AddBenefitForm setIsAddBenefitModalOpen={setIsAddBenefitModalOpen} />
-                    </DialogContent>
-                </Dialog>
-            </div>
+            <AddBenefitForm setIsAddBenefitModalOpen={setIsAddBenefitModalOpen} />
+          </DialogContent>
+        </Dialog>
+      </div>
 
             {/* Benefits Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -352,8 +352,8 @@ const BenefitsPage = () => {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
-    )
+    </div>
+  )
 }
 
 export default BenefitsPage

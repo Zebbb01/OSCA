@@ -6,7 +6,7 @@ export type MonthlyRelease = {
     releaseDate: string; // YYYY-MM-DD
     totalAmountReleased: number;
     numberOfBeneficiaries: number;
-    status: 'Released' | 'Scheduled' | 'Delayed';
+    status: 'Released' | 'Unreleased' | 'Delayed';
     details: Array<{
         beneficiaryName: string;
         amount: number;
@@ -36,7 +36,7 @@ export const staticMonthlyReleases: MonthlyRelease[] = [
         releaseDate: '2025-07-20',
         totalAmountReleased: 160000.00,
         numberOfBeneficiaries: 160,
-        status: 'Scheduled',
+        status: 'Unreleased',
         details: [
             { beneficiaryName: 'Alice Johnson', amount: 1000.00, status: 'Unclaimed' },
             { beneficiaryName: 'Bob Williams', amount: 1000.00, status: 'Unclaimed' },

@@ -124,9 +124,10 @@
                                                 setRole(null)
                                                 setShowSignUp(false)
                                             }}
-                                            className="text-sm font-medium text-gray-600 underline hover:text-gray-800 transition duration-200"
+                                            className="border-2 rounded-sm border-emerald-600 bg-emerald-600 hover:bg-emerald-700 px-3 text-lg font-medium text-white hover:text-white transition duration-200"
                                         >
-                                            ← Back to Role Selection
+                                            ←
+                                            {/* ← Back to Role Selection */}
                                         </button>
                                     </div>
                                 </motion.div>

@@ -7,6 +7,7 @@ export const enum RegistrationDocumentTag {
     GOVERNMENT_ISSUED_ID = 'government_issued_id',
     MEMBERSHIP_CERTIFICATE = 'membership_certificate',
     MEDICAL_ASSISTANCE = 'medical_assistance',
+    LOW_INCOME = 'low_income'
 }
 
 export interface SeniorsFormDataType {

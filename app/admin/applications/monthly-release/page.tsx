@@ -66,8 +66,8 @@ export default function MonthlyReleasePage() {
                             />
                             <OverviewCard
                                 title="Upcoming Release"
-                                value={monthlyReleases.find(r => r.status === 'Scheduled')?.month || 'N/A'}
-                                description="The next scheduled release of funds."
+                                value={monthlyReleases.find(r => r.status === 'Unreleased')?.month || 'N/A'}
+                                description="The next Unreleased release of funds."
                                 icon={CalendarDays}
                                 iconColor="text-purple-600"
                             />
@@ -88,7 +88,7 @@ export default function MonthlyReleasePage() {
                                     <CardHeader>
                                         <CardTitle>Monthly Release History</CardTitle>
                                         <CardDescription>
-                                            View a summary of all past and scheduled monthly financial releases.
+                                            View a summary of all past and Unreleased monthly financial releases.
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent>
@@ -120,7 +120,7 @@ export default function MonthlyReleasePage() {
                                                                 <TableCell>
                                                                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
                                                                         release.status === 'Released' ? 'bg-green-100 text-green-800' :
-                                                                        release.status === 'Scheduled' ? 'bg-blue-100 text-blue-800' :
+                                                                        release.status === 'Unreleased' ? 'bg-blue-100 text-blue-800' :
                                                                         'bg-yellow-100 text-yellow-800'
                                                                     }`}>
                                                                         {release.status}

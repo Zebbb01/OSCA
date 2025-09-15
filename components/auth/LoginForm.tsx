@@ -43,11 +43,12 @@ const LoginForm = ({ onGoToSignUp }: LoginFormProps) => {
             })
 
             if (result?.error) {
-                const errorMessage = getErrorMessage(result.error)
-                setError('root.serverError', { type: 'manual', message: errorMessage })
-                toast.error(errorMessage)
-                return
+                const errorMessage = getErrorMessage(result.error); // "USER_NOT_FOUND" etc.
+                setError('root.serverError', { type: 'manual', message: errorMessage });
+                toast.error(errorMessage);
+                return;
             }
+
 
             if (result?.ok) {
                 toast.success('Login successful!')

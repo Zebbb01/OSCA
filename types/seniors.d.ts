@@ -16,7 +16,7 @@ export type SeniorsFormDataType = {
   contactPerson: string;
   contactRelationship: string;
   pwd: boolean;
-  lowIncome: boolean;
+  // lowIncome: boolean;
   // Documents are handled separately, so they aren't part of this base type
   // medical_assistance?: File[]; // Example if you want to include files in the form data type
   // birth_certificate?: File;

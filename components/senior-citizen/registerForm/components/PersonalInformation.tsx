@@ -156,7 +156,7 @@ export const PersonalInformation = () => {
                     />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                         control={form.control}
                         name="gender"
@@ -211,7 +211,7 @@ export const PersonalInformation = () => {
                             </FormItem>
                         )}
                     />
-                    <FormField
+                    {/* <FormField
                         control={form.control}
                         name="lowIncome"
                         render={({ field }) => (
@@ -234,7 +234,7 @@ export const PersonalInformation = () => {
                                 <FormMessage />
                             </FormItem>
                         )}
-                    />
+                    /> */}
                 </div>
             </CardContent>
         </Card>

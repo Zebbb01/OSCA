@@ -1,11 +1,9 @@
-// app/api/auth/[...nextauth]/route.ts
-
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import prisma from '@/lib/prisma';
 import { AuthService } from '@/services/auth.service';
-import { CustomAuthError, AUTH_ERROR_CODES, createAuthError } from '@/utils/auth-errors';
+import { CustomAuthError, AUTH_ERROR_CODES } from '@/utils/auth-errors';
 
 const { handlers } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -21,15 +19,25 @@ const { handlers } = NextAuth({
           return await AuthService.authenticateUser(username, password);
         } catch (err) {
           if (err instanceof CustomAuthError) {
-            throw new Error(err.code);
+            // Store the code in credentials for later
+            (credentials as any).authCode = err.code;
+            return null; // tell NextAuth login failed
           }
           console.error('Authorization error:', err);
-          throw new Error(AUTH_ERROR_CODES.UNEXPECTED_ERROR);
+          (credentials as any).authCode = AUTH_ERROR_CODES.UNEXPECTED_ERROR;
+          return null;
         }
       },
     }),
   ],
   callbacks: {
+    async signIn({ credentials }) {
+      // If AuthService attached a code, forward it as an error
+      if ((credentials as any)?.authCode) {
+        throw new Error((credentials as any).authCode);
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id as string;
@@ -50,11 +58,8 @@ const { handlers } = NextAuth({
       }
       return session;
     },
-    // Add this redirect callback
     async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
       else if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
     },
@@ -65,7 +70,7 @@ const { handlers } = NextAuth({
   pages: {
     signIn: '/', // Your login page
   },
-  trustHost: true, // Important for dev tunnels
+  trustHost: true,
 });
 
 export const { GET, POST } = handlers;

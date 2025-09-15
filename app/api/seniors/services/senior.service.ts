@@ -138,7 +138,7 @@ async function createSenior(formData: FormData) {
   });
 
   const uploadPromises: Promise<any>[] = [];
-  const fileTags = ['birth_certificate', 'certificate_of_residency', 'government_issued_id', 'membership_certificate'];
+  const fileTags = ['birth_certificate', 'certificate_of_residency', 'government_issued_id', 'membership_certificate','low_income'];
 
   for (const tag of fileTags) {
     const file = formData.get(tag) as File | null;

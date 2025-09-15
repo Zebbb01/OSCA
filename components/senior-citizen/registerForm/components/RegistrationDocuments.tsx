@@ -14,6 +14,7 @@ type FileData = {
     certificate_of_residency: File | null
     government_issued_id: File | null
     membership_certificate: File | null
+    low_income: File | null
 }
 
 type RegistrationDocumentsProps = {
@@ -29,21 +30,31 @@ const DOCUMENT_TYPES = [
         key: 'birth_certificate',
         label: 'Birth Certificate',
         tag: RegistrationDocumentTag.BIRTH_CERTIFICATE,
+        required: true,
     },
     {
         key: 'certificate_of_residency',
         label: 'Certificate of Residency',
         tag: RegistrationDocumentTag.CERTIFICATE_OF_RESIDENCY,
+        required: true,
     },
     {
         key: 'government_issued_id',
         label: 'Government Issued ID',
         tag: RegistrationDocumentTag.GOVERNMENT_ISSUED_ID,
+        required: true,
     },
     {
         key: 'membership_certificate',
         label: 'Membership Certificate',
         tag: RegistrationDocumentTag.MEMBERSHIP_CERTIFICATE,
+        required: true,
+    },
+    {
+        key: 'low_income',
+        label: 'Low Income',
+        tag: RegistrationDocumentTag.LOW_INCOME,
+        required: false, // Mark as optional
     },
 ]
 
@@ -51,7 +62,7 @@ export const RegistrationDocuments = ({
     fileData,
     handleFileChange,
     getUploadedFileCount,
-    isUploadError, // Although AlertDialogComponent is in RegisterForm.tsx, passing this allows for flexibility.
+    isUploadError,
 }: RegistrationDocumentsProps) => {
     return (
         <Card>
@@ -63,13 +74,15 @@ export const RegistrationDocuments = ({
                             Registration Documents
                         </CardTitle>
                     </div>
+                    {/* The badge should reflect the count of REQUIRED documents */}
                     <Badge variant="secondary" className="text-xs">
                         {getUploadedFileCount()}/4 uploaded
                     </Badge>
                 </div>
                 <CardDescription>
                     Upload required documents for registration. Only image files are
-                    accepted (JPG, PNG, GIF, WEBP, etc.)
+                    accepted (JPG, PNG, GIF, WEBP, etc.).
+                    The low income document is optional.
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

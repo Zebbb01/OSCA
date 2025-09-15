@@ -35,7 +35,7 @@ export const seniorsFormSchema = z.object({
     barangay: z.string().nonempty('Barangay is required'),
     purok: z.string().nonempty('Purok is required'),
     pwd: z.boolean().optional(),
-    lowIncome: z.boolean().optional(),
+    // lowIncome: z.boolean().optional(),
 }).superRefine((data, ctx) => {
     // Check if contactNumber and emergencyNumber are the same
     // Only compare if both fields have values (are not empty strings or undefined)

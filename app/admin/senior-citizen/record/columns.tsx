@@ -116,44 +116,29 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       accessorKey: 'benefits',
       header: 'Benefit(s)',
       cell: ({ row }) => {
-        const benefitElements = row.original.Applications
-          ?.filter(app => app.benefit?.name) // Ensure benefit name exists
-          .map((app, index, array) => {
-            const benefitName = app.benefit?.name;
-            const statusName = app.status?.name;
-            let textColorClass = '';
+        // Grab the latest application (assuming index 0 is the latest)
+        const latestApplication = row.original.Applications?.[0];
+        const benefitName = latestApplication?.benefit?.name;
+        const statusName = latestApplication?.status?.name;
 
-            if (statusName === 'APPROVED') {
-              textColorClass = 'text-green-600 font-medium';
-            } else if (statusName === 'REJECT') { // Changed from 'REJECTED' to 'REJECT'
-              textColorClass = 'text-red-600 font-medium';
-            }
-            // If status is not APPROVED or REJECT, no specific color class will be applied.
+        if (!benefitName) return 'N/A';
 
-            return (
-              // Corrected key to avoid TypeScript error and ensure uniqueness
-              <React.Fragment key={`${row.id}-benefit-${index}`}>
-                <span className={textColorClass}>
-                  {benefitName}
-                </span>
-                {index < array.length - 1 && ', '} {/* Add comma if not the last item */}
-              </React.Fragment>
-            );
-          });
-
-        // If no benefits are found (after filtering for existing names), return 'N/A'
-        if (!benefitElements || benefitElements.length === 0) {
-          return 'N/A';
+        let textColorClass = '';
+        if (statusName === 'APPROVED') {
+          textColorClass = 'text-green-600 font-medium';
+        } else if (statusName === 'REJECT') {
+          textColorClass = 'text-red-600 font-medium';
         }
 
-        return <div>{benefitElements}</div>;
+        return (
+          <span className={textColorClass}>
+            {benefitName}
+          </span>
+        );
       },
-      accessorFn: (row) =>
-        row.Applications
-          ?.map(app => app.benefit?.name)
-          .filter(Boolean)
-          .join(', ') || 'N/A',
+      accessorFn: (row) => row.Applications?.[0]?.benefit?.name || 'N/A',
     },
+
     {
       id: 'releaseStatus',
       accessorKey: 'releaseStatus',

@@ -65,7 +65,7 @@ export const DashboardCountsCard = () => {
                             </p>
                         </div>
                         <div className="p-4 border rounded-lg text-center flex flex-col justify-center">
-                            <h3 className="text-lg font-medium">Newly Registered<br/>(3days ago)</h3>
+                            <h3 className="text-lg font-medium">Regular Seniors<br/>(3days ago)</h3>
                             <p className="text-3xl font-bold text-blue-600">
                                 {seniorCounts.newlyRegisteredSeniors}
                             </p>

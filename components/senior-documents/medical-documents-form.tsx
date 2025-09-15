@@ -144,9 +144,9 @@ export const UploadMedicalDocumentsForm: React.FC<UploadMedicalDocumentsFormProp
         <Dialog open={isOpen} onOpenChange={handleDialogChange}>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
-                    <DialogTitle className="text-2xl font-semibold">Upload Medical Documents</DialogTitle>
+                    <DialogTitle className="text-2xl font-semibold"> Upload Additional Documents</DialogTitle>
                     <DialogDescription>
-                        Attach relevant medical assistance documents for the selected senior citizen.
+                        Attach relevant benefit assistance documents for the selected senior citizen.
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="grid gap-6 py-4">
