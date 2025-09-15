@@ -1,3 +1,4 @@
+// types\benefits.ts
 export type BenefitRequirement = {
     id: number
     name: string
