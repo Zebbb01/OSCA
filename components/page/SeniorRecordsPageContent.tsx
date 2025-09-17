@@ -18,7 +18,6 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import RegisterFormComponents from '@/components/senior-citizen/registerForm/RegisterForm';
-import { UploadMedicalDocumentsForm } from '@/components/senior-documents/medical-documents-form';
 import { apiService } from '@/lib/axios';
 import { Seniors } from '@/types/seniors';
 import { DownloadReleasedSeniorsReport } from '@/components/senior-citizen/reports/download-released-seniors-report';
@@ -206,23 +205,6 @@ const SeniorRecordsPageContent: React.FC<SeniorRecordsPageContentProps> = ({ use
                         </DialogContent>
                     </Dialog>
                 )}
-
-                {/* Upload Medical Documents button visible for USER role (staff) */}
-                {/* {isUser && (
-                    <Button
-                        onClick={() => setShowUploadMedicalModal(true)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center gap-2 transition-colors duration-200"
-                    >
-                        <FontAwesomeIcon icon={faPlus} className="size-4" />
-                        Upload Additional Documents
-                    </Button>
-                )} */}
-
-                <UploadMedicalDocumentsForm
-                    isOpen={showUploadMedicalModal}
-                    onClose={() => setShowUploadMedicalModal(false)}
-                    onUploadSuccess={refreshTable}
-                />
             </div>
 
             {seniorQuery.isLoading || sessionStatus === 'loading' ? (
