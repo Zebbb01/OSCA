@@ -1,3 +1,4 @@
+// components\financial-monitoring\add-transaction-dialog.tsx
 'use client';
 
 import * as React from 'react';
@@ -65,7 +66,11 @@ export function AddTransactionDialog({ isOpen, onClose, onAddTransaction }: AddT
     const onSubmit = (data: AddTransactionFormInputs) => {
         const newTransaction: FinancialTransaction = {
             id: uuidv4(), // Generate a unique ID
-            ...data,
+            date: data.date,
+            benefits: data.description, // Map description to benefits
+            amount: data.amount,
+            type: data.type === 'income' ? 'released' : 'pending', // Map income/expense to released/pending
+            category: data.category,
         };
         onAddTransaction(newTransaction);
         reset(); // Reset form fields
@@ -125,7 +130,7 @@ export function AddTransactionDialog({ isOpen, onClose, onAddTransaction }: AddT
                         <Label htmlFor="type" className="text-right">
                             Type
                         </Label>
-                        <Select onValueChange={(value: TransactionType) => setValue('type', value)} defaultValue={undefined}>
+                        <Select onValueChange={(value: 'income' | 'expense') => setValue('type', value)} defaultValue={undefined}>
                             <SelectTrigger className="col-span-3">
                                 <SelectValue placeholder="Select type" />
                             </SelectTrigger>

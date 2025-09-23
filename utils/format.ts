@@ -1,3 +1,4 @@
+// utils\format.ts
 export function formatDocumentTagName(str: string): string {
   return str
     .split('_') // Split by underscores
