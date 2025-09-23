@@ -79,7 +79,7 @@ export default function GovernmentFundPage() {
                                 iconColor="text-green-600"
                             />
                             <OverviewCard
-                                title="Total Unreleased"
+                                title="Total Pending"
                                 value={`PHP ${totalExpenses.toLocaleString('en-PH', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2,

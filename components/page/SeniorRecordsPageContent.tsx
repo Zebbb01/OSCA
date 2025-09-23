@@ -1,3 +1,4 @@
+// components\page\SeniorRecordsPageContent.tsx
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -30,7 +31,7 @@ interface SeniorQueryParams {
     purok?: string;
     barangay?: string;
     remarks?: string;
-    releaseStatus?: 'Released' | 'Unreleased';
+    releaseStatus?: 'Released' | 'Pending';
 }
 
 interface SeniorRecordsPageContentProps {
@@ -102,6 +103,7 @@ const SeniorRecordsPageContent: React.FC<SeniorRecordsPageContentProps> = ({ use
         'purok',
         'barangay',
         'gender',
+        'benefits',
         'documents',
         'actions', // If admin, actions will be visible
         'user-actions', // If user, user-actions will be visible

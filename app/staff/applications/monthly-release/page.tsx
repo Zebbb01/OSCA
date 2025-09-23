@@ -66,8 +66,8 @@ export default function MonthlyReleasePage() {
                             />
                             <OverviewCard
                                 title="Upcoming Release"
-                                value={monthlyReleases.find(r => r.status === 'Unreleased')?.month || 'N/A'}
-                                description="The next Unreleased release of funds."
+                                value={monthlyReleases.find(r => r.status === 'Pending')?.month || 'N/A'}
+                                description="The next Pending release of funds."
                                 icon={CalendarDays}
                                 iconColor="text-purple-600"
                             />
@@ -88,7 +88,7 @@ export default function MonthlyReleasePage() {
                                     <CardHeader>
                                         <CardTitle>Monthly Release History</CardTitle>
                                         <CardDescription>
-                                            View a summary of all past and Unreleased monthly financial releases.
+                                            View a summary of all past and Pending monthly financial releases.
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent>
@@ -118,11 +118,10 @@ export default function MonthlyReleasePage() {
                                                                 </TableCell>
                                                                 <TableCell className="text-right">{release.numberOfBeneficiaries}</TableCell>
                                                                 <TableCell>
-                                                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                                                                        release.status === 'Released' ? 'bg-green-100 text-green-800' :
-                                                                        release.status === 'Unreleased' ? 'bg-blue-100 text-blue-800' :
-                                                                        'bg-yellow-100 text-yellow-800'
-                                                                    }`}>
+                                                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${release.status === 'Released' ? 'bg-green-100 text-green-800' :
+                                                                            release.status === 'Pending' ? 'bg-blue-100 text-blue-800' :
+                                                                                'bg-yellow-100 text-yellow-800'
+                                                                        }`}>
                                                                         {release.status}
                                                                     </span>
                                                                 </TableCell>
@@ -199,9 +198,8 @@ export default function MonthlyReleasePage() {
                                                                             {`₱${detail.amount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                                                                         </TableCell>
                                                                         <TableCell>
-                                                                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                                                                                detail.status === 'Claimed' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
-                                                                            }`}>
+                                                                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${detail.status === 'Claimed' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
+                                                                                }`}>
                                                                                 {detail.status}
                                                                             </span>
                                                                         </TableCell>

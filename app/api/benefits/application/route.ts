@@ -138,7 +138,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Keep the existing GET and DELETE methods unchanged
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -207,9 +206,21 @@ export async function GET(request: NextRequest) {
             email: true,
             pwd: true,
             documents: {
-              where: {
-                tag: 'medical_assistance' // Include only medical_assistance documents
-              }
+              // Get all documents, not just medical_assistance
+              include: {
+                benefitRequirement: {
+                  select: {
+                    id: true,
+                    name: true,
+                    benefit: {
+                      select: {
+                        id: true,
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
             },
           },
         },

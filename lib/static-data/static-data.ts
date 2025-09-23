@@ -1,6 +1,6 @@
 // lib\static-data.ts
 
-export type TransactionType = 'released' | 'Unreleased';
+export type TransactionType = 'released' | 'Pending';
 
 export interface FinancialTransaction {
     id: string;
@@ -57,7 +57,7 @@ export const staticTransactions: FinancialTransaction[] = [
         date: '2025-06-06',
         benefits: 'Direct Aid - Special Assistance Case',
         amount: 1000.00,
-        type: 'Unreleased', // Kept as Unreleased
+        type: 'Pending', // Kept as Pending
         category: 'Special assistance cases',
     },
     {
@@ -73,7 +73,7 @@ export const staticTransactions: FinancialTransaction[] = [
         date: '2025-06-08',
         benefits: 'Emergency Support - Special Assistance',
         amount: 1000.00,
-        type: 'Unreleased', // Kept as Unreleased
+        type: 'Pending', // Kept as Pending
         category: 'Special assistance cases',
     },
     {
@@ -89,7 +89,7 @@ export const staticTransactions: FinancialTransaction[] = [
         date: '2025-06-10',
         benefits: 'One-time Assistance - Special Case',
         amount: 1000.00,
-        type: 'Unreleased', // Kept as Unreleased
+        type: 'Pending', // Kept as Pending
         category: 'Special assistance cases',
     },
 ];
@@ -117,6 +117,6 @@ export const calculateTotalIncome = (transactions: FinancialTransaction[]): numb
 // Helper function to calculate total expenses
 export const calculateTotalExpenses = (transactions: FinancialTransaction[]): number => {
     return transactions
-        .filter(t => t.type === 'Unreleased')
+        .filter(t => t.type === 'Pending')
         .reduce((sum, t) => sum + t.amount, 0);
 };

@@ -1,10 +1,7 @@
-'use client'
+'use client';
 
-import * as React from 'react'
-import { LayoutDashboard } from 'lucide-react'
-
-import { CollapsibleNavLinks } from '@/components/collapsible-navlink'
-import { NavUser } from '@/components/nav-user'
+import * as React from 'react';
+import { LayoutDashboard } from 'lucide-react';
 import {
     Sidebar,
     SidebarContent,
@@ -12,9 +9,14 @@ import {
     SidebarHeader,
     SidebarMenuButton,
     SidebarRail,
-} from '@/components/ui/sidebar'
+    SidebarGroup,
+    SidebarGroupLabel,
+    SidebarGroupContent,
+    SidebarMenu,
+    SidebarMenuItem,
+} from '@/components/ui/sidebar';
 
-import Image from 'next/image'
+import Image from 'next/image';
 import {
     faDesktop,
     faFile,
@@ -22,38 +24,31 @@ import {
     faMoneyBillWave,
     faPersonCane,
     IconDefinition,
-} from '@fortawesome/free-solid-svg-icons'
-import { useSession } from 'next-auth/react'
-
-// --- Define your types here ---
+} from '@fortawesome/free-solid-svg-icons';
+import { useSession } from 'next-auth/react';
+import { NavUser } from '@/components/nav-user';
 
 interface NavSubItem {
-    title: string
-    url: string
-    roles?: string[]
+    title: string;
+    url: string;
+    roles?: string[];
 }
 
-interface CollapsibleNavItem {
-    title: string
-    icon: IconDefinition
-    isActive?: boolean
-    url: string
-    items: NavSubItem[]
-    roles?: string[]
+interface NavMainItem {
+    title: string;
+    icon?: IconDefinition;
+    roles?: string[];
+    items: NavSubItem[];
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { data: session, status } = useSession()
-    const userRole = (session?.user as any)?.role || 'USER'
+    const { data: session, status } = useSession();
+    const userRole = (session?.user as any)?.role || 'USER';
 
-    // Define base navigation data
-    const baseNavData: { collapsNav: CollapsibleNavItem[] } = {
-        collapsNav: [
+    const baseNavData: { navMain: NavMainItem[] } = {
+        navMain: [
             {
                 title: 'Senior Citizen',
-                icon: faPersonCane,
-                isActive: true,
-                url: '#',
                 roles: ['ADMIN', 'USER'],
                 items: [
                     {
@@ -65,8 +60,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             },
             {
                 title: 'Applications',
-                url: '#',
-                icon: faFile,
                 roles: ['ADMIN', 'USER'],
                 items: [
                     {
@@ -76,65 +69,59 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     },
                     {
                         title: 'Applicants',
-                        url: '/admin/applications/applicants',
+                        url: '/admin/applications/overview',
                         roles: ['ADMIN'],
                     },
                 ],
             },
             {
                 title: 'Monitoring',
-                url: '#',
-                icon: faDesktop,
                 roles: ['ADMIN', 'USER'],
                 items: [
-                    // ADMIN
                     {
                         title: 'Overview',
                         url: '/admin/applications/overview',
-                        roles: ['ADMIN']
+                        roles: ['ADMIN'],
                     },
                     {
                         title: 'Released',
                         url: '/admin/applications/released-monitoring',
-                        roles: ['ADMIN']
+                        roles: ['ADMIN'],
                     },
                     {
-                        title: 'Unreleased',
-                        url: '/admin/applications/unreleased-monitoring',
-                        roles: ['ADMIN']
+                        title: 'Pending',
+                        url: '/admin/applications/pending-monitoring',
+                        roles: ['ADMIN'],
                     },
                     {
                         title: 'Category',
                         url: '/admin/applications/category',
-                        roles: ['ADMIN']
+                        roles: ['ADMIN'],
                     },
-                    // STAFF
                     {
                         title: 'Overview',
                         url: '/staff/applications/overview',
-                        roles: ['USER']
+                        roles: ['USER'],
                     },
                     {
                         title: 'Released',
                         url: '/staff/applications/released-monitoring',
-                        roles: ['USER']
+                        roles: ['USER'],
                     },
                     {
-                        title: 'Unreleased',
-                        url: '/staff/applications/unreleased-monitoring',
-                        roles: ['USER']
+                        title: 'Pending',
+                        url: '/staff/applications/pending-monitoring',
+                        roles: ['USER'],
                     },
                     {
                         title: 'Category',
                         url: '/staff/applications/category',
-                        roles: ['USER']
+                        roles: ['USER'],
                     },
                 ],
             },
             {
                 title: 'Financial',
-                url: '#',
-                icon: faMoneyBillWave,
                 roles: ['ADMIN'],
                 items: [
                     {
@@ -149,8 +136,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             },
             {
                 title: 'Settings',
-                url: '#',
-                icon: faGear,
                 roles: ['ADMIN'],
                 items: [
                     {
@@ -160,73 +145,71 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 ],
             },
         ],
-    }
+    };
 
-    // Adjust the URL for 'Senior Citizen Record' based on user role
     const processedNavData = {
-        collapsNav: baseNavData.collapsNav.map(navItem => {
+        navMain: baseNavData.navMain.map((navItem) => {
             if (navItem.title === 'Senior Citizen') {
                 return {
                     ...navItem,
-                    items: navItem.items.map(subItem => {
+                    items: navItem.items.map((subItem) => {
                         if (subItem.title === 'Record') {
                             return {
                                 ...subItem,
-                                url: userRole === 'USER'
-                                    ? '/staff/senior-citizen/record'
-                                    : '/admin/senior-citizen/record'
-                            }
+                                url:
+                                    userRole === 'USER'
+                                        ? '/staff/senior-citizen/record'
+                                        : '/admin/senior-citizen/record',
+                            };
                         }
-                        return subItem
-                    })
-                }
+                        return subItem;
+                    }),
+                };
             }
-            return navItem
-        })
-    }
+            return navItem;
+        }),
+    };
 
-    // Dashboard links
-    const adminDashboardLink = (
-        <SidebarMenuButton>
-            <LayoutDashboard />
-            <a href={'/admin/dashboard'}>
-                <span>Dashboard</span>
-            </a>
-        </SidebarMenuButton>
-    )
-
-    const staffDashboardLink = (
-        <SidebarMenuButton>
-            <LayoutDashboard />
-            <a href={'/staff/dashboard'}>
-                <span>Dashboard</span>
-            </a>
-        </SidebarMenuButton>
-    )
-
-    const filteredNav = processedNavData.collapsNav
+    const filteredNav = processedNavData.navMain
         .map((navItem) => {
             if (navItem.roles && !navItem.roles.includes(userRole)) {
-                return null
+                return null;
             }
 
             const filteredItems = navItem.items.filter((item) => {
                 if (item.roles) {
-                    return item.roles.includes(userRole)
+                    return item.roles.includes(userRole);
                 }
-                return true
-            })
+                return true;
+            });
 
             if (navItem.items && filteredItems.length === 0 && navItem.items.length > 0) {
-                return null
+                return null;
             }
 
             return {
                 ...navItem,
                 items: filteredItems,
-            }
+            };
         })
-        .filter(Boolean) as CollapsibleNavItem[]
+        .filter(Boolean) as NavMainItem[];
+
+    const dashboardLink =
+        userRole === 'ADMIN' ? (
+            <SidebarMenuButton>
+                <LayoutDashboard />
+                <a href={'/admin/dashboard'}>
+                    <span>Dashboard</span>
+                </a>
+            </SidebarMenuButton>
+        ) : (
+            <SidebarMenuButton>
+                <LayoutDashboard />
+                <a href={'/staff/dashboard'}>
+                    <span>Dashboard</span>
+                </a>
+            </SidebarMenuButton>
+        );
 
     return (
         <Sidebar collapsible="icon" {...props}>
@@ -243,7 +226,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             alt="OSCA Logo"
                             className="rounded-full"
                         />
-
                         <div className="flex flex-col">
                             <span className="truncate font-medium">OSCA</span>
                             <span className="truncate text-xs">Government</span>
@@ -253,10 +235,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarHeader>
 
             <SidebarContent>
-                {userRole === 'ADMIN' && adminDashboardLink}
-                {userRole === 'USER' && staffDashboardLink}
+                {dashboardLink}
 
-                <CollapsibleNavLinks items={filteredNav} />
+                {filteredNav.map((item) => (
+                    <SidebarGroup key={item.title}>
+                        <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {item.items.map((subItem) => (
+                                    <SidebarMenuItem key={subItem.title}>
+                                        <SidebarMenuButton asChild>
+                                            <a href={subItem.url} className="pl-6">
+                                                {subItem.title}
+                                            </a>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                ))}
             </SidebarContent>
 
             <SidebarFooter>
@@ -277,5 +275,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
             <SidebarRail />
         </Sidebar>
-    )
+    );
 }

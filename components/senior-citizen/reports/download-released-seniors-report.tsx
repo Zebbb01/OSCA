@@ -1,17 +1,18 @@
-// components\senior-citizen\reports\download-released-seniors-report.tsx
+// components/senior-citizen/reports/download-released-seniors-report.tsx
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react'; // Import necessary hooks
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { DownloadIcon } from 'lucide-react'; // Assuming you have lucide-react for icons
+import { DownloadIcon } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Seniors } from '@/types/seniors';
 import { formatDateTime, formatDateOnly } from '@/utils/format';
-import { ReportPreviewModal } from '@/components/senior-citizen/ReportPreviewModal'; // Import the new reusable modal
+import { ReportPreviewModal } from '@/components/senior-citizen/ReportPreviewModal';
+import { addPdfHeaderAndFooter, getContentBoundaries } from '@/utils/pdf-header-footer';
 
 interface DownloadReleasedSeniorsReportProps {
-  data: Seniors[]; // The full data set from your table
+  data: Seniors[];
 }
 
 export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsReportProps> = ({ data }) => {
@@ -19,17 +20,16 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
   const [pdfReportUrl, setPdfReportUrl] = useState<string | null>(null);
   const [isLoadingReport, setIsLoadingReport] = useState(false);
 
-  // Function to generate the PDF content as a Blob and set its URL for preview
-  const generateAndSetPdfBlob = useCallback(() => {
-    setIsLoadingReport(true); // Start loading state
-    setPdfReportUrl(null); // Clear any previous PDF URL
+  const generateAndSetPdfBlob = useCallback(async () => {
+    setIsLoadingReport(true);
+    setPdfReportUrl(null);
 
     const releasedSeniors = data.filter(senior => senior.releasedAt);
 
     if (releasedSeniors.length === 0) {
       alert('No released senior citizen records to generate report.');
       setIsLoadingReport(false);
-      setShowReportModal(false); // Close modal if no data
+      setShowReportModal(false);
       return;
     }
 
@@ -41,11 +41,33 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
       author: 'Senior Citizen Management System',
     });
 
-    // Add a title
-    doc.setFontSize(18);
-    doc.text('Released Senior Citizens Report', 14, 20);
+    const boundaries = getContentBoundaries();
+
+    // Add header and footer to first page
+    await addPdfHeaderAndFooter({
+      doc,
+      pageNumber: 1,
+      totalPages: 1, // Will be updated after table generation
+      title: 'Released Senior Citizens Report',
+      subtitle: `Report Generated: ${formatDateTime(new Date().toISOString())}`
+    });
+
+    let yPos = boundaries.topMargin + 10;
+
+    // Summary section
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(34, 139, 34);
+    doc.text('Summary', boundaries.leftMargin, yPos);
+    yPos += 6;
+
     doc.setFontSize(10);
-    doc.text(`Date Generated: ${formatDateTime(new Date().toISOString())}`, 14, 26);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Total Released Senior Citizens: ${releasedSeniors.length}`, boundaries.leftMargin, yPos);
+    yPos += 5;
+    doc.text(`Report Period: All time`, boundaries.leftMargin, yPos);
+    yPos += 15;
 
     // Prepare table headers and data
     const tableColumn = [
@@ -54,11 +76,9 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
       'Barangay',
       'Purok',
       'Gender',
-      // 'PWD',
       'Category',
       'Benefit Type',
       'Status',
-      // 'Birthdate',
       'Released At',
     ];
 
@@ -68,7 +88,6 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
       const benefitName = senior.Applications?.[0]?.benefit.name || 'N/A';
       const statusName = senior.Applications?.[0]?.status.name || 'N/A';
       const releasedDate = senior.releasedAt ? formatDateTime(senior.releasedAt) : 'N/A';
-      const pwdStatus = senior.pwd ? 'Yes' : 'No';
 
       return [
         fullName,
@@ -76,11 +95,9 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
         senior.barangay || 'N/A',
         senior.purok || 'N/A',
         senior.gender || 'N/A',
-        // pwdStatus,
         categoryName,
         benefitName,
         statusName,
-        // formatDateOnly(senior.birthdate),
         releasedDate,
       ];
     });
@@ -89,7 +106,7 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
     autoTable(doc, {
       head: [tableColumn],
       body: tableRows,
-      startY: 35,
+      startY: yPos,
       theme: 'grid',
       styles: {
         fontSize: 8,
@@ -101,23 +118,47 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
         textColor: 255,
         fontStyle: 'bold',
       },
-      margin: { top: 10, right: 10, bottom: 10, left: 10 },
-      didDrawPage: function (data) {
-        // Footer - page number
-        doc.setFontSize(8);
-        const pageCount = doc.internal.pages.length;
-        doc.text(`Page ${data.pageNumber} of ${pageCount - 1}`, doc.internal.pageSize.width - 20, doc.internal.pageSize.height - 10, { align: 'right' });
-      }
+      margin: { 
+        top: boundaries.topMargin, 
+        right: boundaries.rightMargin, 
+        bottom: boundaries.bottomMargin, 
+        left: boundaries.leftMargin 
+      },
     });
+
+    // After table generation, add headers/footers to additional pages
+    const totalPages = doc.internal.pages.length - 1;
+    if (totalPages > 1) {
+      // Add headers and footers to pages 2 and beyond
+      for (let pageNum = 2; pageNum <= totalPages; pageNum++) {
+        doc.setPage(pageNum);
+        await addPdfHeaderAndFooter({
+          doc,
+          pageNumber: pageNum,
+          totalPages: totalPages,
+          title: 'Released Senior Citizens Report',
+          subtitle: 'Continued...'
+        });
+      }
+      
+      // Update the first page with correct total page count
+      doc.setPage(1);
+      await addPdfHeaderAndFooter({
+        doc,
+        pageNumber: 1,
+        totalPages: totalPages,
+        title: 'Released Senior Citizens Report',
+        subtitle: `Report Generated: ${formatDateTime(new Date().toISOString())}`
+      });
+    }
 
     // Output as Blob and create a URL for the iframe preview
     const blob = doc.output('blob');
     const url = URL.createObjectURL(blob);
     setPdfReportUrl(url);
-    setIsLoadingReport(false); // End loading state
-  }, [data, formatDateTime, formatDateOnly]); // Dependencies for useCallback
+    setIsLoadingReport(false);
+  }, [data]);
 
-  // Effect to generate PDF when the modal opens
   useEffect(() => {
     if (showReportModal) {
       generateAndSetPdfBlob();
@@ -126,27 +167,23 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
 
   const handleOpenReportModal = () => {
     setShowReportModal(true);
-    // PDF generation will be handled by the useEffect once modal is open
   };
 
   const handleCloseReportModal = () => {
     setShowReportModal(false);
-    // The cleanup of pdfReportUrl is handled inside ReportPreviewModal's useEffect
-    // No need to revoke here explicitly, but state reset is good practice
     setPdfReportUrl(null);
-    setIsLoadingReport(true); // Reset for next time
+    setIsLoadingReport(true);
   };
 
   const handleDownloadFromPreview = () => {
     if (pdfReportUrl) {
-      // Create a temporary link to trigger download using the blob URL
       const link = document.createElement('a');
       link.href = pdfReportUrl;
-      link.download = 'released_senior_citizens_report.pdf'; // Desired file name
+      link.download = 'released_senior_citizens_report.pdf';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      alert('Report downloaded!'); // You can replace this with a sonner toast if preferred
+      alert('Report downloaded!');
     } else {
       alert('PDF not available for download.');
     }
@@ -159,13 +196,12 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
         Download Report
       </Button>
 
-      {/* Render the reusable ReportPreviewModal */}
       <ReportPreviewModal
         isOpen={showReportModal}
         onClose={handleCloseReportModal}
         pdfUrl={pdfReportUrl}
         isLoading={isLoadingReport}
-        fileName="released_senior_citizens_report.pdf" // Pass the desired download name
+        fileName="released_senior_citizens_report.pdf"
         onDownload={handleDownloadFromPreview}
         title="Released Senior Citizens Report Preview"
         description={

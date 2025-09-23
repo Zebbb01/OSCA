@@ -1,5 +1,4 @@
-// components/overview/MonitoringOverview.tsx
-// components/overview/MonitoringOverview.tsx
+// components\overview\MonitoringOverview.tsx
 'use client';
 
 import React, { useEffect } from 'react';
@@ -30,7 +29,7 @@ export default function MonitoringOverview({
     setColumnFilters,
     isFilterDropdownOpen,
     setIsFilterDropdownOpen,
-    resetFilters, // We'll still keep this for clarity, though its direct call won't be needed here anymore
+    resetFilters,
     releasedSeniors,
     notReleasedSeniors,
     allApplicantsData,
@@ -46,15 +45,13 @@ export default function MonitoringOverview({
     hasError,
   } = useOverviewData({ userRole });
 
-  // --- MODIFIED: Handle tab change and filter reset synchronously ---
   const handleTabChange = (value: string) => {
-    // If the tab is actually changing, reset filters immediately
     if (value !== activeTab) {
-      setGlobalFilter(''); // Clear global filter
-      setColumnFilters([]); // Clear column filters
-      setIsFilterDropdownOpen(false); // Close dropdown
+      setGlobalFilter('');
+      setColumnFilters([]);
+      setIsFilterDropdownOpen(false);
     }
-    setActiveTab(value); // Update the active tab state
+    setActiveTab(value);
   };
 
   const renderLoadingState = () => (
@@ -94,11 +91,12 @@ export default function MonitoringOverview({
       </div>
 
       {/* Tabs Navigation */}
-      <Tabs defaultValue="released" className="w-full" onValueChange={handleTabChange}>
+      <Tabs defaultValue="all-applications" className="w-full" onValueChange={handleTabChange}>
         <TabsList className="grid w-full grid-cols-5">
+          {/* Reordered the tabs to place "All Applications" first */}
+          <TabsTrigger value="all-applications">All Applications</TabsTrigger>
           <TabsTrigger value="released">Released Benefits</TabsTrigger>
           <TabsTrigger value="not-released">Pending Benefits</TabsTrigger>
-          <TabsTrigger value="all-applications">All Applications</TabsTrigger>
           <TabsTrigger value="regular">Regular Citizens</TabsTrigger>
           <TabsTrigger value="special">Special Cases</TabsTrigger>
         </TabsList>
@@ -109,6 +107,30 @@ export default function MonitoringOverview({
           renderErrorState()
         ) : (
           <>
+            {/* Tab Content for All Applications is now the first to match the trigger order */}
+            <TabsContent value="all-applications">
+              <div className="mb-4">
+                <h2 className="text-xl font-semibold text-gray-700">All Applications ({allApplicantsData.length})</h2>
+                <p className="text-gray-500 text-sm">Complete list of benefit applications across all categories.</p>
+              </div>
+              {allApplicantsData.length === 0 ? (
+                <div className="text-center py-10 text-gray-500">No applications found.</div>
+              ) : (
+                <DataTable
+                  columns={applicationColumns}
+                  data={allApplicantsData}
+                  filterableColumns={filterableApplicationColumns}
+                  globalFilter={globalFilter}
+                  setGlobalFilter={setGlobalFilter}
+                  columnFilters={columnFilters}
+                  setColumnFilters={setColumnFilters}
+                  isFilterDropdownOpen={isFilterDropdownOpen}
+                  setIsFilterDropdownOpen={setIsFilterDropdownOpen}
+                  initialVisibleColumns={applicationInitialVisibleColumns}
+                />
+              )}
+            </TabsContent>
+
             <TabsContent value="released">
               <div className="mb-4">
                 <h2 className="text-xl font-semibold text-gray-700">Released Benefits ({releasedSeniors.length})</h2>
@@ -151,29 +173,6 @@ export default function MonitoringOverview({
                   isFilterDropdownOpen={isFilterDropdownOpen}
                   setIsFilterDropdownOpen={setIsFilterDropdownOpen}
                   initialVisibleColumns={seniorInitialVisibleColumns}
-                />
-              )}
-            </TabsContent>
-
-            <TabsContent value="all-applications">
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-700">All Applications ({allApplicantsData.length})</h2>
-                <p className="text-gray-500 text-sm">Complete list of benefit applications across all categories.</p>
-              </div>
-              {allApplicantsData.length === 0 ? (
-                <div className="text-center py-10 text-gray-500">No applications found.</div>
-              ) : (
-                <DataTable
-                  columns={applicationColumns}
-                  data={allApplicantsData}
-                  filterableColumns={filterableApplicationColumns}
-                  globalFilter={globalFilter}
-                  setGlobalFilter={setGlobalFilter}
-                  columnFilters={columnFilters}
-                  setColumnFilters={setColumnFilters}
-                  isFilterDropdownOpen={isFilterDropdownOpen}
-                  setIsFilterDropdownOpen={setIsFilterDropdownOpen}
-                  initialVisibleColumns={applicationInitialVisibleColumns}
                 />
               )}
             </TabsContent>

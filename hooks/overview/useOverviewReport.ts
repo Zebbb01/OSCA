@@ -1,3 +1,4 @@
+// hooks/overview/useOverviewReport.ts
 'use client';
 
 import { useState, useCallback } from 'react';
@@ -6,6 +7,7 @@ import autoTable from 'jspdf-autotable';
 import { Seniors } from '@/types/seniors';
 import { BenefitApplicationData } from '@/types/application';
 import { formatDateTime } from '@/utils/format';
+import { addPdfHeaderAndFooter, getContentBoundaries } from '@/utils/pdf-header-footer';
 
 interface UseOverviewReportProps {
   releasedData: Seniors[];
@@ -22,7 +24,7 @@ export const useOverviewReport = ({
   const [pdfReportUrl, setPdfReportUrl] = useState<string | null>(null);
   const [isLoadingReport, setIsLoadingReport] = useState(false);
 
-  const generateAndSetPdfBlob = useCallback(() => {
+  const generateAndSetPdfBlob = useCallback(async () => {
     setIsLoadingReport(true);
     setPdfReportUrl(null);
 
@@ -35,33 +37,67 @@ export const useOverviewReport = ({
       author: 'Senior Citizen Management System',
     });
 
-    // Title Page
-    doc.setFontSize(22);
-    doc.text('Senior Citizens Overview Report', 14, 25);
-    doc.setFontSize(12);
-    doc.text(`Generated: ${formatDateTime(new Date().toISOString())}`, 14, 35);
+    const boundaries = getContentBoundaries();
+    let currentY = boundaries.topMargin + 10;
 
-    // Summary Statistics
+    // Add header and footer to first page
+    await addPdfHeaderAndFooter({
+      doc,
+      pageNumber: 1,
+      totalPages: 1, // Will be updated later
+      title: 'Senior Citizens Overview Report',
+      subtitle: `Comprehensive Analysis • Generated: ${formatDateTime(new Date().toISOString())}`
+    });
+
+    // Executive Summary
     doc.setFontSize(16);
-    doc.text('Executive Summary', 14, 50);
-    doc.setFontSize(10);
-    doc.text(`Total Released Benefits: ${releasedData.length}`, 14, 60);
-    doc.text(`Total Pending Benefits: ${notReleasedData.length}`, 14, 65);
-    doc.text(`Total Applications: ${categoryData.length}`, 14, 70);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(34, 139, 34);
+    doc.text('Executive Summary', boundaries.leftMargin, currentY);
+    currentY += 10;
 
     const regularApplications = categoryData.filter(app => app.category?.name === 'Regular senior citizens').length;
     const specialApplications = categoryData.filter(app => app.category?.name === 'Special assistance cases').length;
 
-    doc.text(`Regular Senior Citizens Applications: ${regularApplications}`, 14, 75);
-    doc.text(`Special Assistance Cases: ${specialApplications}`, 14, 80);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0);
+    
+    const summaryData = [
+      `Total Released Benefits: ${releasedData.length}`,
+      `Total Pending Benefits: ${notReleasedData.length}`,
+      `Total Applications: ${categoryData.length}`,
+      `Regular Senior Citizens Applications: ${regularApplications}`,
+      `Special Assistance Cases: ${specialApplications}`,
+    ];
 
-    let currentY = 95;
+    summaryData.forEach(item => {
+      doc.text(item, boundaries.leftMargin, currentY);
+      currentY += 5;
+    });
+
+    currentY += 15;
 
     // SECTION 1: RELEASED BENEFITS
     if (releasedData.length > 0) {
-      doc.setFontSize(16);
-      doc.text('Released Benefits Report', 10, currentY);
-      currentY += 5;
+      // Check if we need a new page
+      if (currentY > 200) {
+        doc.addPage();
+        currentY = boundaries.topMargin + 10;
+        await addPdfHeaderAndFooter({
+          doc,
+          pageNumber: doc.internal.pages.length - 1,
+          totalPages: 1, // Will be updated later
+          title: 'Senior Citizens Overview Report',
+          subtitle: 'Released Benefits Section'
+        });
+      }
+
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(34, 139, 34);
+      doc.text('Released Benefits Report', boundaries.leftMargin, currentY);
+      currentY += 8;
 
       const releasedTableColumn = [
         'Full Name',
@@ -107,23 +143,37 @@ export const useOverviewReport = ({
           textColor: 255,
           fontStyle: 'bold',
         },
-        margin: { top: 10, right: 10, bottom: 10, left: 10 },
+        margin: { 
+          top: boundaries.topMargin, 
+          right: boundaries.rightMargin, 
+          bottom: boundaries.bottomMargin, 
+          left: boundaries.leftMargin 
+        },
       });
 
       currentY = (doc as any).lastAutoTable.finalY + 20;
     }
 
-    // Add new page for next sections if needed
-    if (currentY > 200) {
-      doc.addPage();
-      currentY = 20;
-    }
-
-    // SECTION 2: Unreleased BENEFITS
+    // SECTION 2: PENDING BENEFITS
     if (notReleasedData.length > 0) {
-      doc.setFontSize(16);
-      doc.text('Pending Benefits Report', 10, currentY);
-      currentY += 5;
+      // Check if we need a new page
+      if (currentY > 200) {
+        doc.addPage();
+        currentY = boundaries.topMargin + 10;
+        await addPdfHeaderAndFooter({
+          doc,
+          pageNumber: doc.internal.pages.length - 1,
+          totalPages: 1, // Will be updated later
+          title: 'Senior Citizens Overview Report',
+          subtitle: 'Pending Benefits Section'
+        });
+      }
+
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(220, 53, 69); // Red color for pending section
+      doc.text('Pending Benefits Report', boundaries.leftMargin, currentY);
+      currentY += 8;
 
       const notReleasedTableColumn = [
         'Full Name',
@@ -169,23 +219,37 @@ export const useOverviewReport = ({
           textColor: 255,
           fontStyle: 'bold',
         },
-        margin: { top: 10, right: 10, bottom: 10, left: 10 },
+        margin: { 
+          top: boundaries.topMargin, 
+          right: boundaries.rightMargin, 
+          bottom: boundaries.bottomMargin, 
+          left: boundaries.leftMargin 
+        },
       });
 
       currentY = (doc as any).lastAutoTable.finalY + 20;
     }
 
-    // Add new page for category section if needed
-    if (currentY > 200) {
-      doc.addPage();
-      currentY = 20;
-    }
-
     // SECTION 3: APPLICATIONS BY CATEGORY
     if (categoryData.length > 0) {
-      doc.setFontSize(16);
-      doc.text('Applications by Category Report', 10, currentY);
-      currentY += 5;
+      // Check if we need a new page
+      if (currentY > 200) {
+        doc.addPage();
+        currentY = boundaries.topMargin + 10;
+        await addPdfHeaderAndFooter({
+          doc,
+          pageNumber: doc.internal.pages.length - 1,
+          totalPages: 1, // Will be updated later
+          title: 'Senior Citizens Overview Report',
+          subtitle: 'Applications by Category Section'
+        });
+      }
+
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(0, 123, 255); // Blue color for category section
+      doc.text('Applications by Category Report', boundaries.leftMargin, currentY);
+      currentY += 8;
 
       const categoryTableColumn = [
         'Full Name',
@@ -224,18 +288,36 @@ export const useOverviewReport = ({
           textColor: 255,
           fontStyle: 'bold',
         },
-        margin: { top: 10, right: 10, bottom: 10, left: 10 },
-        didDrawPage: function (data) {
-          // Footer - page number
-          doc.setFontSize(8);
-          const pageCount = doc.internal.pages.length;
-          doc.text(
-            `Page ${data.pageNumber} of ${pageCount - 1}`,
-            doc.internal.pageSize.width - 20,
-            doc.internal.pageSize.height - 10,
-            { align: 'right' }
-          );
-        }
+        margin: { 
+          top: boundaries.topMargin, 
+          right: boundaries.rightMargin, 
+          bottom: boundaries.bottomMargin, 
+          left: boundaries.leftMargin 
+        },
+      });
+    }
+
+    // Update total pages for all pages
+    const totalPages = doc.internal.pages.length - 1;
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      let subtitle = '';
+      if (i === 1) {
+        subtitle = `Comprehensive Analysis • Generated: ${formatDateTime(new Date().toISOString())}`;
+      } else if (i === 2) {
+        subtitle = 'Released Benefits Section';
+      } else if (i === 3) {
+        subtitle = 'Pending Benefits Section';
+      } else {
+        subtitle = 'Applications by Category Section';
+      }
+
+      await addPdfHeaderAndFooter({
+        doc,
+        pageNumber: i,
+        totalPages: totalPages,
+        title: 'Senior Citizens Overview Report',
+        subtitle: subtitle
       });
     }
 
@@ -244,7 +326,7 @@ export const useOverviewReport = ({
     const url = URL.createObjectURL(blob);
     setPdfReportUrl(url);
     setIsLoadingReport(false);
-  }, [releasedData, notReleasedData, categoryData]); // Dependencies for useCallback
+  }, [releasedData, notReleasedData, categoryData]);
 
   const handleOpenReportModal = () => {
     setShowReportModal(true);
@@ -254,7 +336,7 @@ export const useOverviewReport = ({
   const handleCloseReportModal = () => {
     setShowReportModal(false);
     setPdfReportUrl(null);
-    setIsLoadingReport(true); // Reset loading state for next generation
+    setIsLoadingReport(true);
   };
 
   const handleDownloadFromPreview = () => {

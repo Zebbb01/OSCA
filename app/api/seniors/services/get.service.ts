@@ -17,7 +17,22 @@ export async function getSeniors(searchParams: URLSearchParams) {
   const queryOptions: any = {
     include: {
       remarks: { select: { id: true, name: true } },
-      documents: true,
+      documents: {
+        include: {
+          benefitRequirement: {
+            select: {
+              id: true,
+              name: true,
+              benefit: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
       Applications: {
         include: {
           category: true,
@@ -65,7 +80,7 @@ export async function getSeniors(searchParams: URLSearchParams) {
   if (releaseStatusFilter) {
     if (releaseStatusFilter === 'Released') {
       queryOptions.where.releasedAt = { not: null };
-    } else if (releaseStatusFilter === 'Unreleased') {
+    } else if (releaseStatusFilter === 'Pending') {
       queryOptions.where.releasedAt = null;
     }
   }
@@ -86,7 +101,26 @@ export async function getArchivedSeniors(searchParams: URLSearchParams) {
   const nameSearch = searchParams.get('name');
 
   const queryOptions: any = {
-    include: { remarks: { select: { id: true, name: true } } },
+    include: { 
+      remarks: { select: { id: true, name: true } },
+      // ✅ FIXED: Also include benefitRequirement for archived seniors
+      documents: {
+        include: {
+          benefitRequirement: {
+            select: {
+              id: true,
+              name: true,
+              benefit: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     where: { NOT: { deletedAt: null } },
   };
 

@@ -1,3 +1,4 @@
+// components\dashboard-counts-card.tsx
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -76,18 +77,7 @@ export const DashboardCountsCard = () => {
                                 {totalBarangays}
                             </p>
                         </div>
-                        {/* <div className="p-4 border rounded-lg text-center">
-                        <h3 className="text-lg font-medium">Special Category</h3>
-                        <p className="text-3xl font-bold text-blue-600">{seniorCounts.categoryCounts.Special}</p>
-                    </div>
-                    <div className="p-4 border rounded-lg text-center">
-                        <h3 className="text-lg font-medium">Regular Category</h3>
-                        <p className="text-3xl font-bold text-purple-600">{seniorCounts.categoryCounts.Regular}</p>
-                    </div>
-                    <div className="p-4 border rounded-lg text-center">
-                        <h3 className="text-lg font-medium">Low-income Category</h3>
-                        <p className="text-3xl font-bold text-yellow-600">{seniorCounts.categoryCounts.LowIncome}</p>
-                    </div> */}
+
                     </div>
                 </div>
             )}

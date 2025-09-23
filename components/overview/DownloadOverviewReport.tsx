@@ -1,3 +1,4 @@
+// components\overview\DownloadOverviewReport.tsx
 'use client';
 
 import React from 'react';
@@ -37,7 +38,7 @@ export const DownloadOverviewReport: React.FC<DownloadOverviewReportProps> = ({
       >
         <FileText className="h-4 w-4" />
         <DownloadIcon className="h-4 w-4" />
-        Download PDF Report
+        Download Report
       </Button>
 
       <ReportPreviewModal

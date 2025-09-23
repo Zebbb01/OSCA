@@ -18,6 +18,17 @@ const truncateText = (text: string | number | null | undefined, limit: number = 
   return text;
 };
 
+// A new helper function to render icons
+const renderBenefitStatusIcon = (statusName: string | undefined) => {
+  if (statusName === 'APPROVED') {
+    return <span className="text-green-600 font-bold text-xl ml-2">✔️</span>;
+  }
+  if (statusName === 'REJECT') {
+    return <span className="text-red-600 font-bold text-xl ml-2">❌</span>;
+  }
+  return null; // Or some default icon for other statuses
+};
+
 // ---
 // Column Definitions
 // ---
@@ -116,7 +127,6 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       accessorKey: 'benefits',
       header: 'Benefit(s)',
       cell: ({ row }) => {
-        // Grab the latest application (assuming index 0 is the latest)
         const latestApplication = row.original.Applications?.[0];
         const benefitName = latestApplication?.benefit?.name;
         const statusName = latestApplication?.status?.name;
@@ -131,9 +141,12 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
         }
 
         return (
-          <span className={textColorClass}>
-            {benefitName}
-          </span>
+          <div className="flex items-center">
+            <span className={textColorClass}>
+              {benefitName}
+            </span>
+            {renderBenefitStatusIcon(statusName)}
+          </div>
         );
       },
       accessorFn: (row) => row.Applications?.[0]?.benefit?.name || 'N/A',
@@ -145,11 +158,11 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       header: 'Released Status',
       cell: ({ row }) => {
         const releasedAt = row.original.releasedAt;
-        const statusText = releasedAt ? 'Released' : 'Unreleased';
+        const statusText = releasedAt ? 'Released' : 'Pending';
 
         const statusStyles: Record<string, string> = {
           'Released': 'bg-green-500 text-white',
-          'Unreleased': 'bg-red-500 text-white',
+          'Pending': 'bg-red-500 text-white',
         };
 
         return (
@@ -165,7 +178,7 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       },
       filterFn: (row, columnId, filterValue) => {
         const releasedAt = row.original.releasedAt;
-        const status = releasedAt ? 'Released' : 'Unreleased';
+        const status = releasedAt ? 'Released' : 'Pending';
         if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) {
           return true;
         }
@@ -203,10 +216,14 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
     },
     {
       id: 'documents',
+      accessorKey: 'documents',
       header: 'Documents',
       cell: ({ row }) => {
-        const senior = row.original;
-        return <DocumentViewDialog senior={senior} />;
+        const seniorWithRemarksId = {
+          ...row.original,
+          remarks_id: row.original.remarks_id ?? null,
+        };
+        return <DocumentViewDialog senior={seniorWithRemarksId} />;
       },
     },
   ];

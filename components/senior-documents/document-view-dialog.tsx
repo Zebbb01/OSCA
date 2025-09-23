@@ -23,24 +23,46 @@ interface DocumentViewDialogProps {
 }
 
 export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({ senior }) => {
+  // Debug logging to see what documents are available
+  console.log('Senior data in DocumentViewDialog:', senior);
+  console.log('Senior documents:', senior?.documents);
+  
   if (!senior || !senior.documents || senior.documents.length === 0) {
     return <p className="text-gray-500 text-sm">No documents uploaded.</p>
   }
 
-  // Filter documents into categories
-  const otherDocuments = senior.documents.filter(
-    (doc) => doc.tag !== RegistrationDocumentTag.MEDICAL_ASSISTANCE
+  // Log each document's tag for debugging
+  senior.documents.forEach((doc, index) => {
+    console.log(`Document ${index}:`, {
+      fileName: doc.file_name,
+      tag: doc.tag,
+      isMedicalAssistance: doc.tag === RegistrationDocumentTag.MEDICAL_ASSISTANCE
+    });
+  });
+
+  // Filter documents into categories - benefit requirements vs basic documents
+  const benefitRequirementDocuments = senior.documents.filter(
+    (doc) => doc.benefitRequirement && doc.benefitRequirement.id
   )
-  const medicalAssistanceDocuments = senior.documents.filter(
-    (doc) => doc.tag === RegistrationDocumentTag.MEDICAL_ASSISTANCE
+  
+  const basicDocuments = senior.documents.filter(
+    (doc) => !doc.benefitRequirement || !doc.benefitRequirement.id
   )
 
-  // Determine the default tab value
-  const defaultTab =
-    medicalAssistanceDocuments.length > 0
-      ? 'medical_assistance'
-      : 'other_documents';
+  console.log('Filtered documents:', {
+    benefitRequirementCount: benefitRequirementDocuments.length,
+    basicDocumentsCount: basicDocuments.length,
+    benefitRequirementDocs: benefitRequirementDocuments.map(d => ({ 
+      fileName: d.file_name, 
+      tag: d.tag, 
+      requirementName: d.benefitRequirement?.name,
+      benefitName: d.benefitRequirement?.benefit?.name 
+    })),
+    basicDocs: basicDocuments.map(d => ({ fileName: d.file_name, tag: d.tag }))
+  });
 
+  // Determine the default tab value - prioritize basic documents if they exist
+  const defaultTab = basicDocuments.length > 0 ? 'basic_documents' : 'benefit_requirements';
 
   return (
     <Dialog>
@@ -62,18 +84,18 @@ export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({ senior }
         {/* Tabbed Interface */}
         <Tabs defaultValue={defaultTab} className="flex flex-col flex-grow overflow-hidden">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="other_documents">
-              Required Documents ({otherDocuments.length})
+            <TabsTrigger value="basic_documents" className={basicDocuments.length === 0 ? 'opacity-50' : ''}>
+              Basic Documents ({basicDocuments.length})
             </TabsTrigger>
-            <TabsTrigger value="medical_assistance">
-              Medical Assistance ({medicalAssistanceDocuments.length})
+            <TabsTrigger value="benefit_requirements" className={benefitRequirementDocuments.length === 0 ? 'opacity-50' : ''}>
+              Benefit Requirements ({benefitRequirementDocuments.length})
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="other_documents" className="flex-grow overflow-y-auto mt-4">
-            {otherDocuments.length > 0 ? (
+          <TabsContent value="basic_documents" className="flex-grow overflow-y-auto mt-4">
+            {basicDocuments.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pr-2">
-                {otherDocuments.map((doc: RegistrationDocument) => (
+                {basicDocuments.map((doc: RegistrationDocument) => (
                   <div
                     key={doc.id}
                     className="bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col overflow-hidden"
@@ -107,6 +129,7 @@ export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({ senior }
                           {formatDocumentTagName(doc.tag)}
                         </h5>
                         <p className="text-sm text-gray-500">Uploaded: {formatDateTime(doc.createdAt)}</p>
+                        <p className="text-xs text-gray-400">Tag: {doc.tag}</p>
                       </div>
                       <div className="mt-4">
                         {doc.imageUrl ? (
@@ -127,14 +150,17 @@ export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({ senior }
                 ))}
               </div>
             ) : (
-              <p className="text-center text-gray-500 mt-8">No required documents available.</p>
+              <div className="text-center text-gray-500 mt-8">
+                <p>No basic documents available.</p>
+                <p className="text-sm mt-2">All documents may be related to benefit requirements.</p>
+              </div>
             )}
           </TabsContent>
 
-          <TabsContent value="medical_assistance" className="flex-grow overflow-y-auto mt-4">
-            {medicalAssistanceDocuments.length > 0 ? (
+          <TabsContent value="benefit_requirements" className="flex-grow overflow-y-auto mt-4">
+            {benefitRequirementDocuments.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pr-2">
-                {medicalAssistanceDocuments.map((doc: RegistrationDocument) => (
+                {benefitRequirementDocuments.map((doc: RegistrationDocument) => (
                   <div
                     key={doc.id}
                     className="bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col overflow-hidden"
@@ -165,9 +191,15 @@ export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({ senior }
                     <div className="p-4 flex-grow flex flex-col justify-between">
                       <div>
                         <h5 className="mb-1 text-lg font-semibold text-gray-900 truncate">
-                          {formatDocumentTagName(doc.tag)}
+                          {doc.benefitRequirement?.name || formatDocumentTagName(doc.tag)}
                         </h5>
+                        {doc.benefitRequirement?.benefit?.name && (
+                          <p className="text-sm font-medium text-emerald-600 mb-1">
+                            For: {doc.benefitRequirement.benefit.name}
+                          </p>
+                        )}
                         <p className="text-sm text-gray-500">Uploaded: {formatDateTime(doc.createdAt)}</p>
+                        <p className="text-xs text-gray-400">Tag: {doc.tag}</p>
                       </div>
                       <div className="mt-4">
                         {doc.imageUrl ? (
@@ -188,7 +220,7 @@ export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({ senior }
                 ))}
               </div>
             ) : (
-              <p className="text-center text-gray-500 mt-8">No medical assistance documents available.</p>
+              <p className="text-center text-gray-500 mt-8">No benefit requirement documents available.</p>
             )}
           </TabsContent>
         </Tabs>

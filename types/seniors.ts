@@ -41,17 +41,28 @@ export interface RegistrationDocumentType {
     medical_assistance?: File[] | FileList | null;
 }
 
-export interface RegistrationDocument {
+export interface BenefitRequirementWithBenefit {
+  id: number;
+  name: string;
+  benefit?: {
     id: number;
-    tag: string;
-    path: string;
-    public_id?: string;
-    imageUrl?: string;
-    file_name: string;
-    seniors_id: number;
-    createdAt: Date;
-    updatedAt: Date;
+    name: string;
+  };
 }
+export interface RegistrationDocument {
+  id: number;
+  tag: string;
+  path: string;
+  public_id?: string;
+  imageUrl?: string;
+  file_name: string;
+  seniors_id: number;
+  createdAt: string;
+  updatedAt: string;
+  benefit_requirement_id?: number;
+  benefitRequirement?: BenefitRequirementWithBenefit; // Add this relationship
+}
+
 
 export interface SeniorsDocuments {
     id: number;
