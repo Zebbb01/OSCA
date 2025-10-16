@@ -12379,6 +12379,7 @@ export namespace Prisma {
     senior_id: number | null
     status_id: number | null
     category_id: number | null
+    rejectionReason: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -12389,6 +12390,7 @@ export namespace Prisma {
     senior_id: number | null
     status_id: number | null
     category_id: number | null
+    rejectionReason: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -12399,6 +12401,7 @@ export namespace Prisma {
     senior_id: number
     status_id: number
     category_id: number
+    rejectionReason: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -12427,6 +12430,7 @@ export namespace Prisma {
     senior_id?: true
     status_id?: true
     category_id?: true
+    rejectionReason?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -12437,6 +12441,7 @@ export namespace Prisma {
     senior_id?: true
     status_id?: true
     category_id?: true
+    rejectionReason?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -12447,6 +12452,7 @@ export namespace Prisma {
     senior_id?: true
     status_id?: true
     category_id?: true
+    rejectionReason?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -12544,6 +12550,7 @@ export namespace Prisma {
     senior_id: number
     status_id: number
     category_id: number | null
+    rejectionReason: string | null
     createdAt: Date
     updatedAt: Date
     _count: ApplicationsCountAggregateOutputType | null
@@ -12573,6 +12580,7 @@ export namespace Prisma {
     senior_id?: boolean
     status_id?: boolean
     category_id?: boolean
+    rejectionReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     senior?: boolean | SeniorDefaultArgs<ExtArgs>
@@ -12587,6 +12595,7 @@ export namespace Prisma {
     senior_id?: boolean
     status_id?: boolean
     category_id?: boolean
+    rejectionReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     senior?: boolean | SeniorDefaultArgs<ExtArgs>
@@ -12601,6 +12610,7 @@ export namespace Prisma {
     senior_id?: boolean
     status_id?: boolean
     category_id?: boolean
+    rejectionReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     senior?: boolean | SeniorDefaultArgs<ExtArgs>
@@ -12615,11 +12625,12 @@ export namespace Prisma {
     senior_id?: boolean
     status_id?: boolean
     category_id?: boolean
+    rejectionReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ApplicationsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "benefit_id" | "senior_id" | "status_id" | "category_id" | "createdAt" | "updatedAt", ExtArgs["result"]["applications"]>
+  export type ApplicationsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "benefit_id" | "senior_id" | "status_id" | "category_id" | "rejectionReason" | "createdAt" | "updatedAt", ExtArgs["result"]["applications"]>
   export type ApplicationsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     senior?: boolean | SeniorDefaultArgs<ExtArgs>
     benefit?: boolean | BenefitsDefaultArgs<ExtArgs>
@@ -12653,6 +12664,7 @@ export namespace Prisma {
       senior_id: number
       status_id: number
       category_id: number | null
+      rejectionReason: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["applications"]>
@@ -13087,6 +13099,7 @@ export namespace Prisma {
     readonly senior_id: FieldRef<"Applications", 'Int'>
     readonly status_id: FieldRef<"Applications", 'Int'>
     readonly category_id: FieldRef<"Applications", 'Int'>
+    readonly rejectionReason: FieldRef<"Applications", 'String'>
     readonly createdAt: FieldRef<"Applications", 'DateTime'>
     readonly updatedAt: FieldRef<"Applications", 'DateTime'>
   }
@@ -13673,6 +13686,7 @@ export namespace Prisma {
     senior_id: 'senior_id',
     status_id: 'status_id',
     category_id: 'category_id',
+    rejectionReason: 'rejectionReason',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -14496,6 +14510,7 @@ export namespace Prisma {
     senior_id?: IntFilter<"Applications"> | number
     status_id?: IntFilter<"Applications"> | number
     category_id?: IntNullableFilter<"Applications"> | number | null
+    rejectionReason?: StringNullableFilter<"Applications"> | string | null
     createdAt?: DateTimeFilter<"Applications"> | Date | string
     updatedAt?: DateTimeFilter<"Applications"> | Date | string
     senior?: XOR<SeniorScalarRelationFilter, SeniorWhereInput>
@@ -14510,6 +14525,7 @@ export namespace Prisma {
     senior_id?: SortOrder
     status_id?: SortOrder
     category_id?: SortOrderInput | SortOrder
+    rejectionReason?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     senior?: SeniorOrderByWithRelationInput
@@ -14527,6 +14543,7 @@ export namespace Prisma {
     senior_id?: IntFilter<"Applications"> | number
     status_id?: IntFilter<"Applications"> | number
     category_id?: IntNullableFilter<"Applications"> | number | null
+    rejectionReason?: StringNullableFilter<"Applications"> | string | null
     createdAt?: DateTimeFilter<"Applications"> | Date | string
     updatedAt?: DateTimeFilter<"Applications"> | Date | string
     senior?: XOR<SeniorScalarRelationFilter, SeniorWhereInput>
@@ -14541,6 +14558,7 @@ export namespace Prisma {
     senior_id?: SortOrder
     status_id?: SortOrder
     category_id?: SortOrderInput | SortOrder
+    rejectionReason?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ApplicationsCountOrderByAggregateInput
@@ -14559,6 +14577,7 @@ export namespace Prisma {
     senior_id?: IntWithAggregatesFilter<"Applications"> | number
     status_id?: IntWithAggregatesFilter<"Applications"> | number
     category_id?: IntNullableWithAggregatesFilter<"Applications"> | number | null
+    rejectionReason?: StringNullableWithAggregatesFilter<"Applications"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Applications"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Applications"> | Date | string
   }
@@ -15302,6 +15321,7 @@ export namespace Prisma {
   }
 
   export type ApplicationsCreateInput = {
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     senior: SeniorCreateNestedOneWithoutApplicationsInput
@@ -15316,11 +15336,13 @@ export namespace Prisma {
     senior_id: number
     status_id: number
     category_id?: number | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type ApplicationsUpdateInput = {
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     senior?: SeniorUpdateOneRequiredWithoutApplicationsNestedInput
@@ -15335,6 +15357,7 @@ export namespace Prisma {
     senior_id?: IntFieldUpdateOperationsInput | number
     status_id?: IntFieldUpdateOperationsInput | number
     category_id?: NullableIntFieldUpdateOperationsInput | number | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15345,11 +15368,13 @@ export namespace Prisma {
     senior_id: number
     status_id: number
     category_id?: number | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type ApplicationsUpdateManyMutationInput = {
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15360,6 +15385,7 @@ export namespace Prisma {
     senior_id?: IntFieldUpdateOperationsInput | number
     status_id?: IntFieldUpdateOperationsInput | number
     category_id?: NullableIntFieldUpdateOperationsInput | number | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16059,6 +16085,7 @@ export namespace Prisma {
     senior_id?: SortOrder
     status_id?: SortOrder
     category_id?: SortOrder
+    rejectionReason?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -16077,6 +16104,7 @@ export namespace Prisma {
     senior_id?: SortOrder
     status_id?: SortOrder
     category_id?: SortOrder
+    rejectionReason?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -16087,6 +16115,7 @@ export namespace Prisma {
     senior_id?: SortOrder
     status_id?: SortOrder
     category_id?: SortOrder
+    rejectionReason?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -17079,6 +17108,7 @@ export namespace Prisma {
   }
 
   export type ApplicationsCreateWithoutSeniorInput = {
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     benefit: BenefitsCreateNestedOneWithoutApplicationsInput
@@ -17091,6 +17121,7 @@ export namespace Prisma {
     benefit_id: number
     status_id: number
     category_id?: number | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17188,6 +17219,7 @@ export namespace Prisma {
     senior_id?: IntFilter<"Applications"> | number
     status_id?: IntFilter<"Applications"> | number
     category_id?: IntNullableFilter<"Applications"> | number | null
+    rejectionReason?: StringNullableFilter<"Applications"> | string | null
     createdAt?: DateTimeFilter<"Applications"> | Date | string
     updatedAt?: DateTimeFilter<"Applications"> | Date | string
   }
@@ -17455,6 +17487,7 @@ export namespace Prisma {
   }
 
   export type ApplicationsCreateWithoutCategoryInput = {
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     senior: SeniorCreateNestedOneWithoutApplicationsInput
@@ -17467,6 +17500,7 @@ export namespace Prisma {
     benefit_id: number
     senior_id: number
     status_id: number
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17498,6 +17532,7 @@ export namespace Prisma {
   }
 
   export type ApplicationsCreateWithoutStatusInput = {
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     senior: SeniorCreateNestedOneWithoutApplicationsInput
@@ -17510,6 +17545,7 @@ export namespace Prisma {
     benefit_id: number
     senior_id: number
     category_id?: number | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17541,6 +17577,7 @@ export namespace Prisma {
   }
 
   export type ApplicationsCreateWithoutBenefitInput = {
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     senior: SeniorCreateNestedOneWithoutApplicationsInput
@@ -17553,6 +17590,7 @@ export namespace Prisma {
     senior_id: number
     status_id: number
     category_id?: number | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -18043,6 +18081,7 @@ export namespace Prisma {
     benefit_id: number
     status_id: number
     category_id?: number | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -18083,6 +18122,7 @@ export namespace Prisma {
   }
 
   export type ApplicationsUpdateWithoutSeniorInput = {
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     benefit?: BenefitsUpdateOneRequiredWithoutApplicationsNestedInput
@@ -18095,6 +18135,7 @@ export namespace Prisma {
     benefit_id?: IntFieldUpdateOperationsInput | number
     status_id?: IntFieldUpdateOperationsInput | number
     category_id?: NullableIntFieldUpdateOperationsInput | number | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18104,6 +18145,7 @@ export namespace Prisma {
     benefit_id?: IntFieldUpdateOperationsInput | number
     status_id?: IntFieldUpdateOperationsInput | number
     category_id?: NullableIntFieldUpdateOperationsInput | number | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18208,11 +18250,13 @@ export namespace Prisma {
     benefit_id: number
     senior_id: number
     status_id: number
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type ApplicationsUpdateWithoutCategoryInput = {
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     senior?: SeniorUpdateOneRequiredWithoutApplicationsNestedInput
@@ -18225,6 +18269,7 @@ export namespace Prisma {
     benefit_id?: IntFieldUpdateOperationsInput | number
     senior_id?: IntFieldUpdateOperationsInput | number
     status_id?: IntFieldUpdateOperationsInput | number
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18234,6 +18279,7 @@ export namespace Prisma {
     benefit_id?: IntFieldUpdateOperationsInput | number
     senior_id?: IntFieldUpdateOperationsInput | number
     status_id?: IntFieldUpdateOperationsInput | number
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18243,11 +18289,13 @@ export namespace Prisma {
     benefit_id: number
     senior_id: number
     category_id?: number | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type ApplicationsUpdateWithoutStatusInput = {
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     senior?: SeniorUpdateOneRequiredWithoutApplicationsNestedInput
@@ -18260,6 +18308,7 @@ export namespace Prisma {
     benefit_id?: IntFieldUpdateOperationsInput | number
     senior_id?: IntFieldUpdateOperationsInput | number
     category_id?: NullableIntFieldUpdateOperationsInput | number | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18269,6 +18318,7 @@ export namespace Prisma {
     benefit_id?: IntFieldUpdateOperationsInput | number
     senior_id?: IntFieldUpdateOperationsInput | number
     category_id?: NullableIntFieldUpdateOperationsInput | number | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18278,6 +18328,7 @@ export namespace Prisma {
     senior_id: number
     status_id: number
     category_id?: number | null
+    rejectionReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -18290,6 +18341,7 @@ export namespace Prisma {
   }
 
   export type ApplicationsUpdateWithoutBenefitInput = {
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     senior?: SeniorUpdateOneRequiredWithoutApplicationsNestedInput
@@ -18302,6 +18354,7 @@ export namespace Prisma {
     senior_id?: IntFieldUpdateOperationsInput | number
     status_id?: IntFieldUpdateOperationsInput | number
     category_id?: NullableIntFieldUpdateOperationsInput | number | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18311,6 +18364,7 @@ export namespace Prisma {
     senior_id?: IntFieldUpdateOperationsInput | number
     status_id?: IntFieldUpdateOperationsInput | number
     category_id?: NullableIntFieldUpdateOperationsInput | number | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

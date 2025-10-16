@@ -60,16 +60,6 @@ export async function createSenior(formData: FormData) {
       pwd: seniorData.pwd ?? false,
       low_income: seniorData.lowIncome ?? false,
       remarks_id: newRemark.id,
-      Applications: {
-        create: {
-          benefit: { connect: { id: 1 } },
-          status: { connect: { id: 1 } },
-          category: initialCategoryId ? { connect: { id: initialCategoryId } } : undefined,
-        },
-      },
-    },
-    include: {
-      Applications: true,
     },
   });
 

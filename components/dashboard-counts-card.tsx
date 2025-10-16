@@ -53,31 +53,30 @@ export const DashboardCountsCard = () => {
             {seniorCounts && (
                 <div className="flex justify-center">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 w-full max-w-5xl">
-                        <div className="p-4 border rounded-lg text-center flex flex-col justify-center">
-                            <h3 className="text-lg font-medium">Total Seniors</h3>
-                            <p className="text-3xl font-bold text-green-600">
-                                {seniorCounts.totalSeniors}
+                        <div className="p-4 border rounded-lg text-center flex flex-col justify-center bg-blue-50">
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">Number of Regular<br/>Senior Citizens</h3>
+                            <p className="text-4xl font-bold text-blue-600">
+                                {seniorCounts.categoryCounts.Regular}
                             </p>
                         </div>
-                        <div className="p-4 border rounded-lg text-center flex flex-col justify-center">
-                            <h3 className="text-lg font-medium">Total PWD Seniors</h3>
-                            <p className="text-3xl font-bold text-gray-600">
+                        <div className="p-4 border rounded-lg text-center flex flex-col justify-center bg-purple-50">
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">Number of PWD<br/>Senior Citizens</h3>
+                            <p className="text-4xl font-bold text-purple-600">
                                 {seniorCounts.totalPwdSeniors}
                             </p>
                         </div>
-                        <div className="p-4 border rounded-lg text-center flex flex-col justify-center">
-                            <h3 className="text-lg font-medium">Regular Seniors<br/>(3days ago)</h3>
-                            <p className="text-3xl font-bold text-blue-600">
+                        <div className="p-4 border rounded-lg text-center flex flex-col justify-center bg-green-50">
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">Number of Newly<br/>Registered Seniors</h3>
+                            <p className="text-4xl font-bold text-green-600">
                                 {seniorCounts.newlyRegisteredSeniors}
                             </p>
                         </div>
-                        <div className="p-4 border rounded-lg text-center flex flex-col justify-center">
-                            <h3 className="text-lg font-medium">Number of Brgy</h3> {/* Changed title */}
-                            <p className="text-3xl font-bold text-red-600"> {/* Display total count */}
-                                {totalBarangays}
+                        <div className="p-4 border rounded-lg text-center flex flex-col justify-center bg-orange-50">
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">Overall Total</h3>
+                            <p className="text-4xl font-bold text-orange-600">
+                                {seniorCounts.totalSeniors}
                             </p>
                         </div>
-
                     </div>
                 </div>
             )}

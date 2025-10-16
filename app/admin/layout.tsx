@@ -35,51 +35,53 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <AppSidebar />
 
             <SidebarInset>
-                <header className="bg-green-600 text-white w-full flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-                    <div className="flex items-center justify-between w-full px-4"> {/* Added justify-between and w-full */}
-                        <div className="flex items-center gap-2"> {/* Group breadcrumbs and trigger */}
-                            <SidebarTrigger className="-ml-1" />
+                <header className="bg-green-600 text-white w-full flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 shadow-md">
+                    <div className="flex items-center justify-between w-full px-4">
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <SidebarTrigger className="-ml-1 text-white hover:bg-white/20 transition-colors" />
 
                             <Separator
                                 orientation="vertical"
-                                className="mr-2 data-[orientation=vertical]:h-4"
+                                className="mr-2 h-4 bg-white/30"
                             />
 
-                            <Breadcrumb>
-                                <BreadcrumbList className="flex flex-wrap items-center gap-1">
-                                    {pathSegments.map((segment, index) => {
-                                        const href = '/' + pathSegments.slice(0, index + 1).join('/')
-                                        const isLast = index === pathSegments.length - 1
+                            <div className="min-w-0 flex-1 group-has-data-[collapsible=icon]/sidebar-wrapper:hidden">
+                                <Breadcrumb>
+                                    <BreadcrumbList className="flex flex-wrap items-center gap-1">
+                                        {pathSegments.map((segment, index) => {
+                                            const href = '/' + pathSegments.slice(0, index + 1).join('/')
+                                            const isLast = index === pathSegments.length - 1
 
-                                        return (
-                                            <div
-                                                key={href}
-                                                className="flex items-center gap-1 text-white"
-                                            >
-                                                <BreadcrumbItem>
-                                                    {isLast ? (
-                                                        <BreadcrumbPage className="text-white">
-                                                            {formatSegment(segment)}
-                                                        </BreadcrumbPage>
-                                                    ) : (
-                                                        <BreadcrumbLink
-                                                            href={href}
-                                                            className="text-white"
-                                                        >
-                                                            {formatSegment(segment)}
-                                                        </BreadcrumbLink>
-                                                    )}
-                                                </BreadcrumbItem>
+                                            return (
+                                                <div
+                                                    key={href}
+                                                    className="flex items-center gap-1 text-white"
+                                                >
+                                                    <BreadcrumbItem>
+                                                        {isLast ? (
+                                                            <BreadcrumbPage className="text-white font-medium">
+                                                                {formatSegment(segment)}
+                                                            </BreadcrumbPage>
+                                                        ) : (
+                                                            <BreadcrumbLink
+                                                                href={href}
+                                                                className="text-white/90 hover:text-white transition-colors"
+                                                            >
+                                                                {formatSegment(segment)}
+                                                            </BreadcrumbLink>
+                                                        )}
+                                                    </BreadcrumbItem>
 
-                                                {!isLast && <BreadcrumbSeparator />}
-                                            </div>
-                                        )
-                                    })}
-                                </BreadcrumbList>
-                            </Breadcrumb>
+                                                    {!isLast && <BreadcrumbSeparator className="text-white/60" />}
+                                                </div>
+                                            )
+                                        })}
+                                    </BreadcrumbList>
+                                </Breadcrumb>
+                            </div>
                         </div>
 
-                        <div className="px-3 py-1 rounded-full">
+                        <div className="flex-shrink-0">
                             <NotificationDropdown userRole={userRole} />
                         </div>
                     </div>

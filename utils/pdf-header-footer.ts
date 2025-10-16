@@ -7,6 +7,7 @@ interface HeaderFooterOptions {
   totalPages: number;
   title: string;
   subtitle?: string;
+  preparedBy?: string;
 }
 
 export const addPdfHeaderAndFooter = async (options: HeaderFooterOptions) => {
@@ -216,4 +217,30 @@ export const getContentBoundaries = () => {
     leftMargin: 14,
     rightMargin: 14
   };
+};
+
+// Add "Prepared by" section to PDF
+export const addPreparedBySection = (doc: jsPDF, preparedBy: string = 'OSCA Administrator') => {
+  const pageHeight = doc.internal.pageSize.height;
+  const pageWidth = doc.internal.pageSize.width;
+  const boundaries = getContentBoundaries();
+  
+  // Position above footer
+  const preparedByY = pageHeight - boundaries.bottomMargin - 15;
+  
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(0, 0, 0);
+  doc.text('Prepared by:', boundaries.leftMargin, preparedByY);
+  
+  doc.setFont('helvetica', 'bold');
+  doc.text(preparedBy, boundaries.leftMargin, preparedByY + 5);
+  
+  // Add signature line
+  doc.setLineWidth(0.5);
+  doc.line(boundaries.leftMargin + 50, preparedByY + 3, boundaries.leftMargin + 100, preparedByY + 3);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.text('Signature over Printed Name', boundaries.leftMargin + 50, preparedByY + 7);
 };

@@ -17,14 +17,6 @@ import {
 } from '@/components/ui/sidebar';
 
 import Image from 'next/image';
-import {
-    faDesktop,
-    faFile,
-    faGear,
-    faMoneyBillWave,
-    faPersonCane,
-    IconDefinition,
-} from '@fortawesome/free-solid-svg-icons';
 import { useSession } from 'next-auth/react';
 import { NavUser } from '@/components/nav-user';
 
@@ -36,7 +28,6 @@ interface NavSubItem {
 
 interface NavMainItem {
     title: string;
-    icon?: IconDefinition;
     roles?: string[];
     items: NavSubItem[];
 }
@@ -194,58 +185,65 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         })
         .filter(Boolean) as NavMainItem[];
 
-    const dashboardLink =
-        userRole === 'ADMIN' ? (
-            <SidebarMenuButton>
-                <LayoutDashboard />
-                <a href={'/admin/dashboard'}>
-                    <span>Dashboard</span>
-                </a>
-            </SidebarMenuButton>
-        ) : (
-            <SidebarMenuButton>
-                <LayoutDashboard />
-                <a href={'/staff/dashboard'}>
-                    <span>Dashboard</span>
-                </a>
-            </SidebarMenuButton>
-        );
-
     return (
-        <Sidebar collapsible="icon" {...props}>
-            <SidebarHeader>
+        <Sidebar collapsible="icon" className="border-r border-gray-200" {...props}>
+            <SidebarHeader className="border-b border-gray-200 bg-gradient-to-r from-green-50 to-green-100">
                 <SidebarMenuButton
                     size="lg"
-                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                    className="data-[state=open]:bg-green-100 data-[state=open]:text-green-800 hover:bg-green-100 transition-colors"
                 >
-                    <div className="flex items-center gap-2">
-                        <Image
-                            src={'/img/cthall-logo.jpg'}
-                            width={30}
-                            height={30}
-                            alt="OSCA Logo"
-                            className="rounded-full"
-                        />
+                    <div className="flex items-center gap-3">
+                        <div className="relative">
+                            <Image
+                                src={'/img/cthall-logo.jpg'}
+                                width={32}
+                                height={32}
+                                alt="OSCA Logo"
+                                className="rounded-full ring-2 ring-green-200"
+                            />
+                        </div>
                         <div className="flex flex-col">
-                            <span className="truncate font-medium">OSCA</span>
-                            <span className="truncate text-xs">Government</span>
+                            <span className="truncate font-bold text-green-800">OSCA</span>
+                            <span className="truncate text-xs text-green-600">Government</span>
                         </div>
                     </div>
                 </SidebarMenuButton>
             </SidebarHeader>
 
-            <SidebarContent>
-                {dashboardLink}
+            <SidebarContent className="bg-white">
+                <SidebarGroup className="px-2 py-2">
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            {userRole === 'ADMIN' ? (
+                                <SidebarMenuButton asChild className="hover:bg-green-50 hover:text-green-700 transition-colors">
+                                    <a href={'/admin/dashboard'} className="flex items-center gap-3">
+                                        <LayoutDashboard className="h-4 w-4" />
+                                        <span className="font-medium">Dashboard</span>
+                                    </a>
+                                </SidebarMenuButton>
+                            ) : (
+                                <SidebarMenuButton asChild className="hover:bg-green-50 hover:text-green-700 transition-colors">
+                                    <a href={'/staff/dashboard'} className="flex items-center gap-3">
+                                        <LayoutDashboard className="h-4 w-4" />
+                                        <span className="font-medium">Dashboard</span>
+                                    </a>
+                                </SidebarMenuButton>
+                            )}
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </SidebarGroup>
 
                 {filteredNav.map((item) => (
-                    <SidebarGroup key={item.title}>
-                        <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
+                    <SidebarGroup key={item.title} className="px-2 py-1">
+                        <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 py-1">
+                            {item.title}
+                        </SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 {item.items.map((subItem) => (
                                     <SidebarMenuItem key={subItem.title}>
-                                        <SidebarMenuButton asChild>
-                                            <a href={subItem.url} className="pl-6">
+                                        <SidebarMenuButton asChild className="hover:bg-green-50 hover:text-green-700 transition-colors">
+                                            <a href={subItem.url} className="pl-6 py-2 text-sm font-medium">
                                                 {subItem.title}
                                             </a>
                                         </SidebarMenuButton>
@@ -257,7 +255,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 ))}
             </SidebarContent>
 
-            <SidebarFooter>
+            <SidebarFooter className="border-t border-gray-200 bg-gray-50">
                 {status === 'loading' ? (
                     <div className="p-4 text-sm text-gray-500">Loading user...</div>
                 ) : session?.user ? (

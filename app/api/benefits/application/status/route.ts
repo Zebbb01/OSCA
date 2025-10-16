@@ -26,11 +26,22 @@ export async function PUT(request: NextRequest) {
         const res = await request.json()
         console.log('res body json: ', res)
 
+        // Prepare update data
+        const updateData: {
+            status_id: number;
+            rejectionReason?: string | null;
+        } = {
+            status_id: res.status_id,
+        }
+
+        // Add rejection reason if provided, otherwise set to null
+        if (res.rejectionReason !== undefined) {
+            updateData.rejectionReason = res.rejectionReason || null
+        }
+
         const updatedApplictionStatus = await prisma.applications.update({
             where: { id: res.application_id },
-            data: {
-                status_id: res.status_id,
-            },
+            data: updateData,
         })
 
         const resp: PUTApiResponse = {

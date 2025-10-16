@@ -172,11 +172,12 @@ model BenefitRequirements {
 
 // APPLICATIONS TABLE SCHEMA
 model Applications {
-  id          Int  @id @default(autoincrement())
-  benefit_id  Int
-  senior_id   Int
-  status_id   Int
-  category_id Int?
+  id              Int     @id @default(autoincrement())
+  benefit_id      Int
+  senior_id       Int
+  status_id       Int
+  category_id     Int?
+  rejectionReason String? // Optional field for rejection reason
 
   senior   Senior          @relation(fields: [senior_id], references: [id], onDelete: Cascade)
   benefit  Benefits        @relation(fields: [benefit_id], references: [id])

@@ -162,7 +162,7 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
 
         const statusStyles: Record<string, string> = {
           'Released': 'bg-green-500 text-white',
-          'Pending': 'bg-red-500 text-white',
+          'Pending': 'bg-gray-500 text-white',
         };
 
         return (

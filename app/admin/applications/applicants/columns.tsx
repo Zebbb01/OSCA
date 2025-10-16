@@ -105,6 +105,27 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
       accessorFn: (row) => row.status.name,
     },
     {
+      accessorKey: 'rejectionReason',
+      header: 'Rejection Reason',
+      cell: ({ row }) => {
+        const reason = row.original.rejectionReason;
+        const status = row.original.status.name;
+        
+        // Only show if status is REJECT
+        if (status === 'REJECT' || status === 'REJECTED') {
+          return (
+            <div className="max-w-xs">
+              <span className="text-sm text-gray-700">
+                {reason || 'No reason provided'}
+              </span>
+            </div>
+          );
+        }
+        return <span className="text-gray-400 text-sm">N/A</span>;
+      },
+      accessorFn: (row) => row.rejectionReason || '',
+    },
+    {
       accessorKey: 'createdAt',
       header: 'Applied Date',
       cell: ({ row }) => {

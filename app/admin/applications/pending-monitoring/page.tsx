@@ -175,7 +175,7 @@ const NotReleaseMonitoringPage = () => {
           Loading Senior Records...
         </div>
       ) : seniorQuery.isError ? (
-        <div className="text-center py-10 text-red-500">
+        <div className="text-center py-10 text-g-500">
           Error loading records: {seniorQuery.error?.message || 'An unexpected error occurred.'}
         </div>
       ) : notReceivedSeniors.length === 0 ? (
