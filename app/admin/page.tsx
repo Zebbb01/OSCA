@@ -16,7 +16,7 @@ const AdminRoot = () => {
         if (userRole === 'ADMIN') {
             router.replace('/admin/dashboard')
         } else if (userRole === 'USER') { // Assuming 'USER' role is for staff
-            router.replace('/staff/senior-citizen/record')
+            router.replace('/staff/record')
         } else {
             // Handle other roles or unauthenticated users, e.g., redirect to login
             router.replace('/'); // Or your login page path

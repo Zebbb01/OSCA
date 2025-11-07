@@ -196,6 +196,40 @@ model Applications {
   @@map("applications")
 }
 
+// FINANCIAL TRANSACTION TABLE SCHEMA
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  date        DateTime
+  benefits    String
+  description String
+  amount      Float
+  type        TransactionType
+  category    String
+  seniorName  String?
+  barangay    String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("transaction")
+}
+
+model GovernmentFund {
+  id             Int      @id @default(autoincrement())
+  currentBalance Float    @default(500000)
+  lastUpdatedBy  String?
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("government_fund")
+}
+
+enum TransactionType {
+  released
+  pending
+}
+
 enum Gender {
   male
   female

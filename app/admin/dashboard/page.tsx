@@ -62,34 +62,34 @@ const ageDistributionData = [
 
 // Admin-specific metrics
 const adminMetrics = [
-    { 
-        title: 'Active Staff', 
-        value: '12', 
-        change: '+2', 
+    {
+        title: 'Active Staff',
+        value: '12',
+        change: '+2',
         icon: Shield,
         color: 'text-blue-600',
         bgColor: 'bg-blue-50'
     },
-    { 
-        title: 'Pending Verifications', 
-        value: '23', 
-        change: '-5', 
+    {
+        title: 'Pending Verifications',
+        value: '23',
+        change: '-5',
         icon: FileText,
         color: 'text-orange-600',
         bgColor: 'bg-orange-50'
     },
-    { 
-        title: 'System Uptime', 
-        value: '99.8%', 
-        change: '+0.1%', 
+    {
+        title: 'System Uptime',
+        value: '99.8%',
+        change: '+0.1%',
         icon: Activity,
         color: 'text-green-600',
         bgColor: 'bg-green-50'
     },
-    { 
-        title: 'Data Accuracy', 
-        value: '97.2%', 
-        change: '+1.2%', 
+    {
+        title: 'Data Accuracy',
+        value: '97.2%',
+        change: '+1.2%',
         icon: TrendingUp,
         color: 'text-purple-600',
         bgColor: 'bg-purple-50'
@@ -134,202 +134,13 @@ const chartConfig = {
 const DashboardPage = () => {
     return (
         <div className="space-y-6 p-6">
-            
-            {/* Senior Counts Section */}
-            <DashboardCountsCard />
-            {/* Admin-specific metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {adminMetrics.map((metric, index) => {
-                    const Icon = metric.icon
-                    return (
-                        <Card key={index} className="relative overflow-hidden">
-                            <CardContent className="p-6">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-medium text-gray-600">{metric.title}</p>
-                                        <p className="text-2xl font-bold">{metric.value}</p>
-                                        <p className={`text-sm ${metric.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                                            {metric.change} from last month
-                                        </p>
-                                    </div>
-                                    <div className={`p-3 rounded-full ${metric.bgColor}`}>
-                                        <Icon className={`h-6 w-6 ${metric.color}`} />
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )
-                })}
-            </div>
-
-            {/* First row of charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Senior Categories Pie Chart */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Senior Counts Section */}
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Senior Categories Distribution</CardTitle>
-                        <CardDescription>Breakdown by senior citizen categories</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ResponsiveContainer width="100%" height={250}>
-                            <PieChart>
-                                <Pie
-                                    data={seniorCategoriesData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={100}
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
-                                    {seniorCategoriesData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                                <Legend />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </CardContent>
+                    <DashboardCountsCard />
                 </Card>
 
-                {/* Staff Activity Area Chart */}
-                <Card className="lg:col-span-2">
-                    <CardHeader>
-                        <CardTitle>Staff Activity Overview</CardTitle>
-                        <CardDescription>Monthly staff performance metrics</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ResponsiveContainer width="100%" height={250}>
-                            <AreaChart data={staffActivityData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="month" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Area 
-                                    type="monotone" 
-                                    dataKey="registrations" 
-                                    stackId="1" 
-                                    stroke="#22c55e" 
-                                    fill="#22c55e" 
-                                    fillOpacity={0.6}
-                                />
-                                <Area 
-                                    type="monotone" 
-                                    dataKey="updates" 
-                                    stackId="1" 
-                                    stroke="#3b82f6" 
-                                    fill="#3b82f6" 
-                                    fillOpacity={0.6}
-                                />
-                                <Area 
-                                    type="monotone" 
-                                    dataKey="verifications" 
-                                    stackId="1" 
-                                    stroke="#f59e0b" 
-                                    fill="#f59e0b" 
-                                    fillOpacity={0.6}
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Second row - Age Distribution and Barangay Distribution */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <BarChartComponent
-                    title="Age Distribution by Gender"
-                    description="Senior citizen age groups by gender"
-                    chartData={ageDistributionData}
-                    chartConfig={{
-                        male: { label: 'Male', color: '#3b82f6' },
-                        female: { label: 'Female', color: '#ec4899' }
-                    }}
-                    xAxisKey="ageGroup"
-                />
-
-                <BarChartComponent
-                    title="Barangay Distribution"
-                    description="Senior distribution across barangays"
-                    chartData={barangayDistributionData}
-                    chartConfig={{
-                        pwd: { label: 'PWD', color: '#8b5cf6' },
-                        regular: { label: 'Regular', color: '#22c55e' }
-                    }}
-                    xAxisKey="barangay"
-                />
-            </div>
-
-            {/* Third row - Original charts enhanced */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <BarChartComponent
-                    title="Monthly Registered Seniors"
-                    description="Monthly registration trends with admin insights"
-                    chartData={monthlyRegisteredChartData}
-                    chartConfig={chartConfig}
-                    xAxisKey="month"
-                />
-
-                <LineChartComponent
-                    title="Yearly Registration Growth"
-                    description="Long-term senior registration trends"
-                    chartData={yearlyRegisteredChartData}
-                    chartConfig={chartConfig}
-                    xAxisKey="year"
-                />
-            </div>
-
-            {/* System Health and Quick Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <Card className="lg:col-span-2">
-                    <CardHeader>
-                        <CardTitle>System Health Monitor</CardTitle>
-                        <CardDescription>Real-time system performance indicators</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium">Database Performance</span>
-                                <div className="flex items-center space-x-2">
-                                    <div className="w-24 bg-gray-200 rounded-full h-2">
-                                        <div className="bg-green-600 h-2 rounded-full" style={{ width: '92%' }}></div>
-                                    </div>
-                                    <span className="text-sm">92%</span>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium">API Response Time</span>
-                                <div className="flex items-center space-x-2">
-                                    <div className="w-24 bg-gray-200 rounded-full h-2">
-                                        <div className="bg-blue-600 h-2 rounded-full" style={{ width: '88%' }}></div>
-                                    </div>
-                                    <span className="text-sm">156ms</span>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium">Server Load</span>
-                                <div className="flex items-center space-x-2">
-                                    <div className="w-24 bg-gray-200 rounded-full h-2">
-                                        <div className="bg-yellow-600 h-2 rounded-full" style={{ width: '67%' }}></div>
-                                    </div>
-                                    <span className="text-sm">67%</span>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium">Storage Usage</span>
-                                <div className="flex items-center space-x-2">
-                                    <div className="w-24 bg-gray-200 rounded-full h-2">
-                                        <div className="bg-orange-600 h-2 rounded-full" style={{ width: '74%' }}></div>
-                                    </div>
-                                    <span className="text-sm">74%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
+                {/* Quick Admin Actions */}
                 <Card>
                     <CardHeader>
                         <CardTitle>Quick Admin Actions</CardTitle>
@@ -377,6 +188,160 @@ const DashboardPage = () => {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Third row - Original charts enhanced */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <BarChartComponent
+                    title="Monthly Registered Seniors"
+                    description="Monthly registration trends with admin insights"
+                    chartData={monthlyRegisteredChartData}
+                    chartConfig={chartConfig}
+                    xAxisKey="month"
+                />
+
+                <LineChartComponent
+                    title="Yearly Registration Growth"
+                    description="Long-term senior registration trends"
+                    chartData={yearlyRegisteredChartData}
+                    chartConfig={chartConfig}
+                    xAxisKey="year"
+                />
+            </div>
+
+            {/* Admin-specific metrics */}
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {adminMetrics.map((metric, index) => {
+                    const Icon = metric.icon
+                    return (
+                        <Card key={index} className="relative overflow-hidden">
+                            <CardContent className="p-6">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-600">{metric.title}</p>
+                                        <p className="text-2xl font-bold">{metric.value}</p>
+                                        <p className={`text-sm ${metric.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                                            {metric.change} from last month
+                                        </p>
+                                    </div>
+                                    <div className={`p-3 rounded-full ${metric.bgColor}`}>
+                                        <Icon className={`h-6 w-6 ${metric.color}`} />
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )
+                })}
+            </div> */}
+
+            {/* First row of charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Senior Categories Pie Chart */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Senior Categories Distribution</CardTitle>
+                        <CardDescription>Breakdown by senior citizen categories</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <PieChart>
+                                <Pie
+                                    data={seniorCategoriesData}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={60}
+                                    outerRadius={100}
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                >
+                                    {seniorCategoriesData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                                <Legend />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </CardContent>
+                </Card>
+                <BarChartComponent
+                    title="Age Distribution by Gender"
+                    description="Senior citizen age groups by gender"
+                    chartData={ageDistributionData}
+                    chartConfig={{
+                        male: { label: 'Male', color: '#3b82f6' },
+                        female: { label: 'Female', color: '#ec4899' }
+                    }}
+                    xAxisKey="ageGroup"
+                />
+
+                <BarChartComponent
+                    title="Barangay Distribution"
+                    description="Senior distribution across barangays"
+                    chartData={barangayDistributionData}
+                    chartConfig={{
+                        pwd: { label: 'PWD', color: '#8b5cf6' },
+                        regular: { label: 'Regular', color: '#22c55e' }
+                    }}
+                    xAxisKey="barangay"
+                />
+            </div>
+
+            {/* Second row - Age Distribution and Barangay Distribution */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            </div>
+
+
+
+            {/* System Health and Quick Actions */}
+            {/* <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+                <Card className="lg:col-span-2">
+                    <CardHeader>
+                        <CardTitle>System Health Monitor</CardTitle>
+                        <CardDescription>Real-time system performance indicators</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">Database Performance</span>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-24 bg-gray-200 rounded-full h-2">
+                                        <div className="bg-green-600 h-2 rounded-full" style={{ width: '92%' }}></div>
+                                    </div>
+                                    <span className="text-sm">92%</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">API Response Time</span>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-24 bg-gray-200 rounded-full h-2">
+                                        <div className="bg-blue-600 h-2 rounded-full" style={{ width: '88%' }}></div>
+                                    </div>
+                                    <span className="text-sm">156ms</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">Server Load</span>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-24 bg-gray-200 rounded-full h-2">
+                                        <div className="bg-yellow-600 h-2 rounded-full" style={{ width: '67%' }}></div>
+                                    </div>
+                                    <span className="text-sm">67%</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">Storage Usage</span>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-24 bg-gray-200 rounded-full h-2">
+                                        <div className="bg-orange-600 h-2 rounded-full" style={{ width: '74%' }}></div>
+                                    </div>
+                                    <span className="text-sm">74%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div> */}
         </div>
     )
 }

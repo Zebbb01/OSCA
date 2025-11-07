@@ -47,12 +47,12 @@ export const DashboardCountsCard = () => {
 
     return (
         <div className="md:col-span-2 bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Senior Citizen Overview</h2>
+            <h2 className="text-xl font-semibold mb-4 text-center">Senior Citizen Overview</h2>
             {loadingCounts && <p>Loading senior counts...</p>}
             {errorCounts && <p className="text-red-500">Error: {errorCounts}</p>}
             {seniorCounts && (
                 <div className="flex justify-center">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 w-full max-w-5xl">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl">
                         <div className="p-4 border rounded-lg text-center flex flex-col justify-center bg-blue-50">
                             <h3 className="text-sm font-medium text-gray-700 mb-2">Number of Regular<br/>Senior Citizens</h3>
                             <p className="text-4xl font-bold text-blue-600">

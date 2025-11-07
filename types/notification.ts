@@ -1,4 +1,4 @@
-// --- NEW Notification Type ---
+// types\notification.ts
 export interface Notification {
     id: string;
     type: 'senior_pending' | 'release_approved'; // Define specific types

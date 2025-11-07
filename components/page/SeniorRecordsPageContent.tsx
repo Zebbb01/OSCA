@@ -22,7 +22,7 @@ import RegisterFormComponents from '@/components/senior-citizen/registerForm/Reg
 import { apiService } from '@/lib/axios';
 import { Seniors } from '@/types/seniors';
 import { DownloadReleasedSeniorsReport } from '@/components/senior-citizen/reports/download-released-seniors-report';
-import { getSeniorRecordsColumns } from '@/app/admin/senior-citizen/record/columns';
+import { getSeniorRecordsColumns } from '@/app/admin/(senior-citizen)/record/columns';
 import { DataTable } from '../data-table';
 
 interface SeniorQueryParams {

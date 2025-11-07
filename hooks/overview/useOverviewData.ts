@@ -9,8 +9,8 @@ import { ColumnFiltersState } from '@tanstack/react-table';
 import { apiService } from '@/lib/axios';
 import { Seniors } from '@/types/seniors';
 import { BenefitApplicationData } from '@/types/application';
-import { getSeniorRecordsColumns } from '@/app/admin/senior-citizen/record/columns';
-import { getApplicantsColumns } from '@/app/admin/applications/applicants/columns';
+import { getSeniorRecordsColumns } from '@/app/admin/(senior-citizen)/record/columns';
+import { getApplicantsColumns } from '@/app/admin/(applications)/applicants/columns';
 
 interface UseOverviewDataProps {
   userRole: 'admin' | 'staff';
@@ -53,7 +53,7 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
 
           // Determine which parameters are relevant for the current activeTab
           // This helps avoid sending irrelevant filter params to the API
-          if (['released', 'not-released'].includes(activeTab)) {
+          if (['released', 'pending'].includes(activeTab)) {
             switch (filter.id) {
               case 'gender':
                 if (value === 'Male' || value === 'Female') {

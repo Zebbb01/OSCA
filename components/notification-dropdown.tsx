@@ -5,7 +5,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { BellRing } from 'lucide-react'
 import { CheckCircle2, UserPlus } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query'; // Import useQuery for data fetching
+import { useQuery } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button'
 import {
@@ -19,14 +19,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { formatDateTime } from '@/utils/format'
-import { Seniors } from '@/types/seniors'; // Import the new Notification type and Seniors type
-import { Notification } from '@/types/notification'; // Assuming you have a Notification type defined
+import { Seniors } from '@/types/seniors';
+import { Notification } from '@/types/notification';
 
 export function NotificationDropdown({ userRole }: { userRole: 'ADMIN' | 'USER' }) {
-    // --- REAL DATA FETCHING (Conceptual Example) ---
     const fetchNotifications = async (): Promise<Notification[]> => {
         try {
-            // Replace with your actual API endpoint for fetching seniors
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -36,30 +34,27 @@ export function NotificationDropdown({ userRole }: { userRole: 'ADMIN' | 'USER' 
             const generatedNotifications: Notification[] = seniorsData.flatMap(senior => {
                 const notifications: Notification[] = [];
 
-                // Notification for pending seniors
+                // Notification for pending seniors - removed ** markdown
                 if (senior.remarks.name === 'Pending') {
                     notifications.push({
                         id: `pending-${senior.id}`,
                         type: 'senior_pending',
-                        message: `New senior **${senior.firstname} ${senior.lastname}** pending verification.`,
-                        // Ensure your backend sends dates in a format that new Date() can parse
+                        message: `New senior <strong>${senior.firstname} ${senior.lastname}</strong> pending verification.`,
                         timestamp: new Date(senior.createdAt).toISOString(),
-                        link: `/admin/senior-citizen/record?filter=pending&seniorId=${senior.id}`,
+                        link: `/admin/record?filter=pending&seniorId=${senior.id}`,
                         seniorId: senior.id,
                         seniorName: `${senior.firstname} ${senior.lastname}`,
                     });
                 }
 
-                // Notification for recently released seniors
-                // Check if releasedAt exists and is a valid date
+                // Notification for recently released seniors - removed ** markdown
                 if (senior.releasedAt) {
                     notifications.push({
                         id: `released-${senior.id}`,
                         type: 'release_approved',
-                        message: `Benefits released for **${senior.firstname} ${senior.lastname}**!`,
-                        // Ensure your backend sends dates in a format that new Date() can parse
+                        message: `Benefits released for <strong>${senior.firstname} ${senior.lastname}</strong>!`,
                         timestamp: new Date(senior.releasedAt).toISOString(),
-                        link: `/admin/applications/release-monitoring?status=released&seniorId=${senior.id}`,
+                        link: `/admin/released-monitoring?status=released&seniorId=${senior.id}`,
                         seniorId: senior.id,
                         seniorName: `${senior.firstname} ${senior.lastname}`,
                     });
@@ -71,7 +66,6 @@ export function NotificationDropdown({ userRole }: { userRole: 'ADMIN' | 'USER' 
 
         } catch (err) {
             console.error("Failed to fetch seniors for notifications:", err);
-            // You might want to rethrow or return an empty array based on error handling strategy
             throw err;
         }
     };
@@ -83,7 +77,6 @@ export function NotificationDropdown({ userRole }: { userRole: 'ADMIN' | 'USER' 
         refetchInterval: 60 * 1000,
     });
 
-    // Calculate pending seniors count
     const pendingSeniorsCount = notifications?.filter(
         (notif) => notif.type === 'senior_pending'
     ).length || 0;
@@ -109,7 +102,6 @@ export function NotificationDropdown({ userRole }: { userRole: 'ADMIN' | 'USER' 
     }
 
     if (error) {
-        // Handle error gracefully, maybe show a tooltip or a different icon
         console.error("Error fetching notifications:", error);
         return (
             <Button variant="ghost" size="icon" className="relative text-white hover:bg-white/20 hover:text-white" title="Error loading notifications">
@@ -118,7 +110,6 @@ export function NotificationDropdown({ userRole }: { userRole: 'ADMIN' | 'USER' 
             </Button>
         );
     }
-
 
     return (
         <DropdownMenu>
@@ -140,7 +131,6 @@ export function NotificationDropdown({ userRole }: { userRole: 'ADMIN' | 'USER' 
                         {notifications && notifications.length > 0 ? (
                             notifications.map((notification) => (
                                 <DropdownMenuItem key={notification.id} asChild>
-                                    {/* The Link component must be the direct child of DropdownMenuItem when asChild is used */}
                                     <Link
                                         href={notification.link}
                                         className="flex items-start gap-3 p-3 hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors duration-200"
@@ -170,12 +160,12 @@ export function NotificationDropdown({ userRole }: { userRole: 'ADMIN' | 'USER' 
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                     {userRole === 'USER' ? (
-                        <Link href="/staff/applications/release-monitoring" className="block text-center text-sm p-2 text-primary hover:bg-accent hover:text-accent-foreground cursor-pointer">
-                            View All Notifications
+                        <Link href="/staff/released-monitoring" className="block text-center text-sm p-2 text-primary hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                            View All 
                         </Link>
                     ) : (
-                        <Link href="/admin/applications/release-monitoring" className="block text-center text-sm p-2 text-primary hover:bg-accent hover:text-accent-foreground cursor-pointer">
-                            View All Notifications
+                        <Link href="/admin/released-monitoring" className="block text-center text-sm p-2 text-primary hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                            View All 
                         </Link>
                     )}
                 </DropdownMenuItem>

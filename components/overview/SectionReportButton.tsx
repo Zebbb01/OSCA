@@ -1,3 +1,4 @@
+// components/overview/SectionReportButton.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -6,6 +7,8 @@ import { FileText, DownloadIcon } from 'lucide-react';
 import { ReportPreviewModal } from '@/components/senior-citizen/ReportPreviewModal';
 import { Seniors } from '@/types/seniors';
 import { BenefitApplicationData } from '@/types/application';
+import { useQuery } from '@tanstack/react-query';
+import { apiService } from '@/lib/axios';
 
 // Helper function to generate report content
 const generateReportContent = (
@@ -13,7 +16,8 @@ const generateReportContent = (
   data: any[],
   timePeriod: string,
   selectedPeriod: string,
-  reportType: string
+  reportType: string,
+  initialBalance: number = 500000
 ): string => {
   const header = `${sectionName} Report
 Generated: ${new Date().toLocaleString()}
@@ -31,11 +35,13 @@ ${'='.repeat(50)}
     // Financial report content
     const totalReleased = data.filter(item => item.type === 'released').reduce((sum, item) => sum + item.amount, 0);
     const totalPending = data.filter(item => item.type === 'pending').reduce((sum, item) => sum + item.amount, 0);
+    const currentBalance = initialBalance - totalReleased;
     
     content += `FINANCIAL SUMMARY:
+Initial Fund Balance: ₱${initialBalance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
 Total Released: ₱${totalReleased.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
 Total Pending: ₱${totalPending.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-Current Balance: ₱${(500000 - totalReleased + totalPending).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+Current Balance: ₱${currentBalance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
 
 TRANSACTION DETAILS:
 `;
@@ -104,6 +110,25 @@ export const SectionReportButton: React.FC<SectionReportButtonProps> = ({
   const [pdfReportUrl, setPdfReportUrl] = useState<string | null>(null);
   const [isLoadingReport, setIsLoadingReport] = useState(false);
 
+  // Fetch government fund balance for financial reports
+  const { data: fundData } = useQuery({
+    queryKey: ['government-fund'],
+    queryFn: async () => {
+      try {
+        return await apiService.get<{ id: number; currentBalance: number }>(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/government-fund`
+        );
+      } catch (error) {
+        console.warn('Government fund API not available, using default value');
+        return { id: 0, currentBalance: 500000 };
+      }
+    },
+    staleTime: 5 * 60 * 1000,
+    enabled: reportType === 'financial', // Only fetch when needed
+  });
+
+  const initialBalance = fundData?.currentBalance || 500000;
+
   const handleOpenReportModal = async () => {
     setShowReportModal(true);
     setIsLoadingReport(true);
@@ -111,7 +136,14 @@ export const SectionReportButton: React.FC<SectionReportButtonProps> = ({
     try {
       // Generate a simple PDF content using jsPDF or similar approach
       // For now, we'll create a simple text-based PDF content
-      const reportContent = generateReportContent(sectionName, data, timePeriod, selectedPeriod, reportType);
+      const reportContent = generateReportContent(
+        sectionName, 
+        data, 
+        timePeriod, 
+        selectedPeriod, 
+        reportType,
+        initialBalance
+      );
       
       // Create a blob with PDF-like content
       const blob = new Blob([reportContent], { type: 'application/pdf' });

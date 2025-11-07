@@ -38,9 +38,9 @@ Pending Applications: ${pendingBenefits}
 Rejected Applications: ${rejectedBenefits}
 
 FINANCIAL OVERVIEW:
-Estimated Total Fund Allocation: ₱${((approvedBenefits + pendingBenefits) * 5000).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-Released Funds: ₱${(approvedBenefits * 5000).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-Pending Disbursement: ₱${(pendingBenefits * 5000).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+Estimated Total Fund Allocation: ₱${((approvedBenefits + pendingBenefits) * 1000).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+Released Funds: ₱${(approvedBenefits * 1000).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+Pending Disbursement: ₱${(pendingBenefits * 1000).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
 
 ${'='.repeat(60)}
 
@@ -173,7 +173,7 @@ export const GovernmentFundReportButton: React.FC<GovernmentFundReportButtonProp
   const calculateTotalFundAmount = (benefits: BenefitApplicationData[], categories: BenefitApplicationData[]) => {
     // This would be calculated based on your business logic
     // For now, return a mock calculation
-    return (benefits.length + categories.length) * 5000; // Mock calculation
+    return (benefits.length + categories.length) * 1000; // Mock calculation
   };
 
   const calculateReleasedFundAmount = (benefits: BenefitApplicationData[], categories: BenefitApplicationData[]) => {
@@ -183,7 +183,7 @@ export const GovernmentFundReportButton: React.FC<GovernmentFundReportButtonProp
     const releasedCategories = categories.filter(item => 
       item.status.name === 'APPROVED' || item.status.name === 'RELEASED'
     );
-    return (releasedBenefits.length + releasedCategories.length) * 5000; // Mock calculation
+    return (releasedBenefits.length + releasedCategories.length) * 1000; // Mock calculation
   };
 
   const calculatePendingFundAmount = (benefits: BenefitApplicationData[], categories: BenefitApplicationData[]) => {
@@ -193,7 +193,7 @@ export const GovernmentFundReportButton: React.FC<GovernmentFundReportButtonProp
     const pendingCategories = categories.filter(item => 
       item.status.name === 'PENDING' || item.status.name === 'PROCESSING'
     );
-    return (pendingBenefits.length + pendingCategories.length) * 5000; // Mock calculation
+    return (pendingBenefits.length + pendingCategories.length) * 1000; // Mock calculation
   };
 
   const getReportTitle = () => {

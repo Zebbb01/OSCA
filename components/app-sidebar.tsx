@@ -44,7 +44,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 items: [
                     {
                         title: 'Record',
-                        url: '/admin/senior-citizen/record',
+                        url: '/admin/record',
                         roles: ['ADMIN', 'USER'],
                     },
                 ],
@@ -55,12 +55,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 items: [
                     {
                         title: 'Benefits',
-                        url: '/staff/applications/benefits',
+                        url: '/staff/benefits',
                         roles: ['USER'],
                     },
                     {
                         title: 'Applicants',
-                        url: '/admin/applications/overview',
+                        url: '/admin/overview',
                         roles: ['ADMIN'],
                     },
                 ],
@@ -71,42 +71,42 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 items: [
                     {
                         title: 'Overview',
-                        url: '/admin/applications/overview',
+                        url: '/admin/overview',
                         roles: ['ADMIN'],
                     },
                     {
                         title: 'Released',
-                        url: '/admin/applications/released-monitoring',
+                        url: '/admin/released-monitoring',
                         roles: ['ADMIN'],
                     },
                     {
                         title: 'Pending',
-                        url: '/admin/applications/pending-monitoring',
+                        url: '/admin/pending-monitoring',
                         roles: ['ADMIN'],
                     },
                     {
                         title: 'Category',
-                        url: '/admin/applications/category',
+                        url: '/admin/category',
                         roles: ['ADMIN'],
                     },
                     {
                         title: 'Overview',
-                        url: '/staff/applications/overview',
+                        url: '/staff/overview',
                         roles: ['USER'],
                     },
                     {
                         title: 'Released',
-                        url: '/staff/applications/released-monitoring',
+                        url: '/staff/released-monitoring',
                         roles: ['USER'],
                     },
                     {
                         title: 'Pending',
-                        url: '/staff/applications/pending-monitoring',
+                        url: '/staff/pending-monitoring',
                         roles: ['USER'],
                     },
                     {
                         title: 'Category',
-                        url: '/staff/applications/category',
+                        url: '/staff/category',
                         roles: ['USER'],
                     },
                 ],
@@ -117,11 +117,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 items: [
                     {
                         title: 'Government Fund',
-                        url: '/admin/applications/government-fund',
+                        url: '/admin/government-fund',
                     },
                     {
                         title: 'Monthly Release',
-                        url: '/admin/applications/monthly-release',
+                        url: '/admin/monthly-release',
                     },
                 ],
             },
@@ -149,8 +149,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                 ...subItem,
                                 url:
                                     userRole === 'USER'
-                                        ? '/staff/senior-citizen/record'
-                                        : '/admin/senior-citizen/record',
+                                        ? '/staff/record'
+                                        : '/admin/record',
                             };
                         }
                         return subItem;

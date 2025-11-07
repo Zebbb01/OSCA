@@ -346,7 +346,7 @@ export default function MonitoringOverview({
           <TabsTrigger value="barangay-summary">Barangay Summary</TabsTrigger>
           <TabsTrigger value="all-applications">All Applications</TabsTrigger>
           <TabsTrigger value="released">Released Benefits</TabsTrigger>
-          <TabsTrigger value="not-released">Unreleased Benefits</TabsTrigger>
+          <TabsTrigger value="pending">Unreleased Benefits</TabsTrigger>
           <TabsTrigger value="regular">Regular Citizens</TabsTrigger>
           <TabsTrigger value="special">Special Cases</TabsTrigger>
         </TabsList>
@@ -418,7 +418,7 @@ export default function MonitoringOverview({
             </TabsContent>
 
             {/* Pending Benefits */}
-            <TabsContent value="not-released">
+            <TabsContent value="pending">
               <div className="mb-4">
                 <h2 className="text-xl font-semibold text-gray-700">Pending Benefits ({filteredData.notReleasedSeniors.length})</h2>
                 <p className="text-gray-500 text-sm">Senior citizens awaiting benefit release for the selected period.</p>

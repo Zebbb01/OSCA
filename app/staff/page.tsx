@@ -7,7 +7,7 @@ const StaffRoot = () => {
     const router = useRouter()
 
     useEffect(() => {
-        router.replace('/staff/senior-citizen/record')
+        router.replace('/staff/record')
     }, [router])
 
     return null

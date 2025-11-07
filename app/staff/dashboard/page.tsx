@@ -1,6 +1,9 @@
 'use client'
 
+import { BarChartComponent } from '@/components/bar-chart'
+import LineChartComponent from '@/components/line-chart'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ChartConfig } from '@/components/ui/chart'
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ScatterChart, Scatter, Tooltip, Legend } from 'recharts'
 
 // Key metrics data
@@ -71,7 +74,22 @@ const nrrData = [
   { month: 'Apr', new: 450, returning: 650, total: 1100 },
   { month: 'May', new: 300, returning: 500, total: 800 }
 ]
+// Original chart data
+const monthlyRegisteredChartData = [
+    { month: 'January', seniors: 186 },
+    { month: 'February', seniors: 305 },
+    { month: 'March', seniors: 237 },
+    { month: 'April', seniors: 73 },
+    { month: 'May', seniors: 209 },
+    { month: 'June', seniors: 214 },
+]
 
+const yearlyRegisteredChartData = [
+    { year: '2022', seniors: 73 },
+    { year: '2023', seniors: 209 },
+    { year: '2024', seniors: 214 },
+    { year: '2025', seniors: 300 },
+]
 // Net NRR by Product data
 const productData = [
   { product: 'Product A', value: 85 },
@@ -81,11 +99,47 @@ const productData = [
   { product: 'Product E', value: 95 }
 ]
 
+const chartConfig = {
+    seniors: {
+        label: 'Senior',
+        color: '#4ade80',
+    },
+    registrations: {
+        label: 'Registrations',
+        color: '#22c55e',
+    },
+    updates: {
+        label: 'Updates',
+        color: '#3b82f6',
+    },
+    verifications: {
+        label: 'Verifications',
+        color: '#f59e0b',
+    },
+    male: {
+        label: 'Male',
+        color: '#3b82f6',
+    },
+    female: {
+        label: 'Female',
+        color: '#ec4899',
+    },
+    pwd: {
+        label: 'PWD',
+        color: '#8b5cf6',
+    },
+    regular: {
+        label: 'Regular',
+        color: '#22c55e',
+    }
+} satisfies ChartConfig
+
 const DashboardPage = () => {
   return (
     <div className="p-6 space-y-6">
+
       {/* Key Metrics Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {keyMetrics.map((metric, index) => (
           <Card key={index} className="bg-white">
             <CardHeader className="pb-2">
@@ -109,7 +163,7 @@ const DashboardPage = () => {
             </CardContent>
           </Card>
         ))}
-      </div>
+      </div> */}
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -140,8 +194,8 @@ const DashboardPage = () => {
               {pageViewsData.map((item, index) => (
                 <div key={index} className="flex items-center justify-between text-sm">
                   <div className="flex items-center">
-                    <div 
-                      className="w-3 h-3 rounded-full mr-2" 
+                    <div
+                      className="w-3 h-3 rounded-full mr-2"
                       style={{ backgroundColor: item.color }}
                     />
                     <span>{item.name}</span>
@@ -153,6 +207,25 @@ const DashboardPage = () => {
           </CardContent>
         </Card>
 
+      {/* Third row - Original charts enhanced */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <BarChartComponent
+          title="Monthly Registered Seniors"
+          description="Monthly registration trends with admin insights"
+          chartData={monthlyRegisteredChartData}
+          chartConfig={chartConfig}
+          xAxisKey="month"
+        />
+
+        <LineChartComponent
+          title="Yearly Registration Growth"
+          description="Long-term senior registration trends"
+          chartData={yearlyRegisteredChartData}
+          chartConfig={chartConfig}
+          xAxisKey="year"
+        />
+      </div>
+      
         {/* NRR Stats by Country Bubble Chart */}
         <Card className="bg-white">
           <CardHeader>
@@ -163,7 +236,7 @@ const DashboardPage = () => {
               <ScatterChart data={bubbleData}>
                 <XAxis type="number" dataKey="x" domain={[0, 100]} hide />
                 <YAxis type="number" dataKey="y" domain={[0, 100]} hide />
-                <Tooltip 
+                <Tooltip
                   formatter={(value, name) => [value, name]}
                   labelFormatter={(label) => `Country: ${bubbleData.find(d => d.x === label)?.country || ''}`}
                 />
@@ -208,7 +281,7 @@ const DashboardPage = () => {
               <div key={index} className="text-center">
                 <div className="bg-gray-100 rounded-lg p-4 mb-2">
                   <div className="h-20 bg-gradient-to-t from-green-200 to-green-100 rounded flex items-end justify-center">
-                    <div 
+                    <div
                       className="w-full bg-green-400 rounded-t"
                       style={{ height: `${product.value}%` }}
                     />

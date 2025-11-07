@@ -46,7 +46,8 @@ export const SeniorActionButtons: React.FC<SeniorActionButtonsProps> = ({
       {/* Edit Dialog - Now using the separate component */}
       <SeniorEditDialog senior={senior} queryClient={queryClient} userRole={userRole} />
 
-      {/* Delete */}
+      {/* Delete - Only show if not USER */}
+      {userRole !== 'USER' && (
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button variant="ghost" size="icon" className="h-10 w-10 rounded-md bg-background cursor-pointer text-sm ring-offset-background text-red-600 hover:bg-red-50 hover:text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
@@ -72,6 +73,7 @@ export const SeniorActionButtons: React.FC<SeniorActionButtonsProps> = ({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      )}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+// app\staff\layout.tsx
 'use client'
 
 import { AppSidebar } from '@/components/app-sidebar'

@@ -81,7 +81,7 @@ export function NavUser({ user }: { user: User }) {
                                 </div>
                             </div>
                         </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
+                        {/* <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
                                 <Sparkles />
@@ -103,7 +103,7 @@ export function NavUser({ user }: { user: User }) {
                                 Notifications
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
+                        <DropdownMenuSeparator /> */}
 
                         <DropdownMenuItem onClick={() => signOut({redirectTo: '/'})}>
                             <LogOut />
