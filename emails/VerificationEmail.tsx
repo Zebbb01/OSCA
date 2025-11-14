@@ -23,7 +23,7 @@ interface VerificationEmailProps {
 
 const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:8000'; // Fallback for local development
+  : 'https://xpvs9c65-3000.asse.devtunnels.ms/'; // Fallback for local development
 
 export const VerificationEmail = ({
   firstName,
@@ -36,7 +36,7 @@ export const VerificationEmail = ({
     <Body style={main}>
       <Container style={container}>
         {/* Optional: Add a logo with similar styling to VerifyEmailPage's icons */}
-        
+
         {/* <Section style={logoContainer}>
             <Img
                 src={`${baseUrl}/img/cthall-logo-removedBG.png`} // Make sure you have a logo in public/static
@@ -46,7 +46,7 @@ export const VerificationEmail = ({
                 style={logo}
             />
         </Section> */}
-       
+
 
         <Text style={heading}>Account Verification</Text>
         <Text style={paragraph}>Hello {firstName},</Text>

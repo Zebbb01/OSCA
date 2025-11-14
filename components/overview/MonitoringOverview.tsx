@@ -4,11 +4,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { DataTable } from '../data-table';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { DownloadOverviewReport } from './DownloadOverviewReport';
+import { DownloadTabReport } from './DownloadTabReport';
 import { useOverviewData } from '@/hooks/overview/useOverviewData';
-import { format, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subMonths, subQuarters, subYears } from 'date-fns';
+import { format, isWithinInterval, parseISO, startOfDay, endOfDay } from 'date-fns';
 
 interface MonitoringOverviewProps {
   userRole: 'admin' | 'staff';
@@ -16,8 +17,6 @@ interface MonitoringOverviewProps {
   description?: string;
   showDownloadButton?: boolean;
 }
-
-type TimePeriod = 'monthly' | 'quarterly' | 'annual';
 
 interface GroupedData {
   barangay: string;
@@ -36,8 +35,8 @@ export default function MonitoringOverview({
   description = "Comprehensive view of all senior citizen benefit applications, releases, and categories.",
   showDownloadButton = true
 }: MonitoringOverviewProps) {
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>('monthly');
-  const [selectedPeriod, setSelectedPeriod] = useState<string>(format(new Date(), 'yyyy-MM'));
+  const [startDate, setStartDate] = useState<string>(format(new Date(new Date().getFullYear(), 0, 1), 'yyyy-MM-dd'));
+  const [endDate, setEndDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
 
   const {
     activeTab,
@@ -63,68 +62,23 @@ export default function MonitoringOverview({
     hasError,
   } = useOverviewData({ userRole });
 
-  // Generate period options based on selected time period
-  const periodOptions = useMemo(() => {
-    const now = new Date();
-    const options = [];
-
-    if (timePeriod === 'monthly') {
-      for (let i = 0; i < 12; i++) {
-        const date = subMonths(now, i);
-        options.push({
-          value: format(date, 'yyyy-MM'),
-          label: format(date, 'MMMM yyyy')
-        });
-      }
-    } else if (timePeriod === 'quarterly') {
-      for (let i = 0; i < 8; i++) {
-        const date = subQuarters(now, i);
-        const quarter = Math.floor(date.getMonth() / 3) + 1;
-        options.push({
-          value: format(date, 'yyyy-') + `Q${quarter}`,
-          label: `Q${quarter} ${format(date, 'yyyy')}`
-        });
-      }
-    } else {
-      for (let i = 0; i < 5; i++) {
-        const date = subYears(now, i);
-        options.push({
-          value: format(date, 'yyyy'),
-          label: format(date, 'yyyy')
-        });
-      }
-    }
-
-    return options;
-  }, [timePeriod]);
-
-  // Filter data by selected time period
+  // Filter data by selected date range
   const filteredData = useMemo(() => {
     const filterByDate = (data: any[], dateField: string = 'createdAt') => {
-      if (!selectedPeriod) return data;
+      if (!startDate || !endDate) return data;
 
-      return data.filter(item => {
-        const itemDate = new Date(item[dateField]);
-        let startDate: Date;
-        let endDate: Date;
+      try {
+        const start = startOfDay(parseISO(startDate));
+        const end = endOfDay(parseISO(endDate));
 
-        if (timePeriod === 'monthly') {
-          const [year, month] = selectedPeriod.split('-');
-          startDate = startOfMonth(new Date(parseInt(year), parseInt(month) - 1));
-          endDate = endOfMonth(new Date(parseInt(year), parseInt(month) - 1));
-        } else if (timePeriod === 'quarterly') {
-          const [year, quarter] = selectedPeriod.split('-Q');
-          const quarterNum = parseInt(quarter);
-          const quarterMonth = (quarterNum - 1) * 3;
-          startDate = startOfQuarter(new Date(parseInt(year), quarterMonth));
-          endDate = endOfQuarter(new Date(parseInt(year), quarterMonth));
-        } else {
-          startDate = startOfYear(new Date(parseInt(selectedPeriod), 0));
-          endDate = endOfYear(new Date(parseInt(selectedPeriod), 0));
-        }
-
-        return itemDate >= startDate && itemDate <= endDate;
-      });
+        return data.filter(item => {
+          const itemDate = parseISO(item[dateField]);
+          return isWithinInterval(itemDate, { start, end });
+        });
+      } catch (error) {
+        console.error('Date filtering error:', error);
+        return data;
+      }
     };
 
     return {
@@ -134,16 +88,15 @@ export default function MonitoringOverview({
       regularApplications: filterByDate(regularApplications),
       specialApplications: filterByDate(specialApplications)
     };
-  }, [releasedSeniors, notReleasedSeniors, allApplicantsData, regularApplications, specialApplications, selectedPeriod, timePeriod]);
+  }, [releasedSeniors, notReleasedSeniors, allApplicantsData, regularApplications, specialApplications, startDate, endDate]);
 
   // Group data by barangay
   const barangayGroupedData = useMemo((): GroupedData[] => {
     const groupedMap = new Map<string, GroupedData>();
 
-    // Process seniors data
     [...filteredData.releasedSeniors, ...filteredData.notReleasedSeniors].forEach(senior => {
       const barangay = senior.barangay || 'Unknown';
-      
+
       if (!groupedMap.has(barangay)) {
         groupedMap.set(barangay, {
           barangay,
@@ -159,22 +112,21 @@ export default function MonitoringOverview({
 
       const group = groupedMap.get(barangay)!;
       group.totalRecords++;
-      
+
       if (senior.releasedAt) {
         group.releasedCount++;
       } else {
         group.pendingCount++;
       }
 
-      // Count by category from latest application
       const latestApp = senior.Applications?.[0];
       if (latestApp) {
         const status = latestApp.status.name;
         const category = latestApp.category?.name;
-        
+
         if (status === 'APPROVED') group.approvedCount++;
         if (status === 'REJECT') group.rejectedCount++;
-        
+
         if (category === 'Regular senior citizens') group.regularCount++;
         if (category === 'Special assistance cases') group.specialCount++;
       }
@@ -183,19 +135,12 @@ export default function MonitoringOverview({
     return Array.from(groupedMap.values()).sort((a, b) => b.totalRecords - a.totalRecords);
   }, [filteredData]);
 
-  // Remove actions column from seniors columns
+  // Remove actions column from seniors columns (for display only)
   const sanitizedSeniorColumns = useMemo(() => {
-    return seniorColumns.filter(col => 
+    return seniorColumns.filter(col =>
       !['actions', 'user-actions'].includes((col as any).id || (col as any).accessorKey)
     );
   }, [seniorColumns]);
-
-  // Remove actions column from application columns  
-  const sanitizedApplicationColumns = useMemo(() => {
-    return applicationColumns.filter(col => 
-      !['actions', 'user-actions'].includes((col as any).id || (col as any).accessorKey)
-    );
-  }, [applicationColumns]);
 
   // Create barangay summary columns
   const barangayColumns = useMemo(() => [
@@ -250,18 +195,6 @@ export default function MonitoringOverview({
     setActiveTab(value);
   };
 
-  // Update selected period when time period changes
-  useEffect(() => {
-    if (timePeriod === 'monthly') {
-      setSelectedPeriod(format(new Date(), 'yyyy-MM'));
-    } else if (timePeriod === 'quarterly') {
-      const quarter = Math.floor(new Date().getMonth() / 3) + 1;
-      setSelectedPeriod(format(new Date(), 'yyyy-') + `Q${quarter}`);
-    } else {
-      setSelectedPeriod(format(new Date(), 'yyyy'));
-    }
-  }, [timePeriod]);
-
   const renderLoadingState = () => (
     <div className="text-center py-10 text-gray-500 flex items-center justify-center">
       <svg className="animate-spin h-6 w-6 mr-3 text-blue-500" viewBox="0 0 24 24">
@@ -282,7 +215,6 @@ export default function MonitoringOverview({
 
   return (
     <div className="container mx-auto p-5 rounded-md mt-8 border border-gray-200 shadow-sm">
-      {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
@@ -295,60 +227,67 @@ export default function MonitoringOverview({
               releasedData={filteredData.releasedSeniors}
               notReleasedData={filteredData.notReleasedSeniors}
               categoryData={filteredData.allApplicantsData}
+              startDate={startDate}
+              endDate={endDate}
             />
           </div>
         )}
       </div>
 
-      {/* Time Period Controls */}
       <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Time Period Selection</CardTitle>
-          <CardDescription>Select the time period and specific range for your monitoring overview</CardDescription>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Date Range Filter</CardTitle>
+          <CardDescription className="text-sm">
+            Select the date range for filtering your monitoring data
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium mb-2">Period Type</label>
-              <Select value={timePeriod} onValueChange={(value: TimePeriod) => setTimePeriod(value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                  <SelectItem value="quarterly">Quarterly</SelectItem>
-                  <SelectItem value="annual">Annual</SelectItem>
-                </SelectContent>
-              </Select>
+        <CardContent className="pt-2">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:space-x-2 gap-2">
+            <div>
+              <label className="block text-sm font-medium mb-1.5">Start Date</label>
+              <Input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                max={endDate}
+                className="w-[180px] sm:w-[160px]"
+              />
             </div>
-            <div className="flex-1">
-              <label className="block text-sm font-medium mb-2">Specific Period</label>
-              <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {periodOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <span className="hidden sm:inline-block pb-2 text-gray-400 font-semibold">
+              to
+            </span>
+            <div>
+              <label className="block text-sm font-medium mb-1.5">End Date</label>
+              <Input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                min={startDate}
+                className="w-[180px] sm:w-[160px]"
+              />
             </div>
           </div>
+
+          <p className="text-xs text-gray-500 mt-3">
+            Showing data from{" "}
+            <span className="font-semibold">
+              {format(parseISO(startDate), "MMM dd, yyyy")}
+            </span>{" "}
+            to{" "}
+            <span className="font-semibold">
+              {format(parseISO(endDate), "MMM dd, yyyy")}
+            </span>
+          </p>
         </CardContent>
       </Card>
 
-      {/* Tabs Navigation */}
+
       <Tabs defaultValue="barangay-summary" className="w-full" onValueChange={handleTabChange}>
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="barangay-summary">Barangay Summary</TabsTrigger>
           <TabsTrigger value="all-applications">All Applications</TabsTrigger>
           <TabsTrigger value="released">Released Benefits</TabsTrigger>
           <TabsTrigger value="pending">Unreleased Benefits</TabsTrigger>
-          <TabsTrigger value="regular">Regular Citizens</TabsTrigger>
-          <TabsTrigger value="special">Special Cases</TabsTrigger>
         </TabsList>
 
         {isLoading ? (
@@ -357,34 +296,49 @@ export default function MonitoringOverview({
           renderErrorState()
         ) : (
           <>
-            {/* Barangay Summary Tab */}
             <TabsContent value="barangay-summary">
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-700">Summary by Barangay ({barangayGroupedData.length})</h2>
-                <p className="text-gray-500 text-sm">Comprehensive overview of senior citizen records grouped by barangay for the selected period.</p>
+              <div className="mb-4 flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-700">Summary by Barangay ({barangayGroupedData.length})</h2>
+                  <p className="text-gray-500 text-sm">Comprehensive overview of senior citizen records grouped by barangay for the selected period.</p>
+                </div>
+                <DownloadTabReport
+                  tabType="barangay-summary"
+                  data={barangayGroupedData}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
               </div>
               <DataTable
                 columns={barangayColumns}
                 data={barangayGroupedData}
                 filterableColumns={[]}
                 globalFilter=""
-                setGlobalFilter={() => {}}
+                setGlobalFilter={() => { }}
                 columnFilters={[]}
-                setColumnFilters={() => {}}
+                setColumnFilters={() => { }}
                 isFilterDropdownOpen={false}
-                setIsFilterDropdownOpen={() => {}}
+                setIsFilterDropdownOpen={() => { }}
                 initialVisibleColumns={['barangay', 'totalRecords', 'releasedCount', 'pendingCount', 'approvedCount', 'rejectedCount', 'regularCount', 'specialCount']}
+                showColumnVisibility={false}
               />
             </TabsContent>
 
-            {/* All Applications */}
             <TabsContent value="all-applications">
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-700">All Applications ({filteredData.allApplicantsData.length})</h2>
-                <p className="text-gray-500 text-sm">Complete list of benefit applications for the selected period.</p>
+              <div className="mb-4 flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-700">All Applications ({filteredData.allApplicantsData.length})</h2>
+                  <p className="text-gray-500 text-sm">Complete list of benefit applications for the selected period.</p>
+                </div>
+                <DownloadTabReport
+                  tabType="all-applications"
+                  data={filteredData.allApplicantsData}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
               </div>
               <DataTable
-                columns={sanitizedApplicationColumns}
+                columns={applicationColumns}
                 data={filteredData.allApplicantsData}
                 filterableColumns={filterableApplicationColumns}
                 globalFilter={globalFilter}
@@ -393,15 +347,23 @@ export default function MonitoringOverview({
                 setColumnFilters={setColumnFilters}
                 isFilterDropdownOpen={isFilterDropdownOpen}
                 setIsFilterDropdownOpen={setIsFilterDropdownOpen}
-                initialVisibleColumns={applicationInitialVisibleColumns.filter(col => !['actions', 'user-actions'].includes(col))}
+                initialVisibleColumns={applicationInitialVisibleColumns}
+                showColumnVisibility={false}
               />
             </TabsContent>
 
-            {/* Released Benefits */}
             <TabsContent value="released">
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-700">Released Benefits ({filteredData.releasedSeniors.length})</h2>
-                <p className="text-gray-500 text-sm">Senior citizens who have successfully received their benefits in the selected period.</p>
+              <div className="mb-4 flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-700">Released Benefits ({filteredData.releasedSeniors.length})</h2>
+                  <p className="text-gray-500 text-sm">Senior citizens who have successfully received their benefits in the selected period.</p>
+                </div>
+                <DownloadTabReport
+                  tabType="released"
+                  data={filteredData.releasedSeniors}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
               </div>
               <DataTable
                 columns={sanitizedSeniorColumns}
@@ -414,14 +376,22 @@ export default function MonitoringOverview({
                 isFilterDropdownOpen={isFilterDropdownOpen}
                 setIsFilterDropdownOpen={setIsFilterDropdownOpen}
                 initialVisibleColumns={seniorInitialVisibleColumns.filter(col => !['actions', 'user-actions'].includes(col))}
+                showColumnVisibility={false}
               />
             </TabsContent>
 
-            {/* Pending Benefits */}
             <TabsContent value="pending">
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-700">Pending Benefits ({filteredData.notReleasedSeniors.length})</h2>
-                <p className="text-gray-500 text-sm">Senior citizens awaiting benefit release for the selected period.</p>
+              <div className="mb-4 flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-700">Pending Benefits ({filteredData.notReleasedSeniors.length})</h2>
+                  <p className="text-gray-500 text-sm">Senior citizens awaiting benefit release for the selected period.</p>
+                </div>
+                <DownloadTabReport
+                  tabType="pending"
+                  data={filteredData.notReleasedSeniors}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
               </div>
               <DataTable
                 columns={sanitizedSeniorColumns}
@@ -434,56 +404,16 @@ export default function MonitoringOverview({
                 isFilterDropdownOpen={isFilterDropdownOpen}
                 setIsFilterDropdownOpen={setIsFilterDropdownOpen}
                 initialVisibleColumns={seniorInitialVisibleColumns.filter(col => !['actions', 'user-actions'].includes(col))}
-              />
-            </TabsContent>
-
-            {/* Regular Citizens */}
-            <TabsContent value="regular">
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-700">Regular Senior Citizens ({filteredData.regularApplications.length})</h2>
-                <p className="text-gray-500 text-sm">Applications from regular senior citizen category for the selected period.</p>
-              </div>
-              <DataTable
-                columns={sanitizedApplicationColumns}
-                data={filteredData.regularApplications}
-                filterableColumns={filterableApplicationColumns}
-                globalFilter={globalFilter}
-                setGlobalFilter={setGlobalFilter}
-                columnFilters={columnFilters}
-                setColumnFilters={setColumnFilters}
-                isFilterDropdownOpen={isFilterDropdownOpen}
-                setIsFilterDropdownOpen={setIsFilterDropdownOpen}
-                initialVisibleColumns={applicationInitialVisibleColumns.filter(col => !['actions', 'user-actions'].includes(col))}
-              />
-            </TabsContent>
-
-            {/* Special Cases */}
-            <TabsContent value="special">
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-700">Special Assistance Cases ({filteredData.specialApplications.length})</h2>
-                <p className="text-gray-500 text-sm">Applications requiring special assistance for the selected period.</p>
-              </div>
-              <DataTable
-                columns={sanitizedApplicationColumns}
-                data={filteredData.specialApplications}
-                filterableColumns={filterableApplicationColumns}
-                globalFilter={globalFilter}
-                setGlobalFilter={setGlobalFilter}
-                columnFilters={columnFilters}
-                setColumnFilters={setColumnFilters}
-                isFilterDropdownOpen={isFilterDropdownOpen}
-                setIsFilterDropdownOpen={setIsFilterDropdownOpen}
-                initialVisibleColumns={applicationInitialVisibleColumns.filter(col => !['actions', 'user-actions'].includes(col))}
+                showColumnVisibility={false}
               />
             </TabsContent>
           </>
         )}
       </Tabs>
 
-      {/* Prepared By Footer */}
       <div className="mt-8 pt-4 border-t border-gray-200 text-center">
         <p className="text-sm text-gray-600">
-          Prepared by: <span className="font-semibold">{preparedBy}</span> | 
+          Prepared by: <span className="font-semibold">{preparedBy}</span> |
           Generated on: <span className="font-semibold">{format(new Date(), 'MMMM dd, yyyy')}</span>
         </p>
       </div>

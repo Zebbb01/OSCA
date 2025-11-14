@@ -13,34 +13,28 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { EyeOpenIcon, DownloadIcon } from '@radix-ui/react-icons'
-import { RegistrationDocument, Seniors, RegistrationDocumentTag } from '@/types/seniors' // Import RegistrationDocumentTag
+import { FileText } from 'lucide-react'
+import { RegistrationDocument, Seniors, RegistrationDocumentTag } from '@/types/seniors'
 import { formatDateTime, formatDocumentTagName, getDownloadUrl } from '@/utils/format'
 import { DocumentViewer } from './document-viewer'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs' // Import Tabs components
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface DocumentViewDialogProps {
-  senior: Seniors // Ensure Seniors type includes the 'documents' array
+  senior: Seniors
+  iconOnly?: boolean
 }
 
-export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({ senior }) => {
-  // Debug logging to see what documents are available
-  console.log('Senior data in DocumentViewDialog:', senior);
-  console.log('Senior documents:', senior?.documents);
-  
+export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({ senior, iconOnly = false }) => {
   if (!senior || !senior.documents || senior.documents.length === 0) {
-    return <p className="text-gray-500 text-sm">No documents uploaded.</p>
+    return iconOnly ? (
+      <Button variant="ghost" size="sm" className="h-8 w-8 p-0" disabled>
+        <FileText className="h-4 w-4 text-gray-400" />
+      </Button>
+    ) : (
+      <p className="text-gray-500 text-sm">No documents uploaded.</p>
+    );
   }
 
-  // Log each document's tag for debugging
-  senior.documents.forEach((doc, index) => {
-    console.log(`Document ${index}:`, {
-      fileName: doc.file_name,
-      tag: doc.tag,
-      isMedicalAssistance: doc.tag === RegistrationDocumentTag.MEDICAL_ASSISTANCE
-    });
-  });
-
-  // Filter documents into categories - benefit requirements vs basic documents
   const benefitRequirementDocuments = senior.documents.filter(
     (doc) => doc.benefitRequirement && doc.benefitRequirement.id
   )
@@ -49,27 +43,20 @@ export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({ senior }
     (doc) => !doc.benefitRequirement || !doc.benefitRequirement.id
   )
 
-  console.log('Filtered documents:', {
-    benefitRequirementCount: benefitRequirementDocuments.length,
-    basicDocumentsCount: basicDocuments.length,
-    benefitRequirementDocs: benefitRequirementDocuments.map(d => ({ 
-      fileName: d.file_name, 
-      tag: d.tag, 
-      requirementName: d.benefitRequirement?.name,
-      benefitName: d.benefitRequirement?.benefit?.name 
-    })),
-    basicDocs: basicDocuments.map(d => ({ fileName: d.file_name, tag: d.tag }))
-  });
-
-  // Determine the default tab value - prioritize basic documents if they exist
   const defaultTab = basicDocuments.length > 0 ? 'basic_documents' : 'benefit_requirements';
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-green-600 hover:bg-green-700">
-          View All ({senior.documents.length})
-        </Button>
+        {iconOnly ? (
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <FileText className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button className="bg-green-600 hover:bg-green-700">
+            View All ({senior.documents.length})
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="!max-w-4xl h-[95vh] flex flex-col p-6">
         <DialogHeader>
@@ -81,7 +68,6 @@ export const DocumentViewDialog: React.FC<DocumentViewDialogProps> = ({ senior }
           </DialogDescription>
         </DialogHeader>
 
-        {/* Tabbed Interface */}
         <Tabs defaultValue={defaultTab} className="flex flex-col flex-grow overflow-hidden">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="basic_documents" className={basicDocuments.length === 0 ? 'opacity-50' : ''}>

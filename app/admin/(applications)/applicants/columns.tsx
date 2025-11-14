@@ -5,8 +5,17 @@ import { ColumnDef } from '@tanstack/react-table';
 import { useQueryClient } from '@tanstack/react-query';
 import { formatDateTime } from '@/utils/format';
 import { DocumentViewDialog } from '@/components/senior-documents/document-view-dialog';
-
+import { MessageSquare } from 'lucide-react';
 import { ApplicantActionButtons } from '@/components/applicants/applicant-action-buttons';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 export const getApplicantsColumns = (userRole: string | undefined, status: string): ColumnDef<any>[] => {
   if (status === 'loading') {
@@ -20,7 +29,7 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
   const baseColumns: ColumnDef<any>[] = [
     {
       accessorKey: 'fullname',
-      header: 'Full Name',
+      header: 'Name',
       accessorFn: (row) =>
         [row.senior.firstname, row.senior.middlename, row.senior.lastname]
           .filter(Boolean)
@@ -32,7 +41,7 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
         const fullName = [first, middle, last].filter(Boolean).join(' ');
         return <div>{fullName}</div>;
       },
-      filterFn: 'includesString', // This is good for global search
+      filterFn: 'includesString',
     },
     {
       accessorKey: 'applied_benefit',
@@ -68,19 +77,6 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
       accessorFn: (row) => row.category?.name || 'N/A',
     },
     {
-      id: 'documents',
-      accessorKey: 'documents',
-      header: 'Documents',
-      cell: ({ row }) => {
-        const seniorDataForDialog = row.original.senior;
-        const seniorWithRemarksId = {
-          ...seniorDataForDialog,
-          remarks_id: row.original.remarks_id ?? null,
-        };
-        return <DocumentViewDialog senior={seniorWithRemarksId} />;
-      },
-    },
-    {
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => {
@@ -105,46 +101,64 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
       accessorFn: (row) => row.status.name,
     },
     {
-      accessorKey: 'rejectionReason',
-      header: 'Rejection Reason',
-      cell: ({ row }) => {
-        const reason = row.original.rejectionReason;
-        const status = row.original.status.name;
-        
-        // Only show if status is REJECT
-        if (status === 'REJECT' || status === 'REJECTED') {
-          return (
-            <div className="max-w-xs">
-              <span className="text-sm text-gray-700">
-                {reason || 'No reason provided'}
-              </span>
-            </div>
-          );
-        }
-        return <span className="text-gray-400 text-sm">N/A</span>;
-      },
-      accessorFn: (row) => row.rejectionReason || '',
-    },
-    {
       accessorKey: 'createdAt',
       header: 'Applied Date',
       cell: ({ row }) => {
         return formatDateTime(row.getValue('createdAt'));
       },
     },
-  ];
-
-  if (userRole === 'ADMIN') {
-    baseColumns.push({
+    {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
         const applicant = row.original;
+        const seniorDataForDialog = applicant.senior;
+        const seniorWithRemarksId = {
+          ...seniorDataForDialog,
+          remarks_id: applicant.remarks_id ?? null,
+        };
+        const reason = applicant.rejectionReason;
+        const status = applicant.status.name;
         const queryClient = useQueryClient();
-        return <ApplicantActionButtons applicant={applicant} queryClient={queryClient} />;
+        
+        return (
+          <div className="flex items-center gap-1">
+            {/* Documents Icon - Always visible */}
+            <DocumentViewDialog senior={seniorWithRemarksId} iconOnly={true} />
+            
+            {/* Rejection Reason Icon - Only for rejected applications */}
+            {(status === 'REJECT' || status === 'REJECTED') && (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <MessageSquare className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Rejection Reason</DialogTitle>
+                    <DialogDescription>
+                      Details about why this application was rejected
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-700">
+                      {reason || 'No reason provided'}
+                    </p>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
+            
+            {/* Admin Actions - Only for admin users */}
+            {userRole === 'ADMIN' && (
+              <ApplicantActionButtons applicant={applicant} queryClient={queryClient} />
+            )}
+          </div>
+        );
       },
-    });
-  }
+    },
+  ];
 
   return baseColumns;
 };

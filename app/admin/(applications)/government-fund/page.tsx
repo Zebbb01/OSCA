@@ -335,13 +335,13 @@ export default function GovernmentFundPage() {
                         {/* Tabs Section */}
                         <Tabs defaultValue="disbursement-history" className="w-full">
                             <TabsList className="grid w-full grid-cols-3">
-                                <TabsTrigger value="approved-funds">Approved Funds</TabsTrigger>
+                                {/* <TabsTrigger value="approved-funds">Approved Funds</TabsTrigger> */}
                                 <TabsTrigger value="remaining-balance">Remaining Balance</TabsTrigger>
                                 <TabsTrigger value="disbursement-history">Disbursement History</TabsTrigger>
                             </TabsList>
 
                             {/* Approved Funds Tab Content */}
-                            <TabsContent value="approved-funds">
+                            {/* <TabsContent value="approved-funds">
                                 <Card>
                                     <CardHeader className="flex flex-row items-center justify-between">
                                         <div className="grid gap-2">
@@ -403,7 +403,7 @@ export default function GovernmentFundPage() {
                                         </div>
                                     </CardContent>
                                 </Card>
-                            </TabsContent>
+                            </TabsContent> */}
 
                             {/* Remaining Balance Tab Content */}
                             <TabsContent value="remaining-balance">

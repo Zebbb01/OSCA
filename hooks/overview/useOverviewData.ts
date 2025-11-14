@@ -1,7 +1,7 @@
 // hooks\overview\useOverviewData.ts
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react'; // Added useCallback
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { ColumnFiltersState } from '@tanstack/react-table';
@@ -20,14 +20,12 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
   const { data: session, status: sessionStatus } = useSession();
   const currentUserRole = (session?.user as any)?.role || 'USER';
 
-  // State management for all tabs
   const [activeTab, setActiveTab] = useState<string>('released');
   const [globalFilter, setGlobalFilter] = useState('');
   const [debouncedGlobalFilter, setDebouncedGlobalFilter] = useState('');
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
 
-  // Debounce global filter
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedGlobalFilter(globalFilter);
@@ -35,24 +33,20 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
     return () => clearTimeout(handler);
   }, [globalFilter]);
 
-  // Function to reset all filters
   const resetFilters = useCallback(() => {
     setGlobalFilter('');
-    setDebouncedGlobalFilter(''); // Also clear the debounced filter immediately
+    setDebouncedGlobalFilter('');
     setColumnFilters([]);
-    setIsFilterDropdownOpen(false); // Close the filter dropdown
+    setIsFilterDropdownOpen(false);
   }, []);
 
-  // Generate query parameters based on column filters
   const generateQueryParams = useMemo(() => {
     return (filters: ColumnFiltersState) => {
       const params: any = {};
       filters.forEach(filter => {
         if (Array.isArray(filter.value) && filter.value.length > 0) {
-          const value = filter.value[0]; // Assuming single-select for these filters
+          const value = filter.value[0];
 
-          // Determine which parameters are relevant for the current activeTab
-          // This helps avoid sending irrelevant filter params to the API
           if (['released', 'pending'].includes(activeTab)) {
             switch (filter.id) {
               case 'gender':
@@ -73,13 +67,13 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
           } else if (['all-applications', 'regular', 'special'].includes(activeTab)) {
             switch (filter.id) {
               case 'applied_benefit':
-                params.benefitName = value; // Assuming your API accepts benefitName for applications
+                params.benefitName = value;
                 break;
               case 'senior_category':
-                params.categoryName = value; // Assuming your API accepts categoryName for applications
+                params.categoryName = value;
                 break;
               case 'status':
-                params.statusName = value; // Assuming your API accepts statusName for applications
+                params.statusName = value;
                 break;
             }
           }
@@ -87,11 +81,10 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
       });
       return params;
     };
-  }, [activeTab]); // Add activeTab to dependencies
+  }, [activeTab]);
 
   const currentQueryParams = generateQueryParams(columnFilters);
 
-  // Fetch seniors data
   const seniorQuery = useQuery<Seniors[]>({
     queryKey: ['seniors', debouncedGlobalFilter, currentQueryParams, userRole],
     queryFn: async () => {
@@ -107,7 +100,6 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
         }
       });
 
-      // Add role-based filtering if needed
       if (userRole === 'staff') {
         url.searchParams.append('staffView', 'true');
       }
@@ -119,15 +111,12 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
     refetchOnWindowFocus: true,
   });
 
-  // Fetch applications data
   const benefitApplicationQuery = useQuery<BenefitApplicationData[]>({
-    // Include currentQueryParams if applications API also supports these filters
     queryKey: ['applications', debouncedGlobalFilter, currentQueryParams, userRole],
     queryFn: async () => {
       const url = new URL(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/benefits/application`, window.location.origin);
 
       if (debouncedGlobalFilter) {
-        // Assuming global filter searches on senior name for applications too
         url.searchParams.append('seniorName', debouncedGlobalFilter);
       }
 
@@ -144,7 +133,6 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
     refetchOnWindowFocus: true,
   });
 
-  // Filtered data based on query results
   const releasedSeniors = useMemo(() => {
     if (seniorQuery.data) {
       return seniorQuery.data.filter(senior => senior.releasedAt !== null);
@@ -161,7 +149,6 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
 
   const allApplicantsData = benefitApplicationQuery.data ?? [];
 
-  // Filter applications by category
   const regularApplications = useMemo(() => {
     return allApplicantsData.filter(app => app.category?.name === 'Regular senior citizens');
   }, [allApplicantsData]);
@@ -170,7 +157,6 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
     return allApplicantsData.filter(app => app.category?.name === 'Special assistance cases');
   }, [allApplicantsData]);
 
-  // Columns for DataTables
   const seniorColumns = useMemo(() => {
     return getSeniorRecordsColumns(currentUserRole, sessionStatus);
   }, [currentUserRole, sessionStatus]);
@@ -179,7 +165,6 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
     return getApplicantsColumns(currentUserRole, sessionStatus);
   }, [currentUserRole, sessionStatus]);
 
-  // Filterable columns for seniors
   const filterableSeniorColumns = useMemo(() => {
     const seniorsData = seniorQuery.data ?? [];
 
@@ -200,9 +185,8 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
     ];
   }, [seniorQuery.data]);
 
-  // Filterable columns for applications
   const filterableApplicationColumns = useMemo(() => {
-    const benefitOptions = Array.from(new Set(allApplicantsData.map(app => app.benefit?.name))) // Use optional chaining
+    const benefitOptions = Array.from(new Set(allApplicantsData.map(app => app.benefit?.name)))
       .filter(Boolean)
       .map(name => ({ value: name, label: name }));
 
@@ -221,20 +205,18 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
     ];
   }, [allApplicantsData]);
 
-  // Initial visible columns
   const seniorInitialVisibleColumns = [
     'fullname', 'contact_no', 'barangay', 'purok', 'gender', 'senior_category', 'benefits', 'releaseStatus', 'documents'
   ];
 
   const applicationInitialVisibleColumns = [
-    'fullname', 'applied_benefit', 'senior_category', 'status', 'createdAt', 'documents', 'actions'
+    'fullname', 'applied_benefit', 'senior_category', 'status', 'createdAt', 'actions'
   ];
 
   const isLoading = seniorQuery.isLoading || benefitApplicationQuery.isLoading || sessionStatus === 'loading';
   const hasError = seniorQuery.isError || benefitApplicationQuery.isError;
 
   return {
-    // State
     activeTab,
     setActiveTab,
     globalFilter,
@@ -243,24 +225,18 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
     setColumnFilters,
     isFilterDropdownOpen,
     setIsFilterDropdownOpen,
-    resetFilters, // Expose the reset function
-
-    // Data
+    resetFilters,
     releasedSeniors,
     notReleasedSeniors,
     allApplicantsData,
     regularApplications,
     specialApplications,
-
-    // Columns & Filters
     seniorColumns,
     applicationColumns,
     filterableSeniorColumns,
     filterableApplicationColumns,
     seniorInitialVisibleColumns,
     applicationInitialVisibleColumns,
-
-    // Loading & Error States
     isLoading,
     hasError,
   };

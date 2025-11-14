@@ -1,25 +1,29 @@
-// components\overview\DownloadOverviewReport.tsx
+// components/overview/DownloadOverviewReport.tsx
 'use client';
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { DownloadIcon, FileText } from 'lucide-react';
+import { Download } from 'lucide-react';
+import { ReportPreviewModal } from '@/components/senior-citizen/ReportPreviewModal';
+import { useOverviewReport } from '@/hooks/overview/useOverviewReport';
 import { Seniors } from '@/types/seniors';
 import { BenefitApplicationData } from '@/types/application';
-import { ReportPreviewModal } from '@/components/senior-citizen/ReportPreviewModal';
-import { useOverviewReport } from '@/hooks/overview/useOverviewReport'; // Import the new hook
 
 interface DownloadOverviewReportProps {
   releasedData: Seniors[];
   notReleasedData: Seniors[];
   categoryData: BenefitApplicationData[];
+  startDate: string;
+  endDate: string;
 }
 
-export const DownloadOverviewReport: React.FC<DownloadOverviewReportProps> = ({
+export function DownloadOverviewReport({
   releasedData,
   notReleasedData,
-  categoryData
-}) => {
+  categoryData,
+  startDate,
+  endDate,
+}: DownloadOverviewReportProps) {
   const {
     showReportModal,
     pdfReportUrl,
@@ -27,18 +31,23 @@ export const DownloadOverviewReport: React.FC<DownloadOverviewReportProps> = ({
     handleOpenReportModal,
     handleCloseReportModal,
     handleDownloadFromPreview,
-  } = useOverviewReport({ releasedData, notReleasedData, categoryData }); // Use the hook and pass data
+  } = useOverviewReport({
+    releasedData,
+    notReleasedData,
+    categoryData,
+    startDate,
+    endDate,
+  });
 
   return (
     <>
       <Button
         onClick={handleOpenReportModal}
-        className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white shadow-lg transition-all duration-200 hover:shadow-xl"
-        size="default"
+        variant="outline"
+        className="bg-green-600 hover:bg-green-700 text-white border-none"
       >
-        <FileText className="h-4 w-4" />
-        <DownloadIcon className="h-4 w-4" />
-        Download Report
+        <Download className="mr-2 h-4 w-4" />
+        Download Complete Overview Report
       </Button>
 
       <ReportPreviewModal
@@ -46,15 +55,11 @@ export const DownloadOverviewReport: React.FC<DownloadOverviewReportProps> = ({
         onClose={handleCloseReportModal}
         pdfUrl={pdfReportUrl}
         isLoading={isLoadingReport}
-        fileName="senior_citizens_overview_report.pdf"
+        fileName={`senior_citizens_overview_report_${new Date().toISOString().split('T')[0]}.pdf`}
         onDownload={handleDownloadFromPreview}
-        title="Senior Citizens Overview Report Preview"
-        description={
-          isLoadingReport
-            ? 'Generating comprehensive overview report, please wait...'
-            : 'Complete overview report is ready for review and download.'
-        }
+        title="Complete Overview Report Preview"
+        description="Generating comprehensive overview report..."
       />
     </>
   );
-};
+}

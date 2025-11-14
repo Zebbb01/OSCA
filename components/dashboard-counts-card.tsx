@@ -2,17 +2,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { SELECT_OPTIONS } from '@/constants/select-options' // Import your select options
+import { SELECT_OPTIONS } from '@/constants/select-options'
 
 interface SeniorCounts {
     totalSeniors: number
     totalPwdSeniors: number
+    totalSeniorsAppliedForBenefits: number // NEW: Added this field
     categoryCounts: {
         Special: number
         Regular: number
         LowIncome: number
     }
-    barangayCounts: Record<string, number> // This will contain counts only for barangays with seniors
+    barangayCounts: Record<string, number>
     newlyRegisteredSeniors: number
 }
 
@@ -21,8 +22,7 @@ export const DashboardCountsCard = () => {
     const [loadingCounts, setLoadingCounts] = useState(true)
     const [errorCounts, setErrorCounts] = useState<string | null>(null)
 
-    // Calculate total number of barangays from SELECT_OPTIONS
-    const totalBarangays = SELECT_OPTIONS.barangay.length;
+    const totalBarangays = SELECT_OPTIONS.barangay.length
 
     useEffect(() => {
         const fetchSeniorCounts = async () => {
@@ -46,7 +46,7 @@ export const DashboardCountsCard = () => {
     }, [])
 
     return (
-        <div className="md:col-span-2 bg-white p-6 rounded-lg shadow">
+        <div className="md:col-span-2 bg-white p-6 rounded-lg">
             <h2 className="text-xl font-semibold mb-4 text-center">Senior Citizen Overview</h2>
             {loadingCounts && <p>Loading senior counts...</p>}
             {errorCounts && <p className="text-red-500">Error: {errorCounts}</p>}
@@ -71,7 +71,14 @@ export const DashboardCountsCard = () => {
                                 {seniorCounts.newlyRegisteredSeniors}
                             </p>
                         </div>
-                        <div className="p-4 border rounded-lg text-center flex flex-col justify-center bg-orange-50">
+                        {/* NEW CARD: Seniors Who Applied for Benefits */}
+                        <div className="p-4 border rounded-lg text-center flex flex-col justify-center bg-cyan-50">
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">Seniors Who Applied<br/>for Benefits</h3>
+                            <p className="text-4xl font-bold text-cyan-600">
+                                {seniorCounts.totalSeniorsAppliedForBenefits}
+                            </p>
+                        </div>
+                        <div className="p-4 border rounded-lg text-center flex flex-col justify-center bg-orange-50 md:col-span-2">
                             <h3 className="text-sm font-medium text-gray-700 mb-2">Overall Total</h3>
                             <p className="text-4xl font-bold text-orange-600">
                                 {seniorCounts.totalSeniors}

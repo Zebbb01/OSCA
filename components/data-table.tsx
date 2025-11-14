@@ -59,6 +59,7 @@ interface DataTableProps<TData, TValue> {
   isFilterDropdownOpen: boolean;
   setIsFilterDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
   initialVisibleColumns?: string[];
+  showColumnVisibility?: boolean; // NEW PROP
 }
 
 export function DataTable<TData, TValue>({
@@ -72,26 +73,24 @@ export function DataTable<TData, TValue>({
   isFilterDropdownOpen,
   setIsFilterDropdownOpen,
   initialVisibleColumns = [],
+  showColumnVisibility = true, // DEFAULT TO TRUE
 }: DataTableProps<TData, TValue>) {
 
-const initialColumnVisibility: VisibilityState = React.useMemo(() => {
+  const initialColumnVisibility: VisibilityState = React.useMemo(() => {
     const visibility: VisibilityState = {};
-    // Use the prop here instead of a hardcoded array
-    const columnsToDisplay = initialVisibleColumns.length > 0 ? initialVisibleColumns : columns.map(col => (col as any).accessorKey || (col as any).id).filter(Boolean); // If no initialVisibleColumns are provided, make all columns visible by default.
+    const columnsToDisplay = initialVisibleColumns.length > 0 ? initialVisibleColumns : columns.map(col => (col as any).accessorKey || (col as any).id).filter(Boolean);
 
     columns.forEach((column) => {
       const columnId = (column as any).accessorKey || (column as any).id;
       if (columnId) {
-        // By default, set all columns to false (hidden)
         visibility[columnId] = false;
-        // Then, explicitly set only the desired columns to true (visible)
         if (columnsToDisplay.includes(columnId)) {
           visibility[columnId] = true;
         }
       }
     });
     return visibility;
-  }, [columns, initialVisibleColumns]); // Add initialVisibleColumns to dependency array
+  }, [columns, initialVisibleColumns]);
 
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(initialColumnVisibility);
 
@@ -117,7 +116,6 @@ const initialColumnVisibility: VisibilityState = React.useMemo(() => {
     return columnFilters.some(filter => filter.id === columnId &&
       (Array.isArray(filter.value) ? filter.value.length > 0 : String(filter.value).length > 0));
   };
-
 
   return (
     <div className="rounded-md border">
@@ -155,7 +153,6 @@ const initialColumnVisibility: VisibilityState = React.useMemo(() => {
                 const column = table.getColumn(filterableCol.id);
                 if (!column) return null;
 
-                // Ensure currentFilterValue is always an array for multi-selects
                 const currentFilterValue = (column.getFilterValue() || []) as string[];
 
                 return (
@@ -177,10 +174,8 @@ const initialColumnVisibility: VisibilityState = React.useMemo(() => {
                               checked={currentFilterValue.includes(String(option.value))}
                               onCheckedChange={(checked) => {
                                 if (checked) {
-                                  // Add the value if checked
                                   column.setFilterValue([...currentFilterValue, String(option.value)]);
                                 } else {
-                                  // Remove the value if unchecked
                                   column.setFilterValue(currentFilterValue.filter((v) => v !== String(option.value)));
                                 }
                               }}
@@ -213,55 +208,54 @@ const initialColumnVisibility: VisibilityState = React.useMemo(() => {
           </DropdownMenu>
         )}
 
-        {/* Column Visibility Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {/* View All Columns Option */}
-            {table.getIsAllColumnsVisible() ? null : (
-              <>
-                <DropdownMenuItem
-                  onClick={() => {
-                    const newVisibility: VisibilityState = {};
-                    table.getAllColumns().forEach(column => {
-                      const columnId = (column as any).accessorKey || (column as any).id;
-                      if (columnId) {
-                          newVisibility[columnId] = true; // Set all found columns to visible
-                      }
-                    });
-                    table.setColumnVisibility(newVisibility);
-                  }}
-                  className="font-semibold text-blue-600 hover:text-blue-700"
-                >
-                  View All
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-              </>
-            )}
-
-            {table
-              .getAllColumns()
-              .filter(
-                (column) => column.getCanHide() // No need for specific ID checks here, getCanHide() is sufficient
-              )
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
+        {/* Column Visibility Dropdown - CONDITIONALLY RENDERED */}
+        {showColumnVisibility && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {!table.getIsAllColumnsVisible() && (
+                <>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      const newVisibility: VisibilityState = {};
+                      table.getAllColumns().forEach(column => {
+                        const columnId = (column as any).accessorKey || (column as any).id;
+                        if (columnId) {
+                          newVisibility[columnId] = true;
+                        }
+                      });
+                      table.setColumnVisibility(newVisibility);
+                    }}
+                    className="font-semibold text-blue-600 hover:text-blue-700"
                   >
-                    {column.id.replace(/_/g, ' ')}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                    View All
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    >
+                      {column.id.replace(/_/g, ' ')}
+                    </DropdownMenuCheckboxItem>
+                  )
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       <Table>

@@ -33,51 +33,58 @@ export async function GET() {
             })
             : 0
 
-        // --- NEWLY ADDED LOGIC ---
+        // --- COUNT SENIORS WHO APPLIED FOR BENEFITS ---
+        // Get unique senior IDs from Applications table
+        const seniorsWithApplications = await prisma.applications.findMany({
+            select: {
+                senior_id: true,
+            },
+            distinct: ['senior_id'],
+        })
+        
+        const totalSeniorsAppliedForBenefits = seniorsWithApplications.length
 
-        // 1. Count of seniors per barangay
+        // --- BARANGAY COUNTS ---
         const seniorsByBarangay = await prisma.senior.groupBy({
             by: ['barangay'],
             _count: {
-                id: true, // Count seniors by their ID within each barangay group
+                id: true,
             },
             orderBy: {
                 _count: {
-                    id: 'desc', // Order by count descending
+                    id: 'desc',
                 },
             },
         })
 
-        // Format the barangay counts into a more accessible object
         const barangayCounts = seniorsByBarangay.reduce((acc, curr) => {
             acc[curr.barangay] = curr._count.id
             return acc
         }, {} as Record<string, number>)
 
-        // 2. Count of newly registered seniors (last 24 hours)
+        // --- NEWLY REGISTERED SENIORS ---
         const twentyFourHoursAgo = new Date()
-        twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24 * 3) // Adjusted to 72 hours(3days) for testing purposes
+        twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24 * 3) // 72 hours for testing
 
         const newlyRegisteredSeniors = await prisma.senior.count({
             where: {
                 createdAt: {
-                    gte: twentyFourHoursAgo, // Greater than or equal to 24 hours ago
+                    gte: twentyFourHoursAgo,
                 },
             },
         })
-
-        // --- END OF NEWLY ADDED LOGIC ---
 
         return NextResponse.json(
             {
                 totalSeniors,
                 totalPwdSeniors,
+                totalSeniorsAppliedForBenefits, // NEW: Count of seniors who applied for benefits
                 categoryCounts: {
                     Special: specialSeniorsCount,
                     Regular: regularSeniorsCount,
                 },
-                barangayCounts, // Add barangay counts to the response
-                newlyRegisteredSeniors, // Add newly registered seniors count to the response
+                barangayCounts,
+                newlyRegisteredSeniors,
             },
             { status: 200 }
         )

@@ -154,6 +154,7 @@ const NotReleaseMonitoringPage = () => {
       'releaseStatus',
       'benefits',
       'documents',
+      'user-actions',
     ];
   }, []);
 

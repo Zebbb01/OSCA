@@ -8,17 +8,22 @@ import { Seniors } from '@/types/seniors';
 import { BenefitApplicationData } from '@/types/application';
 import { formatDateTime } from '@/utils/format';
 import { addPdfHeaderAndFooter, getContentBoundaries } from '@/utils/pdf-header-footer';
+import { format, parseISO } from 'date-fns';
 
 interface UseOverviewReportProps {
   releasedData: Seniors[];
   notReleasedData: Seniors[];
   categoryData: BenefitApplicationData[];
+  startDate: string;
+  endDate: string;
 }
 
 export const useOverviewReport = ({
   releasedData,
   notReleasedData,
   categoryData,
+  startDate,
+  endDate,
 }: UseOverviewReportProps) => {
   const [showReportModal, setShowReportModal] = useState(false);
   const [pdfReportUrl, setPdfReportUrl] = useState<string | null>(null);
@@ -41,12 +46,13 @@ export const useOverviewReport = ({
     let currentY = boundaries.topMargin + 10;
 
     // Add header and footer to first page
+    const dateRange = `${format(parseISO(startDate), 'MMMM dd, yyyy')} - ${format(parseISO(endDate), 'MMMM dd, yyyy')}`;
     await addPdfHeaderAndFooter({
       doc,
       pageNumber: 1,
       totalPages: 1, // Will be updated later
       title: 'Senior Citizens Overview Report',
-      subtitle: `Comprehensive Analysis • Generated: ${formatDateTime(new Date().toISOString())}`
+      subtitle: `Date Range: ${dateRange} • Generated: ${format(new Date(), 'MMMM dd, yyyy')}`
     });
 
     // Executive Summary
@@ -64,6 +70,7 @@ export const useOverviewReport = ({
     doc.setTextColor(0, 0, 0);
     
     const summaryData = [
+      `Report Period: ${dateRange}`,
       `Total Released Benefits: ${releasedData.length}`,
       `Total Pending Benefits: ${notReleasedData.length}`,
       `Total Applications: ${categoryData.length}`,
@@ -100,7 +107,7 @@ export const useOverviewReport = ({
       currentY += 8;
 
       const releasedTableColumn = [
-        'Full Name',
+        'Name',
         'Contact No.',
         'Barangay',
         'Purok',
@@ -176,7 +183,7 @@ export const useOverviewReport = ({
       currentY += 8;
 
       const notReleasedTableColumn = [
-        'Full Name',
+        'Name',
         'Contact No.',
         'Barangay',
         'Purok',
@@ -252,7 +259,7 @@ export const useOverviewReport = ({
       currentY += 8;
 
       const categoryTableColumn = [
-        'Full Name',
+        'Name',
         'Applied Benefit',
         'Category',
         'Status',
@@ -303,7 +310,7 @@ export const useOverviewReport = ({
       doc.setPage(i);
       let subtitle = '';
       if (i === 1) {
-        subtitle = `Comprehensive Analysis • Generated: ${formatDateTime(new Date().toISOString())}`;
+        subtitle = `Date Range: ${dateRange} • Generated: ${format(new Date(), 'MMMM dd, yyyy')}`;
       } else if (i === 2) {
         subtitle = 'Released Benefits Section';
       } else if (i === 3) {
@@ -326,7 +333,7 @@ export const useOverviewReport = ({
     const url = URL.createObjectURL(blob);
     setPdfReportUrl(url);
     setIsLoadingReport(false);
-  }, [releasedData, notReleasedData, categoryData]);
+  }, [releasedData, notReleasedData, categoryData, startDate, endDate]);
 
   const handleOpenReportModal = () => {
     setShowReportModal(true);
@@ -343,7 +350,7 @@ export const useOverviewReport = ({
     if (pdfReportUrl) {
       const link = document.createElement('a');
       link.href = pdfReportUrl;
-      link.download = 'senior_citizens_overview_report.pdf';
+      link.download = `senior_citizens_overview_report_${format(new Date(), 'yyyy_MM_dd')}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
