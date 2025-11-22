@@ -49,14 +49,14 @@ export const ReportGenerator: React.FC<ReportGeneratorProps> = ({
         );
       } catch (error) {
         console.warn('Government fund API not available, using default value');
-        return { id: 0, currentBalance: 500000 };
+        return { id: 0, currentBalance: 0 };
       }
     },
     staleTime: 5 * 60 * 1000,
     enabled: reportType === 'financial-overview', // Only fetch when needed
   });
 
-  const initialBalance = fundData?.currentBalance || 500000;
+  const initialBalance = fundData?.currentBalance || 0;
 
   const generateAndSetPdfBlob = useCallback(async () => {
     setIsLoadingReport(true);

@@ -139,7 +139,7 @@ export default function StaffGovernmentFundPage() {
             } else {
                 return balance + transaction.amount; // Pending funds are allocated
             }
-        }, 500000); // Starting balance
+        }, 0); // Starting balance
     }, [transactions]);
 
     const totalReleased = React.useMemo(() => {

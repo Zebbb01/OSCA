@@ -73,6 +73,11 @@ export type Transaction = $Result.DefaultSelection<Prisma.$TransactionPayload>
  * 
  */
 export type GovernmentFund = $Result.DefaultSelection<Prisma.$GovernmentFundPayload>
+/**
+ * Model FundHistory
+ * 
+ */
+export type FundHistory = $Result.DefaultSelection<Prisma.$FundHistoryPayload>
 
 /**
  * Enums
@@ -352,6 +357,16 @@ export class PrismaClient<
     * ```
     */
   get governmentFund(): Prisma.GovernmentFundDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.fundHistory`: Exposes CRUD operations for the **FundHistory** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more FundHistories
+    * const fundHistories = await prisma.fundHistory.findMany()
+    * ```
+    */
+  get fundHistory(): Prisma.FundHistoryDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -803,7 +818,8 @@ export namespace Prisma {
     BenefitRequirements: 'BenefitRequirements',
     Applications: 'Applications',
     Transaction: 'Transaction',
-    GovernmentFund: 'GovernmentFund'
+    GovernmentFund: 'GovernmentFund',
+    FundHistory: 'FundHistory'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -822,7 +838,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "session" | "senior" | "registrationDocument" | "remarks" | "seniorCategory" | "status" | "benefits" | "benefitRequirements" | "applications" | "transaction" | "governmentFund"
+      modelProps: "user" | "session" | "senior" | "registrationDocument" | "remarks" | "seniorCategory" | "status" | "benefits" | "benefitRequirements" | "applications" | "transaction" | "governmentFund" | "fundHistory"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1714,6 +1730,80 @@ export namespace Prisma {
           }
         }
       }
+      FundHistory: {
+        payload: Prisma.$FundHistoryPayload<ExtArgs>
+        fields: Prisma.FundHistoryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FundHistoryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FundHistoryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FundHistoryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FundHistoryPayload>
+          }
+          findFirst: {
+            args: Prisma.FundHistoryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FundHistoryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FundHistoryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FundHistoryPayload>
+          }
+          findMany: {
+            args: Prisma.FundHistoryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FundHistoryPayload>[]
+          }
+          create: {
+            args: Prisma.FundHistoryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FundHistoryPayload>
+          }
+          createMany: {
+            args: Prisma.FundHistoryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FundHistoryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FundHistoryPayload>[]
+          }
+          delete: {
+            args: Prisma.FundHistoryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FundHistoryPayload>
+          }
+          update: {
+            args: Prisma.FundHistoryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FundHistoryPayload>
+          }
+          deleteMany: {
+            args: Prisma.FundHistoryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FundHistoryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FundHistoryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FundHistoryPayload>[]
+          }
+          upsert: {
+            args: Prisma.FundHistoryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FundHistoryPayload>
+          }
+          aggregate: {
+            args: Prisma.FundHistoryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFundHistory>
+          }
+          groupBy: {
+            args: Prisma.FundHistoryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FundHistoryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FundHistoryCountArgs<ExtArgs>
+            result: $Utils.Optional<FundHistoryCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1818,6 +1908,7 @@ export namespace Prisma {
     applications?: ApplicationsOmit
     transaction?: TransactionOmit
     governmentFund?: GovernmentFundOmit
+    fundHistory?: FundHistoryOmit
   }
 
   /* Types for Logging */
@@ -15874,6 +15965,1125 @@ export namespace Prisma {
 
 
   /**
+   * Model FundHistory
+   */
+
+  export type AggregateFundHistory = {
+    _count: FundHistoryCountAggregateOutputType | null
+    _avg: FundHistoryAvgAggregateOutputType | null
+    _sum: FundHistorySumAggregateOutputType | null
+    _min: FundHistoryMinAggregateOutputType | null
+    _max: FundHistoryMaxAggregateOutputType | null
+  }
+
+  export type FundHistoryAvgAggregateOutputType = {
+    id: number | null
+    amount: number | null
+    previousBalance: number | null
+    newBalance: number | null
+  }
+
+  export type FundHistorySumAggregateOutputType = {
+    id: number | null
+    amount: number | null
+    previousBalance: number | null
+    newBalance: number | null
+  }
+
+  export type FundHistoryMinAggregateOutputType = {
+    id: number | null
+    date: Date | null
+    amount: number | null
+    from: string | null
+    description: string | null
+    receiptPath: string | null
+    receiptUrl: string | null
+    previousBalance: number | null
+    newBalance: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type FundHistoryMaxAggregateOutputType = {
+    id: number | null
+    date: Date | null
+    amount: number | null
+    from: string | null
+    description: string | null
+    receiptPath: string | null
+    receiptUrl: string | null
+    previousBalance: number | null
+    newBalance: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type FundHistoryCountAggregateOutputType = {
+    id: number
+    date: number
+    amount: number
+    from: number
+    description: number
+    receiptPath: number
+    receiptUrl: number
+    previousBalance: number
+    newBalance: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type FundHistoryAvgAggregateInputType = {
+    id?: true
+    amount?: true
+    previousBalance?: true
+    newBalance?: true
+  }
+
+  export type FundHistorySumAggregateInputType = {
+    id?: true
+    amount?: true
+    previousBalance?: true
+    newBalance?: true
+  }
+
+  export type FundHistoryMinAggregateInputType = {
+    id?: true
+    date?: true
+    amount?: true
+    from?: true
+    description?: true
+    receiptPath?: true
+    receiptUrl?: true
+    previousBalance?: true
+    newBalance?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type FundHistoryMaxAggregateInputType = {
+    id?: true
+    date?: true
+    amount?: true
+    from?: true
+    description?: true
+    receiptPath?: true
+    receiptUrl?: true
+    previousBalance?: true
+    newBalance?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type FundHistoryCountAggregateInputType = {
+    id?: true
+    date?: true
+    amount?: true
+    from?: true
+    description?: true
+    receiptPath?: true
+    receiptUrl?: true
+    previousBalance?: true
+    newBalance?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type FundHistoryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FundHistory to aggregate.
+     */
+    where?: FundHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FundHistories to fetch.
+     */
+    orderBy?: FundHistoryOrderByWithRelationInput | FundHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FundHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FundHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FundHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned FundHistories
+    **/
+    _count?: true | FundHistoryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: FundHistoryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: FundHistorySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FundHistoryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FundHistoryMaxAggregateInputType
+  }
+
+  export type GetFundHistoryAggregateType<T extends FundHistoryAggregateArgs> = {
+        [P in keyof T & keyof AggregateFundHistory]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFundHistory[P]>
+      : GetScalarType<T[P], AggregateFundHistory[P]>
+  }
+
+
+
+
+  export type FundHistoryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FundHistoryWhereInput
+    orderBy?: FundHistoryOrderByWithAggregationInput | FundHistoryOrderByWithAggregationInput[]
+    by: FundHistoryScalarFieldEnum[] | FundHistoryScalarFieldEnum
+    having?: FundHistoryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FundHistoryCountAggregateInputType | true
+    _avg?: FundHistoryAvgAggregateInputType
+    _sum?: FundHistorySumAggregateInputType
+    _min?: FundHistoryMinAggregateInputType
+    _max?: FundHistoryMaxAggregateInputType
+  }
+
+  export type FundHistoryGroupByOutputType = {
+    id: number
+    date: Date
+    amount: number
+    from: string
+    description: string | null
+    receiptPath: string | null
+    receiptUrl: string | null
+    previousBalance: number
+    newBalance: number
+    createdAt: Date
+    updatedAt: Date
+    _count: FundHistoryCountAggregateOutputType | null
+    _avg: FundHistoryAvgAggregateOutputType | null
+    _sum: FundHistorySumAggregateOutputType | null
+    _min: FundHistoryMinAggregateOutputType | null
+    _max: FundHistoryMaxAggregateOutputType | null
+  }
+
+  type GetFundHistoryGroupByPayload<T extends FundHistoryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FundHistoryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FundHistoryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FundHistoryGroupByOutputType[P]>
+            : GetScalarType<T[P], FundHistoryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FundHistorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    amount?: boolean
+    from?: boolean
+    description?: boolean
+    receiptPath?: boolean
+    receiptUrl?: boolean
+    previousBalance?: boolean
+    newBalance?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["fundHistory"]>
+
+  export type FundHistorySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    amount?: boolean
+    from?: boolean
+    description?: boolean
+    receiptPath?: boolean
+    receiptUrl?: boolean
+    previousBalance?: boolean
+    newBalance?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["fundHistory"]>
+
+  export type FundHistorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    amount?: boolean
+    from?: boolean
+    description?: boolean
+    receiptPath?: boolean
+    receiptUrl?: boolean
+    previousBalance?: boolean
+    newBalance?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["fundHistory"]>
+
+  export type FundHistorySelectScalar = {
+    id?: boolean
+    date?: boolean
+    amount?: boolean
+    from?: boolean
+    description?: boolean
+    receiptPath?: boolean
+    receiptUrl?: boolean
+    previousBalance?: boolean
+    newBalance?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type FundHistoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "date" | "amount" | "from" | "description" | "receiptPath" | "receiptUrl" | "previousBalance" | "newBalance" | "createdAt" | "updatedAt", ExtArgs["result"]["fundHistory"]>
+
+  export type $FundHistoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "FundHistory"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      date: Date
+      amount: number
+      from: string
+      description: string | null
+      receiptPath: string | null
+      receiptUrl: string | null
+      previousBalance: number
+      newBalance: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["fundHistory"]>
+    composites: {}
+  }
+
+  type FundHistoryGetPayload<S extends boolean | null | undefined | FundHistoryDefaultArgs> = $Result.GetResult<Prisma.$FundHistoryPayload, S>
+
+  type FundHistoryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FundHistoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FundHistoryCountAggregateInputType | true
+    }
+
+  export interface FundHistoryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['FundHistory'], meta: { name: 'FundHistory' } }
+    /**
+     * Find zero or one FundHistory that matches the filter.
+     * @param {FundHistoryFindUniqueArgs} args - Arguments to find a FundHistory
+     * @example
+     * // Get one FundHistory
+     * const fundHistory = await prisma.fundHistory.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FundHistoryFindUniqueArgs>(args: SelectSubset<T, FundHistoryFindUniqueArgs<ExtArgs>>): Prisma__FundHistoryClient<$Result.GetResult<Prisma.$FundHistoryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one FundHistory that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FundHistoryFindUniqueOrThrowArgs} args - Arguments to find a FundHistory
+     * @example
+     * // Get one FundHistory
+     * const fundHistory = await prisma.fundHistory.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FundHistoryFindUniqueOrThrowArgs>(args: SelectSubset<T, FundHistoryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FundHistoryClient<$Result.GetResult<Prisma.$FundHistoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FundHistory that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FundHistoryFindFirstArgs} args - Arguments to find a FundHistory
+     * @example
+     * // Get one FundHistory
+     * const fundHistory = await prisma.fundHistory.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FundHistoryFindFirstArgs>(args?: SelectSubset<T, FundHistoryFindFirstArgs<ExtArgs>>): Prisma__FundHistoryClient<$Result.GetResult<Prisma.$FundHistoryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FundHistory that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FundHistoryFindFirstOrThrowArgs} args - Arguments to find a FundHistory
+     * @example
+     * // Get one FundHistory
+     * const fundHistory = await prisma.fundHistory.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FundHistoryFindFirstOrThrowArgs>(args?: SelectSubset<T, FundHistoryFindFirstOrThrowArgs<ExtArgs>>): Prisma__FundHistoryClient<$Result.GetResult<Prisma.$FundHistoryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more FundHistories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FundHistoryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all FundHistories
+     * const fundHistories = await prisma.fundHistory.findMany()
+     * 
+     * // Get first 10 FundHistories
+     * const fundHistories = await prisma.fundHistory.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const fundHistoryWithIdOnly = await prisma.fundHistory.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FundHistoryFindManyArgs>(args?: SelectSubset<T, FundHistoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FundHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a FundHistory.
+     * @param {FundHistoryCreateArgs} args - Arguments to create a FundHistory.
+     * @example
+     * // Create one FundHistory
+     * const FundHistory = await prisma.fundHistory.create({
+     *   data: {
+     *     // ... data to create a FundHistory
+     *   }
+     * })
+     * 
+     */
+    create<T extends FundHistoryCreateArgs>(args: SelectSubset<T, FundHistoryCreateArgs<ExtArgs>>): Prisma__FundHistoryClient<$Result.GetResult<Prisma.$FundHistoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many FundHistories.
+     * @param {FundHistoryCreateManyArgs} args - Arguments to create many FundHistories.
+     * @example
+     * // Create many FundHistories
+     * const fundHistory = await prisma.fundHistory.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FundHistoryCreateManyArgs>(args?: SelectSubset<T, FundHistoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many FundHistories and returns the data saved in the database.
+     * @param {FundHistoryCreateManyAndReturnArgs} args - Arguments to create many FundHistories.
+     * @example
+     * // Create many FundHistories
+     * const fundHistory = await prisma.fundHistory.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FundHistories and only return the `id`
+     * const fundHistoryWithIdOnly = await prisma.fundHistory.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FundHistoryCreateManyAndReturnArgs>(args?: SelectSubset<T, FundHistoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FundHistoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a FundHistory.
+     * @param {FundHistoryDeleteArgs} args - Arguments to delete one FundHistory.
+     * @example
+     * // Delete one FundHistory
+     * const FundHistory = await prisma.fundHistory.delete({
+     *   where: {
+     *     // ... filter to delete one FundHistory
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FundHistoryDeleteArgs>(args: SelectSubset<T, FundHistoryDeleteArgs<ExtArgs>>): Prisma__FundHistoryClient<$Result.GetResult<Prisma.$FundHistoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one FundHistory.
+     * @param {FundHistoryUpdateArgs} args - Arguments to update one FundHistory.
+     * @example
+     * // Update one FundHistory
+     * const fundHistory = await prisma.fundHistory.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FundHistoryUpdateArgs>(args: SelectSubset<T, FundHistoryUpdateArgs<ExtArgs>>): Prisma__FundHistoryClient<$Result.GetResult<Prisma.$FundHistoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more FundHistories.
+     * @param {FundHistoryDeleteManyArgs} args - Arguments to filter FundHistories to delete.
+     * @example
+     * // Delete a few FundHistories
+     * const { count } = await prisma.fundHistory.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FundHistoryDeleteManyArgs>(args?: SelectSubset<T, FundHistoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FundHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FundHistoryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many FundHistories
+     * const fundHistory = await prisma.fundHistory.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FundHistoryUpdateManyArgs>(args: SelectSubset<T, FundHistoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FundHistories and returns the data updated in the database.
+     * @param {FundHistoryUpdateManyAndReturnArgs} args - Arguments to update many FundHistories.
+     * @example
+     * // Update many FundHistories
+     * const fundHistory = await prisma.fundHistory.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more FundHistories and only return the `id`
+     * const fundHistoryWithIdOnly = await prisma.fundHistory.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FundHistoryUpdateManyAndReturnArgs>(args: SelectSubset<T, FundHistoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FundHistoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one FundHistory.
+     * @param {FundHistoryUpsertArgs} args - Arguments to update or create a FundHistory.
+     * @example
+     * // Update or create a FundHistory
+     * const fundHistory = await prisma.fundHistory.upsert({
+     *   create: {
+     *     // ... data to create a FundHistory
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the FundHistory we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FundHistoryUpsertArgs>(args: SelectSubset<T, FundHistoryUpsertArgs<ExtArgs>>): Prisma__FundHistoryClient<$Result.GetResult<Prisma.$FundHistoryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of FundHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FundHistoryCountArgs} args - Arguments to filter FundHistories to count.
+     * @example
+     * // Count the number of FundHistories
+     * const count = await prisma.fundHistory.count({
+     *   where: {
+     *     // ... the filter for the FundHistories we want to count
+     *   }
+     * })
+    **/
+    count<T extends FundHistoryCountArgs>(
+      args?: Subset<T, FundHistoryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FundHistoryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a FundHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FundHistoryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FundHistoryAggregateArgs>(args: Subset<T, FundHistoryAggregateArgs>): Prisma.PrismaPromise<GetFundHistoryAggregateType<T>>
+
+    /**
+     * Group by FundHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FundHistoryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FundHistoryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FundHistoryGroupByArgs['orderBy'] }
+        : { orderBy?: FundHistoryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FundHistoryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFundHistoryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the FundHistory model
+   */
+  readonly fields: FundHistoryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for FundHistory.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FundHistoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the FundHistory model
+   */
+  interface FundHistoryFieldRefs {
+    readonly id: FieldRef<"FundHistory", 'Int'>
+    readonly date: FieldRef<"FundHistory", 'DateTime'>
+    readonly amount: FieldRef<"FundHistory", 'Float'>
+    readonly from: FieldRef<"FundHistory", 'String'>
+    readonly description: FieldRef<"FundHistory", 'String'>
+    readonly receiptPath: FieldRef<"FundHistory", 'String'>
+    readonly receiptUrl: FieldRef<"FundHistory", 'String'>
+    readonly previousBalance: FieldRef<"FundHistory", 'Float'>
+    readonly newBalance: FieldRef<"FundHistory", 'Float'>
+    readonly createdAt: FieldRef<"FundHistory", 'DateTime'>
+    readonly updatedAt: FieldRef<"FundHistory", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * FundHistory findUnique
+   */
+  export type FundHistoryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FundHistory
+     */
+    select?: FundHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FundHistory
+     */
+    omit?: FundHistoryOmit<ExtArgs> | null
+    /**
+     * Filter, which FundHistory to fetch.
+     */
+    where: FundHistoryWhereUniqueInput
+  }
+
+  /**
+   * FundHistory findUniqueOrThrow
+   */
+  export type FundHistoryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FundHistory
+     */
+    select?: FundHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FundHistory
+     */
+    omit?: FundHistoryOmit<ExtArgs> | null
+    /**
+     * Filter, which FundHistory to fetch.
+     */
+    where: FundHistoryWhereUniqueInput
+  }
+
+  /**
+   * FundHistory findFirst
+   */
+  export type FundHistoryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FundHistory
+     */
+    select?: FundHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FundHistory
+     */
+    omit?: FundHistoryOmit<ExtArgs> | null
+    /**
+     * Filter, which FundHistory to fetch.
+     */
+    where?: FundHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FundHistories to fetch.
+     */
+    orderBy?: FundHistoryOrderByWithRelationInput | FundHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FundHistories.
+     */
+    cursor?: FundHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FundHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FundHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FundHistories.
+     */
+    distinct?: FundHistoryScalarFieldEnum | FundHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * FundHistory findFirstOrThrow
+   */
+  export type FundHistoryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FundHistory
+     */
+    select?: FundHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FundHistory
+     */
+    omit?: FundHistoryOmit<ExtArgs> | null
+    /**
+     * Filter, which FundHistory to fetch.
+     */
+    where?: FundHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FundHistories to fetch.
+     */
+    orderBy?: FundHistoryOrderByWithRelationInput | FundHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FundHistories.
+     */
+    cursor?: FundHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FundHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FundHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FundHistories.
+     */
+    distinct?: FundHistoryScalarFieldEnum | FundHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * FundHistory findMany
+   */
+  export type FundHistoryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FundHistory
+     */
+    select?: FundHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FundHistory
+     */
+    omit?: FundHistoryOmit<ExtArgs> | null
+    /**
+     * Filter, which FundHistories to fetch.
+     */
+    where?: FundHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FundHistories to fetch.
+     */
+    orderBy?: FundHistoryOrderByWithRelationInput | FundHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing FundHistories.
+     */
+    cursor?: FundHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FundHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FundHistories.
+     */
+    skip?: number
+    distinct?: FundHistoryScalarFieldEnum | FundHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * FundHistory create
+   */
+  export type FundHistoryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FundHistory
+     */
+    select?: FundHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FundHistory
+     */
+    omit?: FundHistoryOmit<ExtArgs> | null
+    /**
+     * The data needed to create a FundHistory.
+     */
+    data: XOR<FundHistoryCreateInput, FundHistoryUncheckedCreateInput>
+  }
+
+  /**
+   * FundHistory createMany
+   */
+  export type FundHistoryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many FundHistories.
+     */
+    data: FundHistoryCreateManyInput | FundHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FundHistory createManyAndReturn
+   */
+  export type FundHistoryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FundHistory
+     */
+    select?: FundHistorySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FundHistory
+     */
+    omit?: FundHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to create many FundHistories.
+     */
+    data: FundHistoryCreateManyInput | FundHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FundHistory update
+   */
+  export type FundHistoryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FundHistory
+     */
+    select?: FundHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FundHistory
+     */
+    omit?: FundHistoryOmit<ExtArgs> | null
+    /**
+     * The data needed to update a FundHistory.
+     */
+    data: XOR<FundHistoryUpdateInput, FundHistoryUncheckedUpdateInput>
+    /**
+     * Choose, which FundHistory to update.
+     */
+    where: FundHistoryWhereUniqueInput
+  }
+
+  /**
+   * FundHistory updateMany
+   */
+  export type FundHistoryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update FundHistories.
+     */
+    data: XOR<FundHistoryUpdateManyMutationInput, FundHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which FundHistories to update
+     */
+    where?: FundHistoryWhereInput
+    /**
+     * Limit how many FundHistories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * FundHistory updateManyAndReturn
+   */
+  export type FundHistoryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FundHistory
+     */
+    select?: FundHistorySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FundHistory
+     */
+    omit?: FundHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to update FundHistories.
+     */
+    data: XOR<FundHistoryUpdateManyMutationInput, FundHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which FundHistories to update
+     */
+    where?: FundHistoryWhereInput
+    /**
+     * Limit how many FundHistories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * FundHistory upsert
+   */
+  export type FundHistoryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FundHistory
+     */
+    select?: FundHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FundHistory
+     */
+    omit?: FundHistoryOmit<ExtArgs> | null
+    /**
+     * The filter to search for the FundHistory to update in case it exists.
+     */
+    where: FundHistoryWhereUniqueInput
+    /**
+     * In case the FundHistory found by the `where` argument doesn't exist, create a new FundHistory with this data.
+     */
+    create: XOR<FundHistoryCreateInput, FundHistoryUncheckedCreateInput>
+    /**
+     * In case the FundHistory was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FundHistoryUpdateInput, FundHistoryUncheckedUpdateInput>
+  }
+
+  /**
+   * FundHistory delete
+   */
+  export type FundHistoryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FundHistory
+     */
+    select?: FundHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FundHistory
+     */
+    omit?: FundHistoryOmit<ExtArgs> | null
+    /**
+     * Filter which FundHistory to delete.
+     */
+    where: FundHistoryWhereUniqueInput
+  }
+
+  /**
+   * FundHistory deleteMany
+   */
+  export type FundHistoryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FundHistories to delete
+     */
+    where?: FundHistoryWhereInput
+    /**
+     * Limit how many FundHistories to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * FundHistory without action
+   */
+  export type FundHistoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FundHistory
+     */
+    select?: FundHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FundHistory
+     */
+    omit?: FundHistoryOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -16058,6 +17268,23 @@ export namespace Prisma {
   };
 
   export type GovernmentFundScalarFieldEnum = (typeof GovernmentFundScalarFieldEnum)[keyof typeof GovernmentFundScalarFieldEnum]
+
+
+  export const FundHistoryScalarFieldEnum: {
+    id: 'id',
+    date: 'date',
+    amount: 'amount',
+    from: 'from',
+    description: 'description',
+    receiptPath: 'receiptPath',
+    receiptUrl: 'receiptUrl',
+    previousBalance: 'previousBalance',
+    newBalance: 'newBalance',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type FundHistoryScalarFieldEnum = (typeof FundHistoryScalarFieldEnum)[keyof typeof FundHistoryScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -17100,6 +18327,90 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"GovernmentFund"> | Date | string
   }
 
+  export type FundHistoryWhereInput = {
+    AND?: FundHistoryWhereInput | FundHistoryWhereInput[]
+    OR?: FundHistoryWhereInput[]
+    NOT?: FundHistoryWhereInput | FundHistoryWhereInput[]
+    id?: IntFilter<"FundHistory"> | number
+    date?: DateTimeFilter<"FundHistory"> | Date | string
+    amount?: FloatFilter<"FundHistory"> | number
+    from?: StringFilter<"FundHistory"> | string
+    description?: StringNullableFilter<"FundHistory"> | string | null
+    receiptPath?: StringNullableFilter<"FundHistory"> | string | null
+    receiptUrl?: StringNullableFilter<"FundHistory"> | string | null
+    previousBalance?: FloatFilter<"FundHistory"> | number
+    newBalance?: FloatFilter<"FundHistory"> | number
+    createdAt?: DateTimeFilter<"FundHistory"> | Date | string
+    updatedAt?: DateTimeFilter<"FundHistory"> | Date | string
+  }
+
+  export type FundHistoryOrderByWithRelationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    amount?: SortOrder
+    from?: SortOrder
+    description?: SortOrderInput | SortOrder
+    receiptPath?: SortOrderInput | SortOrder
+    receiptUrl?: SortOrderInput | SortOrder
+    previousBalance?: SortOrder
+    newBalance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FundHistoryWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: FundHistoryWhereInput | FundHistoryWhereInput[]
+    OR?: FundHistoryWhereInput[]
+    NOT?: FundHistoryWhereInput | FundHistoryWhereInput[]
+    date?: DateTimeFilter<"FundHistory"> | Date | string
+    amount?: FloatFilter<"FundHistory"> | number
+    from?: StringFilter<"FundHistory"> | string
+    description?: StringNullableFilter<"FundHistory"> | string | null
+    receiptPath?: StringNullableFilter<"FundHistory"> | string | null
+    receiptUrl?: StringNullableFilter<"FundHistory"> | string | null
+    previousBalance?: FloatFilter<"FundHistory"> | number
+    newBalance?: FloatFilter<"FundHistory"> | number
+    createdAt?: DateTimeFilter<"FundHistory"> | Date | string
+    updatedAt?: DateTimeFilter<"FundHistory"> | Date | string
+  }, "id">
+
+  export type FundHistoryOrderByWithAggregationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    amount?: SortOrder
+    from?: SortOrder
+    description?: SortOrderInput | SortOrder
+    receiptPath?: SortOrderInput | SortOrder
+    receiptUrl?: SortOrderInput | SortOrder
+    previousBalance?: SortOrder
+    newBalance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: FundHistoryCountOrderByAggregateInput
+    _avg?: FundHistoryAvgOrderByAggregateInput
+    _max?: FundHistoryMaxOrderByAggregateInput
+    _min?: FundHistoryMinOrderByAggregateInput
+    _sum?: FundHistorySumOrderByAggregateInput
+  }
+
+  export type FundHistoryScalarWhereWithAggregatesInput = {
+    AND?: FundHistoryScalarWhereWithAggregatesInput | FundHistoryScalarWhereWithAggregatesInput[]
+    OR?: FundHistoryScalarWhereWithAggregatesInput[]
+    NOT?: FundHistoryScalarWhereWithAggregatesInput | FundHistoryScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"FundHistory"> | number
+    date?: DateTimeWithAggregatesFilter<"FundHistory"> | Date | string
+    amount?: FloatWithAggregatesFilter<"FundHistory"> | number
+    from?: StringWithAggregatesFilter<"FundHistory"> | string
+    description?: StringNullableWithAggregatesFilter<"FundHistory"> | string | null
+    receiptPath?: StringNullableWithAggregatesFilter<"FundHistory"> | string | null
+    receiptUrl?: StringNullableWithAggregatesFilter<"FundHistory"> | string | null
+    previousBalance?: FloatWithAggregatesFilter<"FundHistory"> | number
+    newBalance?: FloatWithAggregatesFilter<"FundHistory"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"FundHistory"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"FundHistory"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     firstName: string
@@ -18056,6 +19367,101 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type FundHistoryCreateInput = {
+    date: Date | string
+    amount: number
+    from: string
+    description?: string | null
+    receiptPath?: string | null
+    receiptUrl?: string | null
+    previousBalance: number
+    newBalance: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FundHistoryUncheckedCreateInput = {
+    id?: number
+    date: Date | string
+    amount: number
+    from: string
+    description?: string | null
+    receiptPath?: string | null
+    receiptUrl?: string | null
+    previousBalance: number
+    newBalance: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FundHistoryUpdateInput = {
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    from?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptPath?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    previousBalance?: FloatFieldUpdateOperationsInput | number
+    newBalance?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FundHistoryUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    from?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptPath?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    previousBalance?: FloatFieldUpdateOperationsInput | number
+    newBalance?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FundHistoryCreateManyInput = {
+    id?: number
+    date: Date | string
+    amount: number
+    from: string
+    description?: string | null
+    receiptPath?: string | null
+    receiptUrl?: string | null
+    previousBalance: number
+    newBalance: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type FundHistoryUpdateManyMutationInput = {
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    from?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptPath?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    previousBalance?: FloatFieldUpdateOperationsInput | number
+    newBalance?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FundHistoryUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    from?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptPath?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    previousBalance?: FloatFieldUpdateOperationsInput | number
+    newBalance?: FloatFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -18922,6 +20328,62 @@ export namespace Prisma {
   export type GovernmentFundSumOrderByAggregateInput = {
     id?: SortOrder
     currentBalance?: SortOrder
+  }
+
+  export type FundHistoryCountOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    amount?: SortOrder
+    from?: SortOrder
+    description?: SortOrder
+    receiptPath?: SortOrder
+    receiptUrl?: SortOrder
+    previousBalance?: SortOrder
+    newBalance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FundHistoryAvgOrderByAggregateInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    previousBalance?: SortOrder
+    newBalance?: SortOrder
+  }
+
+  export type FundHistoryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    amount?: SortOrder
+    from?: SortOrder
+    description?: SortOrder
+    receiptPath?: SortOrder
+    receiptUrl?: SortOrder
+    previousBalance?: SortOrder
+    newBalance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FundHistoryMinOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    amount?: SortOrder
+    from?: SortOrder
+    description?: SortOrder
+    receiptPath?: SortOrder
+    receiptUrl?: SortOrder
+    previousBalance?: SortOrder
+    newBalance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type FundHistorySumOrderByAggregateInput = {
+    id?: SortOrder
+    amount?: SortOrder
+    previousBalance?: SortOrder
+    newBalance?: SortOrder
   }
 
   export type SessionCreateNestedManyWithoutUserInput = {

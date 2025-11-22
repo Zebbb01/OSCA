@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { DataTable } from '../data-table';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,12 +11,16 @@ import { DownloadOverviewReport } from './DownloadOverviewReport';
 import { DownloadTabReport } from './DownloadTabReport';
 import { useOverviewData } from '@/hooks/overview/useOverviewData';
 import { format, isWithinInterval, parseISO, startOfDay, endOfDay } from 'date-fns';
+import { Row } from '@tanstack/react-table';
 
 interface MonitoringOverviewProps {
   userRole: 'admin' | 'staff';
   title?: string;
   description?: string;
   showDownloadButton?: boolean;
+  defaultTab?: string;
+  availableTabs?: string[];
+  hideAdminActions?: boolean;
 }
 
 interface GroupedData {
@@ -33,8 +38,14 @@ export default function MonitoringOverview({
   userRole,
   title = "Senior Citizens Monitoring Overview",
   description = "Comprehensive view of all senior citizen benefit applications, releases, and categories.",
-  showDownloadButton = true
+  showDownloadButton = true,
+  defaultTab = "barangay-summary",
+  availableTabs = ["barangay-summary", "all-applications", "released", "pending"],
+  hideAdminActions = false
 }: MonitoringOverviewProps) {
+  const searchParams = useSearchParams();
+  const tabFromUrl = searchParams.get('tab');
+
   const [startDate, setStartDate] = useState<string>(format(new Date(new Date().getFullYear(), 0, 1), 'yyyy-MM-dd'));
   const [endDate, setEndDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
 
@@ -60,9 +71,16 @@ export default function MonitoringOverview({
     applicationInitialVisibleColumns,
     isLoading,
     hasError,
-  } = useOverviewData({ userRole });
+  } = useOverviewData({ userRole, hideAdminActions });
 
-  // Filter data by selected date range
+  useEffect(() => {
+    if (tabFromUrl && ['barangay-summary', 'all-applications', 'released', 'pending'].includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl);
+    } else if (defaultTab) {
+      setActiveTab(defaultTab);
+    }
+  }, [tabFromUrl, defaultTab, setActiveTab]);
+
   const filteredData = useMemo(() => {
     const filterByDate = (data: any[], dateField: string = 'createdAt') => {
       if (!startDate || !endDate) return data;
@@ -90,7 +108,6 @@ export default function MonitoringOverview({
     };
   }, [releasedSeniors, notReleasedSeniors, allApplicantsData, regularApplications, specialApplications, startDate, endDate]);
 
-  // Group data by barangay
   const barangayGroupedData = useMemo((): GroupedData[] => {
     const groupedMap = new Map<string, GroupedData>();
 
@@ -135,54 +152,62 @@ export default function MonitoringOverview({
     return Array.from(groupedMap.values()).sort((a, b) => b.totalRecords - a.totalRecords);
   }, [filteredData]);
 
-  // Remove actions column from seniors columns (for display only)
-  const sanitizedSeniorColumns = useMemo(() => {
-    return seniorColumns.filter(col =>
-      !['actions', 'user-actions'].includes((col as any).id || (col as any).accessorKey)
-    );
-  }, [seniorColumns]);
-
-  // Create barangay summary columns
   const barangayColumns = useMemo(() => [
     {
       accessorKey: 'barangay',
-      header: 'Barangay',
-      cell: ({ row }: any) => <div className="font-medium">{row.getValue('barangay')}</div>,
+      header: () => <div className="text-center font-bold">Barangay</div>,
+      cell: ({ row }: { row: Row<GroupedData> }) => (
+        <div className="text-center font-medium">{row.getValue('barangay')}</div>
+      ),
     },
     {
       accessorKey: 'totalRecords',
-      header: 'Total Records',
-      cell: ({ row }: any) => <div className="text-center font-semibold">{row.getValue('totalRecords')}</div>,
+      header: () => <div className="text-center font-bold">Total Records</div>,
+      cell: ({ row }: { row: Row<GroupedData> }) => (
+        <div className="text-center font-semibold">{row.getValue('totalRecords')}</div>
+      ),
     },
     {
       accessorKey: 'releasedCount',
-      header: 'Released',
-      cell: ({ row }: any) => <div className="text-center text-green-600">{row.getValue('releasedCount')}</div>,
+      header: () => <div className="text-center font-bold">Released</div>,
+      cell: ({ row }: { row: Row<GroupedData> }) => (
+        <div className="text-center text-green-600">{row.getValue('releasedCount')}</div>
+      ),
     },
     {
       accessorKey: 'pendingCount',
-      header: 'Pending',
-      cell: ({ row }: any) => <div className="text-center text-orange-600">{row.getValue('pendingCount')}</div>,
+      header: () => <div className="text-center font-bold">Pending</div>,
+      cell: ({ row }: { row: Row<GroupedData> }) => (
+        <div className="text-center text-orange-600">{row.getValue('pendingCount')}</div>
+      ),
     },
     {
       accessorKey: 'approvedCount',
-      header: 'Approved',
-      cell: ({ row }: any) => <div className="text-center text-blue-600">{row.getValue('approvedCount')}</div>,
+      header: () => <div className="text-center font-bold">Approved</div>,
+      cell: ({ row }: { row: Row<GroupedData> }) => (
+        <div className="text-center text-blue-600">{row.getValue('approvedCount')}</div>
+      ),
     },
     {
       accessorKey: 'rejectedCount',
-      header: 'Rejected',
-      cell: ({ row }: any) => <div className="text-center text-red-600">{row.getValue('rejectedCount')}</div>,
+      header: () => <div className="text-center font-bold">Rejected</div>,
+      cell: ({ row }: { row: Row<GroupedData> }) => (
+        <div className="text-center text-red-600">{row.getValue('rejectedCount')}</div>
+      ),
     },
     {
       accessorKey: 'regularCount',
-      header: 'Regular',
-      cell: ({ row }: any) => <div className="text-center">{row.getValue('regularCount')}</div>,
+      header: () => <div className="text-center font-bold">Regular</div>,
+      cell: ({ row }: { row: Row<GroupedData> }) => (
+        <div className="text-center">{row.getValue('regularCount')}</div>
+      ),
     },
     {
       accessorKey: 'specialCount',
-      header: 'Special Cases',
-      cell: ({ row }: any) => <div className="text-center">{row.getValue('specialCount')}</div>,
+      header: () => <div className="text-center font-bold">Special Cases</div>,
+      cell: ({ row }: { row: Row<GroupedData> }) => (
+        <div className="text-center">{row.getValue('specialCount')}</div>
+      ),
     },
   ], []);
 
@@ -281,13 +306,20 @@ export default function MonitoringOverview({
         </CardContent>
       </Card>
 
-
-      <Tabs defaultValue="barangay-summary" className="w-full" onValueChange={handleTabChange}>
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="barangay-summary">Barangay Summary</TabsTrigger>
-          <TabsTrigger value="all-applications">All Applications</TabsTrigger>
-          <TabsTrigger value="released">Released Benefits</TabsTrigger>
-          <TabsTrigger value="pending">Unreleased Benefits</TabsTrigger>
+      <Tabs value={activeTab} className="w-full" onValueChange={handleTabChange}>
+        <TabsList className={`grid w-full ${availableTabs.length === 1 ? 'grid-cols-1' : availableTabs.length === 2 ? 'grid-cols-2' : availableTabs.length === 3 ? 'grid-cols-3' : 'grid-cols-4'}`}>
+          {availableTabs.includes("barangay-summary") && (
+            <TabsTrigger value="barangay-summary">Barangay Summary</TabsTrigger>
+          )}
+          {availableTabs.includes("all-applications") && (
+            <TabsTrigger value="all-applications">All Applications</TabsTrigger>
+          )}
+          {availableTabs.includes("released") && (
+            <TabsTrigger value="released">Released Benefits</TabsTrigger>
+          )}
+          {availableTabs.includes("pending") && (
+            <TabsTrigger value="pending">Unreleased Benefits</TabsTrigger>
+          )}
         </TabsList>
 
         {isLoading ? (
@@ -366,7 +398,7 @@ export default function MonitoringOverview({
                 />
               </div>
               <DataTable
-                columns={sanitizedSeniorColumns}
+                columns={seniorColumns}
                 data={filteredData.releasedSeniors}
                 filterableColumns={filterableSeniorColumns}
                 globalFilter={globalFilter}
@@ -375,7 +407,7 @@ export default function MonitoringOverview({
                 setColumnFilters={setColumnFilters}
                 isFilterDropdownOpen={isFilterDropdownOpen}
                 setIsFilterDropdownOpen={setIsFilterDropdownOpen}
-                initialVisibleColumns={seniorInitialVisibleColumns.filter(col => !['actions', 'user-actions'].includes(col))}
+                initialVisibleColumns={seniorInitialVisibleColumns}
                 showColumnVisibility={false}
               />
             </TabsContent>
@@ -394,7 +426,7 @@ export default function MonitoringOverview({
                 />
               </div>
               <DataTable
-                columns={sanitizedSeniorColumns}
+                columns={seniorColumns}
                 data={filteredData.notReleasedSeniors}
                 filterableColumns={filterableSeniorColumns}
                 globalFilter={globalFilter}
@@ -403,7 +435,7 @@ export default function MonitoringOverview({
                 setColumnFilters={setColumnFilters}
                 isFilterDropdownOpen={isFilterDropdownOpen}
                 setIsFilterDropdownOpen={setIsFilterDropdownOpen}
-                initialVisibleColumns={seniorInitialVisibleColumns.filter(col => !['actions', 'user-actions'].includes(col))}
+                initialVisibleColumns={seniorInitialVisibleColumns}
                 showColumnVisibility={false}
               />
             </TabsContent>

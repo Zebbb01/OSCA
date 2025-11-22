@@ -1,11 +1,9 @@
-import { TrendingUp } from 'lucide-react'
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from 'recharts'
-
+// components/bar-chart.tsx
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts'
 import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
@@ -19,8 +17,6 @@ export const BarChartComponent = <T extends Record<string, unknown>>({
     chartConfig,
     xAxisKey,
 }: ChartProps<T>) => {
-    console.log('chart keys: ', Object.keys(chartConfig))
-
     return (
         <Card>
             <CardHeader>
@@ -28,32 +24,46 @@ export const BarChartComponent = <T extends Record<string, unknown>>({
                 <CardDescription>{description}</CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={chartConfig} className="h-full w-full">
-                    <BarChart accessibilityLayer data={chartData}>
-                        <CartesianGrid vertical={true} />
-                        <XAxis
-                            dataKey={xAxisKey as string}
-                            tickLine={false}
-                            tickMargin={6}
-                            axisLine={false}
-                            tickFormatter={(value) => value.slice(0, 3)}
-                            fontSize={10}
-                        />
-                        <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                <ChartContainer config={chartConfig} className="h-[300px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart 
+                            data={chartData}
+                            margin={{ top: 20, right: 20, left: 0, bottom: 20 }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis
+                                dataKey={xAxisKey as string}
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={10}
+                                tick={{ fontSize: 12 }}
+                            />
+                            <YAxis
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={10}
+                                allowDecimals={false}
+                                tick={{ fontSize: 12 }}
+                            />
+                            <ChartTooltip 
+                                cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }} 
+                                content={<ChartTooltipContent />} 
+                            />
 
-                        {/* DYNAMIC BAR CHART DATA DEPENDS ON THE GIVEN CONFIG */}
-                        {Object.keys(chartConfig).map((key) => (
-                            <Bar key={key} dataKey={key} fill={chartConfig[key].color} />
-                        ))}
-                    </BarChart>
+                            {/* DYNAMIC BAR CHART DATA DEPENDS ON THE GIVEN CONFIG */}
+                            {Object.keys(chartConfig).map((key) => (
+                                <Bar 
+                                    key={key} 
+                                    dataKey={key} 
+                                    fill={chartConfig[key].color}
+                                    radius={[4, 4, 0, 0]}
+                                    maxBarSize={50}
+                                />
+                            ))}
+                        </BarChart>
+                    </ResponsiveContainer>
                 </ChartContainer>
             </CardContent>
-            {/* <CardFooter className="flex-col items-start gap-1 text-xs">
-                <div className="flex items-center gap-1 font-medium">
-                    +5.2% this month <TrendingUp className="h-3 w-3" />
-                </div>
-                <div className="text-muted-foreground">6-month visitor data</div>
-            </CardFooter> */}
         </Card>
     )
 }

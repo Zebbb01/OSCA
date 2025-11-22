@@ -58,7 +58,7 @@ export const SeniorActionButtons: React.FC<SeniorActionButtonsProps> = ({
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the senior record.
+              This will delete the senior record.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

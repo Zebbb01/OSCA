@@ -216,13 +216,30 @@ model Transaction {
 
 model GovernmentFund {
   id             Int      @id @default(autoincrement())
-  currentBalance Float    @default(500000)
+  currentBalance Float    @default(0)
   lastUpdatedBy  String?
   
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   @@map("government_fund")
+}
+
+model FundHistory {
+  id              Int      @id @default(autoincrement())
+  date            DateTime
+  amount          Float
+  from            String
+  description     String?
+  receiptPath     String?
+  receiptUrl      String?
+  previousBalance Float
+  newBalance      Float
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("fund_history")
 }
 
 enum TransactionType {

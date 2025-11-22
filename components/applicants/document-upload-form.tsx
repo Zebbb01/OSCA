@@ -1,4 +1,4 @@
-// src/app/admin/applications/applicants/components/document-upload-form.tsx
+// components\applicants\document-upload-form.tsx
 import React, { useState, useRef, ChangeEvent } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';

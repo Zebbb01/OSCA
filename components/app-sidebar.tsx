@@ -19,13 +19,14 @@ import {
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { NavUser } from '@/components/nav-user';
+import { usePathname, useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
-import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils' // or define your own classNames helper
 interface NavSubItem {
     title: string;
     url: string;
     roles?: string[];
+    tabParam?: string; // New: for tab navigation
 }
 
 interface NavMainItem {
@@ -37,7 +38,8 @@ interface NavMainItem {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { data: session, status } = useSession();
     const userRole = (session?.user as any)?.role || 'USER';
-    const pathname = usePathname() // ✅ get current path
+    const pathname = usePathname();
+    const router = useRouter();
 
     const baseNavData: { navMain: NavMainItem[] } = {
         navMain: [
@@ -63,7 +65,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     },
                     {
                         title: 'Applicants',
-                        url: '/admin/overview',
+                        url: '/admin/applicants', // Separate route
                         roles: ['ADMIN'],
                     },
                 ],
@@ -77,41 +79,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         url: '/admin/overview',
                         roles: ['ADMIN'],
                     },
-                    // {
-                    //     title: 'Released',
-                    //     url: '/admin/released-monitoring',
-                    //     roles: ['ADMIN'],
-                    // },
                     {
                         title: 'Pending',
                         url: '/admin/pending-monitoring',
                         roles: ['ADMIN'],
                     },
-                    // {
-                    //     title: 'Category',
-                    //     url: '/admin/category',
-                    //     roles: ['ADMIN'],
-                    // },
                     {
                         title: 'Overview',
                         url: '/staff/overview',
                         roles: ['USER'],
                     },
-                    // {
-                    //     title: 'Released',
-                    //     url: '/staff/released-monitoring',
-                    //     roles: ['USER'],
-                    // },
                     {
                         title: 'Pending',
                         url: '/staff/pending-monitoring',
                         roles: ['USER'],
                     },
-                    // {
-                    //     title: 'Category',
-                    //     url: '/staff/category',
-                    //     roles: ['USER'],
-                    // },
                 ],
             },
             {
@@ -188,119 +170,138 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         })
         .filter(Boolean) as NavMainItem[];
 
-return (
-    <Sidebar collapsible="icon" className="border-r border-gray-200" {...props}>
-      {/* HEADER */}
-      <SidebarHeader className="border-b border-gray-200 bg-gradient-to-r from-green-50 to-green-100">
-        <SidebarMenuButton
-          size="lg"
-          className="data-[state=open]:bg-green-100 data-[state=open]:text-green-800 hover:bg-green-100 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <Image
-                src={'/img/cthall-logo.jpg'}
-                width={32}
-                height={32}
-                alt="OSCA Logo"
-                className="rounded-full ring-2 ring-green-200"
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="truncate font-bold text-green-800">OSCA</span>
-              <span className="truncate text-xs text-green-600">Government</span>
-            </div>
-          </div>
-        </SidebarMenuButton>
-      </SidebarHeader>
+    // Helper function to check if a menu item should be highlighted
+    const isItemActive = (itemUrl: string) => {
+        return pathname === itemUrl;
+    };
 
-      {/* CONTENT */}
-      <SidebarContent className="bg-white">
-        {/* DASHBOARD */}
-        <SidebarGroup className="px-2 py-2">
-          <SidebarMenu>
-            <SidebarMenuItem>
-              {userRole === 'ADMIN' ? (
-                <SidebarMenuButton
-                  asChild
-                  className={cn(
-                    'hover:bg-green-50 hover:text-green-700 transition-colors',
-                    pathname === '/admin/dashboard' &&
-                      'bg-green-100 text-green-800 font-semibold'
-                  )}
-                >
-                  <a href={'/admin/dashboard'} className="flex items-center gap-3">
-                    <LayoutDashboard className="h-4 w-4" />
-                    <span className="font-medium">Dashboard</span>
-                  </a>
-                </SidebarMenuButton>
-              ) : (
-                <SidebarMenuButton
-                  asChild
-                  className={cn(
-                    'hover:bg-green-50 hover:text-green-700 transition-colors',
-                    pathname === '/staff/dashboard' &&
-                      'bg-green-100 text-green-800 font-semibold'
-                  )}
-                >
-                  <a href={'/staff/dashboard'} className="flex items-center gap-3">
-                    <LayoutDashboard className="h-4 w-4" />
-                    <span className="font-medium">Dashboard</span>
-                  </a>
-                </SidebarMenuButton>
-              )}
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
+    // Handle navigation with tab parameter
+    const handleNavigation = (e: React.MouseEvent, url: string, tabParam?: string) => {
+        e.preventDefault();
+        if (tabParam) {
+            router.push(`${url}?tab=${tabParam}`);
+        } else {
+            router.push(url);
+        }
+    };
 
-        {/* OTHER GROUPS */}
-        {filteredNav.map((item) => (
-          <SidebarGroup key={item.title} className="px-2 py-1">
-            <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 py-1">
-              {item.title}
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {item.items.map((subItem) => (
-                  <SidebarMenuItem key={subItem.title}>
-                    <SidebarMenuButton
-                      asChild
-                      className={cn(
-                        'hover:bg-green-50 hover:text-green-700 transition-colors',
-                        pathname === subItem.url &&
-                          'bg-green-100 text-green-800 font-semibold'
-                      )}
-                    >
-                      <a href={subItem.url} className="pl-6 py-2 text-sm font-medium">
-                        {subItem.title}
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+    return (
+        <Sidebar collapsible="icon" className="border-r border-gray-200" {...props}>
+            {/* HEADER */}
+            <SidebarHeader className="border-b border-gray-200 bg-gradient-to-r from-green-50 to-green-100">
+                <SidebarMenuButton
+                    size="lg"
+                    className="data-[state=open]:bg-green-100 data-[state=open]:text-green-800 hover:bg-green-100 transition-colors"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="relative">
+                            <Image
+                                src={'/img/cthall-logo.jpg'}
+                                width={32}
+                                height={32}
+                                alt="OSCA Logo"
+                                className="rounded-full ring-2 ring-green-200"
+                            />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="truncate font-bold text-green-800">OSCA</span>
+                            <span className="truncate text-xs text-green-600">Government</span>
+                        </div>
+                    </div>
+                </SidebarMenuButton>
+            </SidebarHeader>
+
+            {/* CONTENT */}
+            <SidebarContent className="bg-white">
+                {/* DASHBOARD */}
+                <SidebarGroup className="px-2 py-2">
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            {userRole === 'ADMIN' ? (
+                                <SidebarMenuButton
+                                    asChild
+                                    className={cn(
+                                        'hover:bg-green-50 hover:text-green-700 transition-colors',
+                                        pathname === '/admin/dashboard' &&
+                                        'bg-green-100 text-green-800 font-semibold'
+                                    )}
+                                >
+                                    <a href={'/admin/dashboard'} className="flex items-center gap-3">
+                                        <LayoutDashboard className="h-4 w-4" />
+                                        <span className="font-medium">Dashboard</span>
+                                    </a>
+                                </SidebarMenuButton>
+                            ) : (
+                                <SidebarMenuButton
+                                    asChild
+                                    className={cn(
+                                        'hover:bg-green-50 hover:text-green-700 transition-colors',
+                                        pathname === '/staff/dashboard' &&
+                                        'bg-green-100 text-green-800 font-semibold'
+                                    )}
+                                >
+                                    <a href={'/staff/dashboard'} className="flex items-center gap-3">
+                                        <LayoutDashboard className="h-4 w-4" />
+                                        <span className="font-medium">Dashboard</span>
+                                    </a>
+                                </SidebarMenuButton>
+                            )}
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </SidebarGroup>
+
+                {/* OTHER GROUPS */}
+                {filteredNav.map((item) => (
+                    <SidebarGroup key={item.title} className="px-2 py-1">
+                        <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 py-1">
+                            {item.title}
+                        </SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {item.items.map((subItem) => (
+                                    <SidebarMenuItem key={subItem.title}>
+                                        <SidebarMenuButton
+                                            asChild
+                                            className={cn(
+                                                'hover:bg-green-50 hover:text-green-700 transition-colors',
+                                                isItemActive(subItem.url) &&
+                                                'bg-green-100 text-green-800 font-semibold'
+                                            )}
+                                        >
+                                            <a 
+                                                href={subItem.url} 
+                                                className="pl-6 py-2 text-sm font-medium"
+                                                onClick={(e) => handleNavigation(e, subItem.url, subItem.tabParam)}
+                                            >
+                                                {subItem.title}
+                                            </a>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
                 ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
-      </SidebarContent>
+            </SidebarContent>
 
-      {/* FOOTER */}
-      <SidebarFooter className="border-t border-gray-200 bg-gray-50">
-        {status === 'loading' ? (
-          <div className="p-4 text-sm text-gray-500">Loading user...</div>
-        ) : session?.user ? (
-          <NavUser
-            user={{
-              username: session.user.username ?? '',
-              email: session.user.email ?? '',
-              role: (session.user as any).role ?? 'USER',
-            }}
-          />
-        ) : (
-          <div className="p-4 text-sm text-gray-500">No user session found.</div>
-        )}
-      </SidebarFooter>
+            {/* FOOTER */}
+            <SidebarFooter className="border-t border-gray-200 bg-gray-50">
+                {status === 'loading' ? (
+                    <div className="p-4 text-sm text-gray-500">Loading user...</div>
+                ) : session?.user ? (
+                    <NavUser
+                        user={{
+                            username: session.user.username ?? '',
+                            email: session.user.email ?? '',
+                            role: (session.user as any).role ?? 'USER',
+                        }}
+                    />
+                ) : (
+                    <div className="p-4 text-sm text-gray-500">No user session found.</div>
+                )}
+            </SidebarFooter>
 
-      <SidebarRail />
-    </Sidebar>
-  )
+            <SidebarRail />
+        </Sidebar>
+    );
 }

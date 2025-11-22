@@ -3,24 +3,21 @@
 
 import React, { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowUpCircle, ArrowDownCircle, FileText, Download } from 'lucide-react'
+import { ArrowUpCircle, ArrowDownCircle, FileText, Download, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { OverviewCard } from '@/components/financial-monitoring/overview-card'
 import { TransactionList } from '@/components/financial-monitoring/transaction-list'
 import { AddTransactionDialog } from '@/components/financial-monitoring/add-transaction-dialog'
+import { AddFundDialog } from '@/components/financial-monitoring/add-fund-dialog'
+import { FundHistoryList } from '@/components/financial-monitoring/fund-history-list'
 import { ReportGenerator } from '@/components/reports/ReportGenerator'
 
-// Import Tabs components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { formatDateOnly } from '@/utils/format';
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { apiService } from '@/lib/axios'
 import { Seniors } from '@/types/seniors'
 import { BenefitApplicationData } from '@/types/application'
-import { EditableOverviewCard } from '@/components/financial-monitoring/editable-overview-card'
 
-// Updated types for real data
 export type FinancialTransaction = {
     id: string;
     date: string;
@@ -42,7 +39,6 @@ export type ApprovedFund = {
     category: string;
 }
 
-// Type for database transactions
 type TransactionFromDB = {
     id: number;
     date: Date | string;
@@ -57,10 +53,24 @@ type TransactionFromDB = {
     updatedAt: Date;
 };
 
+type FundHistoryRecord = {
+    id: number;
+    date: string | Date;
+    amount: number;
+    from: string;
+    description?: string | null;
+    receiptPath?: string | null;
+    receiptUrl?: string | null;
+    previousBalance: number;
+    newBalance: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export default function GovernmentFundPage() {
     const [isAddTransactionDialogOpen, setIsAddTransactionDialogOpen] = useState(false)
+    const [isAddFundDialogOpen, setIsAddFundDialogOpen] = useState(false)
 
-    // Fetch seniors data for financial calculations
     const { data: seniorsData, isLoading: seniorsLoading } = useQuery<Seniors[]>({
         queryKey: ['seniors-financial'],
         queryFn: async () => {
@@ -69,7 +79,6 @@ export default function GovernmentFundPage() {
         staleTime: 5 * 60 * 1000,
     });
 
-    // Fetch applications data for financial calculations
     const { data: applicationsData, isLoading: applicationsLoading } = useQuery<BenefitApplicationData[]>({
         queryKey: ['applications-financial'],
         queryFn: async () => {
@@ -78,7 +87,6 @@ export default function GovernmentFundPage() {
         staleTime: 5 * 60 * 1000,
     });
 
-    // Fetch transactions from database
     const { data: dbTransactions, isLoading: dbTransactionsLoading } = useQuery<TransactionFromDB[]>({
         queryKey: ['transactions'],
         queryFn: async () => {
@@ -89,8 +97,7 @@ export default function GovernmentFundPage() {
         staleTime: 5 * 60 * 1000,
     });
 
-    // Fetch government fund balance
-    const { data: fundData, refetch: refetchFund } = useQuery({
+    const { data: fundData } = useQuery({
         queryKey: ['government-fund'],
         queryFn: async () => {
             return await apiService.get<{ id: number; currentBalance: number }>(
@@ -100,28 +107,19 @@ export default function GovernmentFundPage() {
         staleTime: 5 * 60 * 1000,
     });
 
-    // Mutation to update balance
-    const updateBalanceMutation = useMutation({
-        mutationFn: async (newBalance: number) => {
-            return await apiService.put(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/government-fund`,
-                { currentBalance: newBalance }
+    const { data: fundHistory, isLoading: fundHistoryLoading } = useQuery<FundHistoryRecord[]>({
+        queryKey: ['fund-history'],
+        queryFn: async () => {
+            return await apiService.get<FundHistoryRecord[]>(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/fund-history`
             );
         },
-        onSuccess: () => {
-            refetchFund();
-        },
-        onError: (error) => {
-            console.error('Failed to update balance:', error);
-            alert('Failed to update balance. Please try again.');
-        },
+        staleTime: 5 * 60 * 1000,
     });
 
-    // Transform real data into financial transactions
     const transactions: FinancialTransaction[] = React.useMemo(() => {
         const financialTransactions: FinancialTransaction[] = [];
 
-        // Add transactions from database FIRST
         if (dbTransactions) {
             dbTransactions.forEach(tx => {
                 financialTransactions.push({
@@ -138,7 +136,6 @@ export default function GovernmentFundPage() {
             });
         }
 
-        // Create transactions from released seniors
         if (seniorsData) {
             seniorsData.forEach(senior => {
                 if (senior.releasedAt && senior.Applications && senior.Applications.length > 0) {
@@ -157,7 +154,6 @@ export default function GovernmentFundPage() {
             });
         }
 
-        // Create transactions from pending applications
         if (applicationsData) {
             applicationsData.forEach(app => {
                 if (app.status.name === 'PENDING' || app.status.name === 'APPROVED') {
@@ -178,36 +174,6 @@ export default function GovernmentFundPage() {
         return financialTransactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }, [seniorsData, applicationsData, dbTransactions]);
 
-    // Generate approved funds from applications data
-    const approvedFunds: ApprovedFund[] = React.useMemo(() => {
-        if (!applicationsData) return [];
-
-        const fundsByBenefit = new Map<string, ApprovedFund>();
-
-        applicationsData.forEach(app => {
-            if (app.status.name === 'APPROVED') {
-                const benefitName = app.benefit.name;
-                const existing = fundsByBenefit.get(benefitName);
-
-                if (existing) {
-                    existing.amount += 1000.00;
-                } else {
-                    fundsByBenefit.set(benefitName, {
-                        id: `fund-${benefitName.replace(/\s+/g, '-').toLowerCase()}`,
-                        name: `${benefitName} Fund`,
-                        amount: 1000.00,
-                        dateApproved: app.createdAt,
-                        benefitType: benefitName,
-                        category: app.category?.name || 'Regular senior citizens'
-                    });
-                }
-            }
-        });
-
-        return Array.from(fundsByBenefit.values()).sort((a, b) => b.amount - a.amount);
-    }, [applicationsData]);
-
-    // Calculate financial metrics - FIXED ORDER
     const totalReleased = React.useMemo(() => {
         return transactions
             .filter(t => t.type === 'released')
@@ -220,11 +186,40 @@ export default function GovernmentFundPage() {
             .reduce((sum, t) => sum + t.amount, 0);
     }, [transactions]);
 
-    // NOW we can calculate currentBalance (after totalReleased is defined)
-    const initialBalance = fundData?.currentBalance || 500000;
-    const currentBalance = React.useMemo(() => {
-        return initialBalance - totalReleased;
-    }, [initialBalance, totalReleased]);
+    // Get the total fund balance from database (sum of all fund additions)
+    const totalFundBalance = fundData?.currentBalance || 0;
+
+    // Calculate available balance: Total Fund Balance - Total Released
+    const availableBalance = React.useMemo(() => {
+        return totalFundBalance - totalReleased;
+    }, [totalFundBalance, totalReleased]);
+
+    // Calculate fund history with running balances based on actual available balance
+    const fundHistoryWithBalances = React.useMemo(() => {
+        if (!fundHistory || fundHistory.length === 0) return [];
+
+        // Sort by date descending (newest first)
+        const sorted = [...fundHistory].sort((a, b) => 
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+
+        // Calculate running balances from current available balance going backwards
+        let runningBalance = availableBalance;
+        
+        return sorted.map((record, index) => {
+            const previousBalance = runningBalance;
+            const newBalance = runningBalance + record.amount;
+            
+            // Update running balance for next iteration (going backwards in time)
+            runningBalance = newBalance;
+
+            return {
+                ...record,
+                previousBalance: previousBalance,
+                newBalance: newBalance,
+            };
+        }).reverse(); // Reverse to show oldest first in the table
+    }, [fundHistory, availableBalance]);
 
     const handleAddTransaction = (newTransaction: FinancialTransaction) => {
         console.log('Transaction added:', newTransaction);
@@ -291,23 +286,36 @@ export default function GovernmentFundPage() {
 
                 <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
                     <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-3">
-                        {/* Overview Cards - UPDATED */}
+                        {/* Overview Cards */}
                         <div className="grid gap-4 sm:grid-cols-3 md:gap-8">
-                            <EditableOverviewCard
-                                title="Current Balance"
-                                value={`₱${currentBalance.toLocaleString('en-PH', {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2,
-                                })}`}
-                                description={`Initial: ₱${initialBalance.toLocaleString('en-PH')} - Released: ₱${totalReleased.toLocaleString('en-PH')}`}
-                                icon={() => <span className="text-xl text-green-600">₱</span>}
-                                iconColor="text-green-600"
-                                isEditable={true}
-                                initialValue={initialBalance}
-                                editLabel="Edit Initial Fund Balance"
-                                onSave={(newValue) => updateBalanceMutation.mutate(newValue)}
-                                isSaving={updateBalanceMutation.isPending}
-                            />
+                            <Card>
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                    <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xl text-green-600">₱</span>
+                                        {/* <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6"
+                                            onClick={() => setIsAddFundDialogOpen(true)}
+                                            title="Add Fund"
+                                        >
+                                            <Plus className="h-4 w-4 text-green-600" />
+                                        </Button> */}
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-2xl font-bold">
+                                        {`₱${availableBalance.toLocaleString('en-PH', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                        })}`}
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">
+                                        Total Fund: ₱{totalFundBalance.toLocaleString('en-PH')} - Released: ₱{totalReleased.toLocaleString('en-PH')}
+                                    </p>
+                                </CardContent>
+                            </Card>
 
                             <OverviewCard
                                 title="Total Released"
@@ -333,139 +341,37 @@ export default function GovernmentFundPage() {
                         </div>
 
                         {/* Tabs Section */}
-                        <Tabs defaultValue="disbursement-history" className="w-full">
-                            <TabsList className="grid w-full grid-cols-3">
-                                {/* <TabsTrigger value="approved-funds">Approved Funds</TabsTrigger> */}
-                                <TabsTrigger value="remaining-balance">Remaining Balance</TabsTrigger>
+                        <Tabs defaultValue="fund-history" className="w-full">
+                            <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger value="fund-history">Transaction History</TabsTrigger>
                                 <TabsTrigger value="disbursement-history">Disbursement History</TabsTrigger>
                             </TabsList>
 
-                            {/* Approved Funds Tab Content */}
-                            {/* <TabsContent value="approved-funds">
+                            {/* Fund History Tab Content */}
+                            <TabsContent value="fund-history">
                                 <Card>
                                     <CardHeader className="flex flex-row items-center justify-between">
                                         <div className="grid gap-2">
-                                            <CardTitle>Approved Funds</CardTitle>
+                                            <CardTitle>Fund Addition History</CardTitle>
                                             <CardDescription>
-                                                Details of funds that have been officially approved based on benefit applications.
+                                                Complete log of all government fund additions with running balances.
                                             </CardDescription>
                                         </div>
                                         <div className="flex gap-2">
-                                            <ReportGenerator
-                                                reportTitle="Approved Funds Report"
-                                                data={approvedFunds}
-                                                reportType="government-fund"
-                                                variant="outline"
-                                                size="sm"
-                                            >
-                                                <FileText className="h-4 w-4 mr-2" />
-                                                Generate Report
-                                            </ReportGenerator>
+                                            <Button onClick={() => setIsAddFundDialogOpen(true)}>
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                Add Fund
+                                            </Button>
                                         </div>
                                     </CardHeader>
                                     <CardContent>
-                                        <div className="rounded-md border bg-card text-card-foreground shadow-sm">
-                                            <Table>
-                                                <TableHeader>
-                                                    <TableRow>
-                                                        <TableHead>Fund Name</TableHead>
-                                                        <TableHead>Benefit Type</TableHead>
-                                                        <TableHead>Category</TableHead>
-                                                        <TableHead className="text-right">Amount Approved</TableHead>
-                                                        <TableHead>Date Approved</TableHead>
-                                                    </TableRow>
-                                                </TableHeader>
-                                                <TableBody>
-                                                    {approvedFunds.length > 0 ? (
-                                                        approvedFunds.map((fund) => (
-                                                            <TableRow key={fund.id}>
-                                                                <TableCell className="font-medium">{fund.name}</TableCell>
-                                                                <TableCell>{fund.benefitType}</TableCell>
-                                                                <TableCell>{fund.category}</TableCell>
-                                                                <TableCell className="text-right">
-                                                                    {`₱${fund.amount.toLocaleString('en-PH', {
-                                                                        minimumFractionDigits: 2,
-                                                                        maximumFractionDigits: 2,
-                                                                    })}`}
-                                                                </TableCell>
-                                                                <TableCell>{formatDateOnly(fund.dateApproved)}</TableCell>
-                                                            </TableRow>
-                                                        ))
-                                                    ) : (
-                                                        <TableRow>
-                                                            <TableCell colSpan={5} className="h-24 text-center">
-                                                                No approved funds found.
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    )}
-                                                </TableBody>
-                                            </Table>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </TabsContent> */}
-
-                            {/* Remaining Balance Tab Content */}
-                            <TabsContent value="remaining-balance">
-                                <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between">
-                                        <div className="grid gap-2">
-                                            <CardTitle>Remaining Balance Overview</CardTitle>
-                                            <CardDescription>
-                                                Current financial status and fund allocation breakdown.
-                                            </CardDescription>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <ReportGenerator
-                                                reportTitle="Balance Overview Report"
-                                                data={[{
-                                                    currentBalance,
-                                                    totalReleased,
-                                                    totalPending,
-                                                    totalAllocated: totalReleased + totalPending
-                                                }]}
-                                                reportType="financial-overview"
-                                                variant="outline"
-                                                size="sm"
-                                            >
-                                                <Download className="h-4 w-4 mr-2" />
-                                                Export Balance Report
-                                            </ReportGenerator>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="grid gap-6">
-                                            <div className="text-center">
-                                                <p className="text-4xl font-bold text-primary mb-2">
-                                                    {`₱${currentBalance.toLocaleString('en-PH', {
-                                                        minimumFractionDigits: 2,
-                                                        maximumFractionDigits: 2,
-                                                    })}`}
-                                                </p>
-                                                <p className="text-lg text-muted-foreground">Current Available Balance</p>
+                                        {fundHistoryLoading ? (
+                                            <div className="text-center py-10 text-gray-500">
+                                                Loading fund history...
                                             </div>
-
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                <div className="p-4 border rounded-lg text-center">
-                                                    <h3 className="text-sm font-medium text-muted-foreground">Total Allocated</h3>
-                                                    <p className="text-2xl font-bold text-blue-600">
-                                                        ₱{(totalReleased + totalPending).toLocaleString('en-PH')}
-                                                    </p>
-                                                </div>
-                                                <div className="p-4 border rounded-lg text-center">
-                                                    <h3 className="text-sm font-medium text-muted-foreground">Released</h3>
-                                                    <p className="text-2xl font-bold text-green-600">
-                                                        ₱{totalReleased.toLocaleString('en-PH')}
-                                                    </p>
-                                                </div>
-                                                <div className="p-4 border rounded-lg text-center">
-                                                    <h3 className="text-sm font-medium text-muted-foreground">Pending</h3>
-                                                    <p className="text-2xl font-bold text-orange-600">
-                                                        ₱{totalPending.toLocaleString('en-PH')}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        ) : (
+                                            <FundHistoryList fundHistory={fundHistoryWithBalances} />
+                                        )}
                                     </CardContent>
                                 </Card>
                             </TabsContent>
@@ -509,6 +415,11 @@ export default function GovernmentFundPage() {
                 isOpen={isAddTransactionDialogOpen}
                 onClose={() => setIsAddTransactionDialogOpen(false)}
                 onAddTransaction={handleAddTransaction}
+            />
+            <AddFundDialog
+                isOpen={isAddFundDialogOpen}
+                onClose={() => setIsAddFundDialogOpen(false)}
+                currentBalance={availableBalance}
             />
         </div>
     )

@@ -5,7 +5,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { useQueryClient } from '@tanstack/react-query';
 import { formatDateTime } from '@/utils/format';
 import { DocumentViewDialog } from '@/components/senior-documents/document-view-dialog';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Trash2 } from 'lucide-react';
 import { ApplicantActionButtons } from '@/components/applicants/applicant-action-buttons';
 import {
   Dialog,
@@ -17,7 +17,11 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
-export const getApplicantsColumns = (userRole: string | undefined, status: string): ColumnDef<any>[] => {
+export const getApplicantsColumns = (
+  userRole: string | undefined,
+  status: string,
+  hideAdminActions: boolean = false
+): ColumnDef<any>[] => {
   if (status === 'loading') {
     return [{
       id: 'loading',
@@ -39,7 +43,7 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
         const middle = row.original.senior.middlename || '';
         const last = row.original.senior.lastname || '';
         const fullName = [first, middle, last].filter(Boolean).join(' ');
-        return <div>{fullName}</div>;
+        return <div className="font-medium">{fullName}</div>;
       },
       filterFn: 'includesString',
     },
@@ -85,6 +89,7 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
           PENDING: 'bg-yellow-500 text-white',
           APPROVED: 'bg-green-600 text-white',
           REJECT: 'bg-red-600 text-white',
+          REJECTED: 'bg-red-600 text-white',
         };
         return (
           <div>
@@ -120,17 +125,22 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
         const reason = applicant.rejectionReason;
         const status = applicant.status.name;
         const queryClient = useQueryClient();
-        
+
         return (
           <div className="flex items-center gap-1">
-            {/* Documents Icon - Always visible */}
+            {/* View Documents */}
             <DocumentViewDialog senior={seniorWithRemarksId} iconOnly={true} />
-            
-            {/* Rejection Reason Icon - Only for rejected applications */}
+
+            {/* Rejection Reason - Show only if rejected */}
             {(status === 'REJECT' || status === 'REJECTED') && (
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0" 
+                    title="View Rejection Reason"
+                  >
                     <MessageSquare className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
@@ -149,9 +159,22 @@ export const getApplicantsColumns = (userRole: string | undefined, status: strin
                 </DialogContent>
               </Dialog>
             )}
-            
-            {/* Admin Actions - Only for admin users */}
-            {userRole === 'ADMIN' && (
+
+            {/* Delete Action (only when hideAdminActions = true and user is ADMIN) */}
+            {hideAdminActions && userRole === 'ADMIN' && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                onClick={() => console.log('Delete application:', applicant.id)}
+                title="Delete Application"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+
+            {/* Admin Approve/Reject Actions (Check/X Icons) */}
+            {!hideAdminActions && userRole === 'ADMIN' && (
               <ApplicantActionButtons applicant={applicant} queryClient={queryClient} />
             )}
           </div>

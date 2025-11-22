@@ -17,7 +17,7 @@ const generateReportContent = (
   timePeriod: string,
   selectedPeriod: string,
   reportType: string,
-  initialBalance: number = 500000
+  initialBalance: number = 0
 ): string => {
   const header = `${sectionName} Report
 Generated: ${new Date().toLocaleString()}
@@ -120,14 +120,14 @@ export const SectionReportButton: React.FC<SectionReportButtonProps> = ({
         );
       } catch (error) {
         console.warn('Government fund API not available, using default value');
-        return { id: 0, currentBalance: 500000 };
+        return { id: 0, currentBalance: 0 };
       }
     },
     staleTime: 5 * 60 * 1000,
     enabled: reportType === 'financial', // Only fetch when needed
   });
 
-  const initialBalance = fundData?.currentBalance || 500000;
+  const initialBalance = fundData?.currentBalance;
 
   const handleOpenReportModal = async () => {
     setShowReportModal(true);

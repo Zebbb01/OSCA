@@ -1,4 +1,4 @@
-// app\admin\applications\pending-monitoring\page.tsx
+// app\admin\(applications)\pending-monitoring\page.tsx
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react'; // Import useState and useEffect
@@ -99,7 +99,7 @@ const NotReleaseMonitoringPage = () => {
         }
       });
 
-      console.log('Fetching pending seniors with URL:', url.toString());
+      console.log('Fetching pendingd seniors with URL:', url.toString());
       const response = await apiService.get<Seniors[]>(url.toString());
       return response; // Access data property from axios response
     },
@@ -153,14 +153,15 @@ const NotReleaseMonitoringPage = () => {
       'senior_category',
       'releaseStatus',
       'benefits',
-      // 'documents',
+      'documents',
+      'user-actions',
     ];
   }, []);
 
   return (
     <div className="container mx-auto p-5 rounded-md mt-8 border border-gray-200 shadow-sm">
       <div className="flex flex-col mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Pending Benefits Monitoring</h1>
+        <h1 className="text-3xl font-bold text-gray-800">Pending Benefits of Releasing</h1>
         <p className="text-gray-600 text-base mt-1">
           View all senior citizens who have not yet released their benefits.
         </p>
@@ -175,7 +176,7 @@ const NotReleaseMonitoringPage = () => {
           Loading Senior Records...
         </div>
       ) : seniorQuery.isError ? (
-        <div className="text-center py-10 text-g-500">
+        <div className="text-center py-10 text-red-500">
           Error loading records: {seniorQuery.error?.message || 'An unexpected error occurred.'}
         </div>
       ) : notReceivedSeniors.length === 0 ? (

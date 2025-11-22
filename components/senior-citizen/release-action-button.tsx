@@ -62,7 +62,7 @@ export const ReleaseActionButton: React.FC<ReleaseActionButtonProps> = ({ userRo
         setShowPdfModal(true);
     };
 
-    const showReleaseButton = !senior.releasedAt && userRole !== 'ADMIN';
+    const showReleaseButton = !senior.releasedAt && userRole !== 'USER';
     const showDownloadButton = senior.releasedAt;
 
     return (

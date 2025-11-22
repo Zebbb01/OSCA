@@ -1,239 +1,257 @@
+// app/staff/dashboard/page.tsx
 'use client'
 
+import { useEffect, useState } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
+import { RegistrationTrendsChart } from '@/components/registration-trends-chart'
+import { Loader2 } from 'lucide-react'
 import { BarChartComponent } from '@/components/bar-chart'
-import LineChartComponent from '@/components/line-chart'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
-  ScatterChart,
-  Scatter,
-  Tooltip,
-} from 'recharts'
 import { ChartConfig } from '@/components/ui/chart'
 
-// 📊 Chart Config
+interface CategoryData {
+  name: string
+  value: number
+  color: string
+}
+
+interface StatsData {
+  totalSeniors: number
+  totalApplications: number
+  pendingSeniors: number
+  pwdCount: number
+  lowIncomeCount: number
+}
+interface BarangayData extends Record<string, unknown> {
+  barangay: string
+  seniors: number
+  pwd: number
+  regular: number
+}
+
+interface AgeDistributionData extends Record<string, unknown> {
+  ageGroup: string
+  male: number
+  female: number
+}
+
 const chartConfig = {
-  seniors: { label: 'Senior', color: '#4ade80' },
-  registrations: { label: 'Registrations', color: '#22c55e' },
-  updates: { label: 'Updates', color: '#3b82f6' },
-  verifications: { label: 'Verifications', color: '#f59e0b' },
-  male: { label: 'Male', color: '#3b82f6' },
-  female: { label: 'Female', color: '#ec4899' },
-  pwd: { label: 'PWD', color: '#8b5cf6' },
-  regular: { label: 'Regular', color: '#22c55e' },
+  male: {
+    label: 'Male',
+    color: '#3b82f6',
+  },
+  female: {
+    label: 'Female',
+    color: '#ec4899',
+  },
+  pwd: {
+    label: 'PWD',
+    color: '#8b5cf6',
+  },
+  regular: {
+    label: 'Regular',
+    color: '#22c55e',
+  }
 } satisfies ChartConfig
 
-// 📈 Dummy Data
-const pageViewsData = [
-  { name: 'Desktop', value: 65, color: '#22c55e' },
-  { name: 'Mobile', value: 25, color: '#3b82f6' },
-  { name: 'Tablet', value: 10, color: '#f59e0b' },
-]
-
-const monthlyRegisteredChartData = [
-  { month: 'January', seniors: 186 },
-  { month: 'February', seniors: 305 },
-  { month: 'March', seniors: 237 },
-  { month: 'April', seniors: 73 },
-  { month: 'May', seniors: 209 },
-  { month: 'June', seniors: 214 },
-]
-
-const yearlyRegisteredChartData = [
-  { year: '2022', seniors: 73 },
-  { year: '2023', seniors: 209 },
-  { year: '2024', seniors: 214 },
-  { year: '2025', seniors: 300 },
-]
-
-const bubbleData = [
-  { x: 30, y: 40, z: 100, country: 'USA', color: '#93c5fd' },
-  { x: 45, y: 25, z: 80, country: 'UK', color: '#ddd6fe' },
-  { x: 60, y: 60, z: 60, country: 'Germany', color: '#fed7aa' },
-  { x: 20, y: 70, z: 40, country: 'France', color: '#fde68a' },
-  { x: 80, y: 30, z: 120, country: 'Japan', color: '#a7f3d0' },
-]
-
-const nrrData = [
-  { month: 'Jan', new: 400, returning: 800 },
-  { month: 'Feb', new: 500, returning: 900 },
-  { month: 'Mar', new: 600, returning: 700 },
-  { month: 'Apr', new: 450, returning: 650 },
-  { month: 'May', new: 300, returning: 500 },
-]
-
-const productData = [
-  { product: 'Product A', value: 85 },
-  { product: 'Product B', value: 92 },
-  { product: 'Product C', value: 78 },
-  { product: 'Product D', value: 88 },
-  { product: 'Product E', value: 95 },
-]
-
-// 🧩 Main Dashboard
 const DashboardPage = () => {
+  const [categoriesData, setCategoriesData] = useState<CategoryData[]>([])
+  const [statsData, setStatsData] = useState<StatsData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [ageDistributionData, setAgeDistributionData] = useState<AgeDistributionData[]>([])
+  const [barangayData, setBarangayData] = useState<BarangayData[]>([])
+  const [seniorCounts, setSeniorCounts] = useState<any>(null)
+
+
+  useEffect(() => {
+    fetchDashboardData()
+  }, [])
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const [statsRes, categoriesRes, barangayRes, ageRes] = await Promise.all([
+        fetch('/api/dashboard/stats'),
+        fetch('/api/dashboard/categories'),
+        fetch('/api/dashboard/barangay-distribution'),
+        fetch('/api/dashboard/age-distribution')
+      ])
+
+      const seniorCountsRes = await fetch('/api/seniors/counts')
+
+      if (!seniorCountsRes.ok) {
+        throw new Error('Failed to fetch senior counts')
+      }
+
+      const seniorCountsJson = await seniorCountsRes.json()
+      setSeniorCounts(seniorCountsJson)
+
+
+      if (!statsRes.ok || !categoriesRes.ok || !barangayRes.ok || !ageRes.ok) {
+        throw new Error('Failed to fetch dashboard data')
+      }
+
+      const [stats, categories, barangay, age] = await Promise.all([
+        statsRes.json(),
+        categoriesRes.json(),
+        barangayRes.json(),
+        ageRes.json()
+      ])
+
+      setStatsData(stats.data)                // 👉 FIXED: store statistics
+      setCategoriesData(categories.data)
+      setBarangayData(barangay.data)
+      setAgeDistributionData(age.data)
+
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err)
+      setError('Failed to load dashboard data. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="p-6">
+            <p className="text-red-600">{error}</p>
+            <button
+              onClick={fetchDashboardData}
+              className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Retry
+            </button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div className="p-6 space-y-6">
-      {/* ====== 1️⃣ Chart Row 1 ====== */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Page Views Donut Chart */}
-        <Card className="bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold">Page Views</CardTitle>
-            <CardDescription>Traffic by device type</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={pageViewsData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  dataKey="value"
-                >
-                  {pageViewsData.map((entry, i) => (
-                    <Cell key={i} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="mt-4 space-y-2">
-              {pageViewsData.map((item, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between text-sm"
-                >
-                  <div className="flex items-center">
-                    <span
-                      className="w-3 h-3 rounded-full mr-2"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    {item.name}
-                  </div>
-                  <span className="font-medium">{item.value}%</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-        {/* Monthly Bar Chart */}
-        <BarChartComponent
-          title="Monthly Registered Seniors"
-          description="Monthly registration trends"
-          chartData={monthlyRegisteredChartData}
-          chartConfig={chartConfig}
-          xAxisKey="month"
-        />
-
-        {/* Yearly Line Chart */}
-        <LineChartComponent
-          title="Yearly Registration Growth"
-          description="Long-term senior registration trends"
-          chartData={yearlyRegisteredChartData}
-          chartConfig={chartConfig}
-          xAxisKey="year"
-        />
-      </div>
-
-      {/* ====== 2️⃣ Chart Row 2 ====== */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Bubble Chart */}
-        <Card className="bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold">
-              NRR Stats by Country
+        {/* Total Seniors */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Total Seniors</CardDescription>
+            <CardTitle className="text-3xl">
+              {seniorCounts?.totalSeniors ?? 0}
             </CardTitle>
-            <CardDescription>Regional engagement insights</CardDescription>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={280}>
-              <ScatterChart>
-                <XAxis type="number" dataKey="x" hide />
-                <YAxis type="number" dataKey="y" hide />
-                <Tooltip
-                  formatter={(value, name) => [value, name]}
-                  labelFormatter={(label) =>
-                    `Country: ${
-                      bubbleData.find((d) => d.x === label)?.country || ''
-                    }`
-                  }
-                />
-                <Scatter data={bubbleData}>
-                  {bubbleData.map((entry, i) => (
-                    <Cell key={i} fill={entry.color} />
-                  ))}
-                </Scatter>
-              </ScatterChart>
-            </ResponsiveContainer>
-          </CardContent>
         </Card>
 
-        {/* NRR Stacked Bar Chart */}
-        <Card className="bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold">NRR Overview</CardTitle>
-            <CardDescription>New vs returning members</CardDescription>
+        {/* Total Applications */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Seniors Applied for Benefits</CardDescription>
+            <CardTitle className="text-3xl">
+              {seniorCounts?.totalSeniorsAppliedForBenefits ?? 0}
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={nrrData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="new" stackId="a" fill="#f59e0b" />
-                <Bar dataKey="returning" stackId="a" fill="#3b82f6" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
         </Card>
+
+        {/* Pending → Newly Registered */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Newly Registered Seniors</CardDescription>
+            <CardTitle className="text-3xl">
+              {seniorCounts?.newlyRegisteredSeniors ?? 0}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+
+        {/* PWD Seniors */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>PWD Seniors</CardDescription>
+            <CardTitle className="text-3xl">
+              {seniorCounts?.totalPwdSeniors ?? 0}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+
       </div>
 
-      {/* ====== 3️⃣ Chart Row 3 ====== */}
-      <Card className="bg-white shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-base font-semibold">
-            Net NRR by Product
-          </CardTitle>
-          <CardDescription>Performance comparison</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-            {productData.map((product, i) => (
-              <div key={i} className="text-center">
-                <div className="bg-gray-100 rounded-lg p-4 mb-2">
-                  <div className="h-24 flex items-end justify-center">
-                    <div
-                      className="w-full bg-green-400 rounded-t"
-                      style={{ height: `${product.value}%` }}
-                    />
-                  </div>
-                </div>
-                <div className="text-xs text-gray-600">{product.product}</div>
-                <div className="text-sm font-medium">{product.value}%</div>
+
+      {/* Chart Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Senior Categories Donut Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Senior Categories</CardTitle>
+            <CardDescription>Distribution by category</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {categoriesData.length === 0 ? (
+              <div className="flex items-center justify-center h-[250px] text-gray-500">
+                No category data available
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            ) : (
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie
+                    data={categoriesData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {categoriesData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Registration Trends */}
+        <RegistrationTrendsChart />
+      </div>
+      {/* Third Row - Distribution Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <BarChartComponent
+          title="Age Distribution by Gender"
+          description="Senior age groups by gender"
+          chartData={ageDistributionData as Record<string, unknown>[]}
+          chartConfig={{
+            male: { label: 'Male', color: '#3b82f6' },
+            female: { label: 'Female', color: '#ec4899' }
+          }}
+          xAxisKey="ageGroup"
+        />
+
+        <BarChartComponent
+          title="Barangay Distribution"
+          description="Seniors across barangays"
+          chartData={barangayData as Record<string, unknown>[]}
+          chartConfig={{
+            pwd: { label: 'PWD', color: '#8b5cf6' },
+            regular: { label: 'Regular', color: '#22c55e' }
+          }}
+          xAxisKey="barangay"
+        />
+      </div>
     </div>
   )
 }

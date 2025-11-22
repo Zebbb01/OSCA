@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts'
 import { Button } from '@/components/ui/button'
-import { Calendar, TrendingUp } from 'lucide-react'
+import { Calendar } from 'lucide-react'
 
 interface RegistrationData {
     month?: string
@@ -19,6 +19,9 @@ interface ApiResponse {
     year?: number
     data: RegistrationData[]
 }
+
+const YEAR_START = 2025
+const YEAR_END = 2030
 
 const chartConfig = {
     seniors: {
@@ -40,13 +43,19 @@ export const RegistrationTrendsChart = () => {
                 setLoading(true)
                 const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors/registration-trends?view=${view}&year=${year}`
                 const response = await fetch(url)
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`)
                 }
-                
+
                 const result: ApiResponse = await response.json()
-                setData(result.data)
+
+                if (view === 'yearly') {
+                    setData(fillYearRange(result.data))
+                } else {
+                    setData(result.data)
+                }
+
                 setError(null)
             } catch (error: any) {
                 console.error('Error fetching registration trends:', error)
@@ -58,6 +67,18 @@ export const RegistrationTrendsChart = () => {
 
         fetchData()
     }, [view, year])
+
+    // Fill missing years from 2025–2030
+    const fillYearRange = (data: RegistrationData[]) => {
+        const fullData: RegistrationData[] = []
+
+        for (let y = YEAR_START; y <= YEAR_END; y++) {
+            const existing = data.find(d => Number(d.year) === y)
+            fullData.push(existing || { year: String(y), seniors: 0 })
+        }
+
+        return fullData
+    }
 
     const handleYearChange = (direction: 'prev' | 'next') => {
         setYear(prev => direction === 'prev' ? prev - 1 : prev + 1)
@@ -71,11 +92,11 @@ export const RegistrationTrendsChart = () => {
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div>
-                        <CardTitle>Registration Trends</CardTitle>
+                        <CardTitle>Registration of Seniors Trends</CardTitle>
                         <CardDescription>
-                            {view === 'monthly' 
-                                ? `Monthly registrations for ${year}` 
-                                : 'Yearly registration trends'}
+                            {view === 'monthly'
+                                ? `Monthly registrations for ${year}`
+                                : `Yearly registrations (2025–2030)`}
                         </CardDescription>
                     </div>
                     <div className="flex gap-2">
@@ -95,7 +116,7 @@ export const RegistrationTrendsChart = () => {
                         </Button>
                     </div>
                 </div>
-                
+
                 {view === 'monthly' && (
                     <div className="flex items-center gap-2 mt-2">
                         <Button
@@ -120,23 +141,24 @@ export const RegistrationTrendsChart = () => {
                     </div>
                 )}
             </CardHeader>
+
             <CardContent>
                 {loading && (
                     <div className="h-[300px] flex items-center justify-center">
                         <p className="text-muted-foreground">Loading chart data...</p>
                     </div>
                 )}
-                
+
                 {error && (
                     <div className="h-[300px] flex items-center justify-center">
                         <p className="text-red-500">Error: {error}</p>
                     </div>
                 )}
-                
+
                 {!loading && !error && data.length > 0 && (
                     <ChartContainer config={chartConfig} className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart 
+                            <BarChart
                                 data={data}
                                 margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
                             >
@@ -157,7 +179,7 @@ export const RegistrationTrendsChart = () => {
                                     tickMargin={10}
                                     allowDecimals={false}
                                 />
-                                <ChartTooltip 
+                                <ChartTooltip
                                     content={<ChartTooltipContent />}
                                     cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
                                 />

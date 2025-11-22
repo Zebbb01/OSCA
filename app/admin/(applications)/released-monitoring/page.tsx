@@ -1,4 +1,4 @@
-// app\admin\applications\release-monitoring\page.tsx
+// app\admin\(applications)\released-monitoring\page.tsx
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react'; // Import useState and useEffect

@@ -1,4 +1,4 @@
-// hooks\overview\useOverviewData.ts
+// hooks/overview/useOverviewData.ts
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -14,9 +14,10 @@ import { getApplicantsColumns } from '@/app/admin/(applications)/applicants/colu
 
 interface UseOverviewDataProps {
   userRole: 'admin' | 'staff';
+  hideAdminActions?: boolean;
 }
 
-export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
+export const useOverviewData = ({ userRole, hideAdminActions = false }: UseOverviewDataProps) => {
   const { data: session, status: sessionStatus } = useSession();
   const currentUserRole = (session?.user as any)?.role || 'USER';
 
@@ -157,13 +158,18 @@ export const useOverviewData = ({ userRole }: UseOverviewDataProps) => {
     return allApplicantsData.filter(app => app.category?.name === 'Special assistance cases');
   }, [allApplicantsData]);
 
+  // Pass true as third parameter to show only document icon (no action buttons)
   const seniorColumns = useMemo(() => {
-    return getSeniorRecordsColumns(currentUserRole, sessionStatus);
+    return getSeniorRecordsColumns(currentUserRole, sessionStatus, true);
   }, [currentUserRole, sessionStatus]);
 
   const applicationColumns = useMemo(() => {
-    return getApplicantsColumns(currentUserRole, sessionStatus);
-  }, [currentUserRole, sessionStatus]);
+    return getApplicantsColumns(
+      hideAdminActions ? undefined : currentUserRole,
+      sessionStatus,
+      hideAdminActions
+    );
+  }, [currentUserRole, sessionStatus, hideAdminActions]);
 
   const filterableSeniorColumns = useMemo(() => {
     const seniorsData = seniorQuery.data ?? [];

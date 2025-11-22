@@ -16,7 +16,7 @@ export async function GET() {
     // Create initial record if none exists
     if (!fund) {
       fund = await prisma.governmentFund.create({
-        data: { currentBalance: 500000 },
+        data: { currentBalance: 0 },
       });
     }
 
