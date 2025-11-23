@@ -14,10 +14,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@radix-ui/react-label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Pencil, UserIcon, PhoneIcon, StickyNoteIcon } from 'lucide-react';
 import {
-  EditableCheckboxFieldProps,
   EditableDateFieldProps,
   EditableFormFieldProps,
   EditableSelectFieldProps,
@@ -31,7 +29,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { SELECT_OPTIONS } from '@/constants/select-options';
-import { formatDateTime } from '@/utils/format'; // Import formatDateTime
+import { formatDateTime } from '@/utils/format';
 
 const EditableFormField: React.FC<EditableFormFieldProps> = ({
   label,
@@ -51,10 +49,28 @@ const EditableFormField: React.FC<EditableFormFieldProps> = ({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       readOnly={readOnly}
+      onKeyDown={type === "number" || type === "tel" ? allowOnlyNumbers : undefined}
+      inputMode={type === "number" || type === "tel" ? "numeric" : undefined}
       className={readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}
     />
   </div>
 );
+
+const allowOnlyNumbers = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const allowedKeys = [
+    "Backspace",
+    "Delete",
+    "ArrowLeft",
+    "ArrowRight",
+    "Tab",
+  ];
+
+  if (allowedKeys.includes(e.key)) return;
+
+  if (!/^[0-9]$/.test(e.key)) {
+    e.preventDefault();
+  }
+};
 
 const EditableSelectField: React.FC<EditableSelectFieldProps> = ({
   label,
@@ -86,19 +102,18 @@ const EditableDateField: React.FC<EditableDateFieldProps> = ({
   id,
   value,
   onChange,
-  placeholder = 'Month Day, YYYY', 
+  placeholder = 'Month Day, YYYY',
   readOnly = false,
 }) => (
-  <div className="flex flex-col"> 
-    <Label htmlFor={id}> 
+  <div className="flex flex-col">
+    <Label htmlFor={id}>
       {label}
     </Label>
     <DatePicker
       selected={value}
       onChange={onChange}
-      // Reordered dateFormat to prioritize 'MMMM d, yyyy'
       dateFormat={[
-        'MMMM d, yyyy', // This is the primary format for "May 3, 2003"
+        'MMMM d, yyyy',
         'MM/dd/yyyy',
         'yyyy-MM-dd',
         'MMM d, yyyy',
@@ -108,27 +123,11 @@ const EditableDateField: React.FC<EditableDateFieldProps> = ({
       showYearDropdown
       showMonthDropdown
       dropdownMode="select"
-      className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
-        readOnly ? 'bg-gray-100 cursor-not-allowed' : ''
-      }`}
-      readOnly={readOnly} // Pass readOnly to DatePicker
-      disabled={readOnly} // Disable interaction
+      className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''
+        }`}
+      readOnly={readOnly}
+      disabled={readOnly}
     />
-  </div>
-);
-
-const EditableCheckboxField: React.FC<EditableCheckboxFieldProps> = ({ label, id, checked, onCheckedChange }) => (
-  <div className="flex flex-col space-y-1">
-    <Label htmlFor={id}>{label}</Label>
-    <div className="flex items-center space-x-2 pt-2">
-      <Checkbox id={id} checked={checked} onCheckedChange={onCheckedChange} />
-      <label
-        htmlFor={id}
-        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      >
-        {label}
-      </label>
-    </div>
   </div>
 );
 
@@ -162,7 +161,7 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
     low_income: senior.low_income,
     contact_person: senior.contact_person || '',
     contact_relationship: senior.contact_relationship || '',
-    releasedAt: senior.releasedAt ? new Date(senior.releasedAt) : null, // Initialize releasedAt
+    releasedAt: senior.releasedAt ? new Date(senior.releasedAt) : null,
   });
 
   const { updateSeniorMutation } = useSeniorMutations(queryClient);
@@ -184,7 +183,7 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
       low_income: senior.low_income,
       contact_person: senior.contact_person || '',
       contact_relationship: senior.contact_relationship || '',
-      releasedAt: senior.releasedAt ? new Date(senior.releasedAt) : null, // Update on senior change
+      releasedAt: senior.releasedAt ? new Date(senior.releasedAt) : null,
     });
   }, [senior]);
 
@@ -209,17 +208,14 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
       low_income: editData.low_income,
       contact_person: editData.contact_person || '',
       contact_relationship: editData.contact_relationship || '',
-      // Conditionally add releasedAt to payload if it's an admin and the value has changed
       ...(isAdmin && { releasedAt: editData.releasedAt ? editData.releasedAt.toISOString() : null }),
     };
 
     updateSeniorMutation.mutate(payload, {
       onSuccess: () => {
         setOpen(false);
-        // Invalidate relevant queries to refetch updated data
-        // This is crucial for your UI to reflect the category change
-        queryClient.invalidateQueries({ queryKey: ['seniors', senior.id] }); // Invalidate specific senior
-        queryClient.invalidateQueries({ queryKey: ['applications'] }); // Invalidate all applications or specific ones if needed
+        queryClient.invalidateQueries({ queryKey: ['seniors', senior.id] });
+        queryClient.invalidateQueries({ queryKey: ['applications'] });
       },
     });
   };
@@ -234,8 +230,16 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
     </Button>
   );
 
-  const genderOptions = [{ value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }];
-  // Determine if the "Additional Information" section should be displayed
+  const genderOptions = [
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' }
+  ];
+
+  const seniorCitizenCategoryOptions = [
+    { value: 'false', label: 'Regular Senior Citizen' },
+    { value: 'true', label: 'Special Cases' }
+  ];
+
   const shouldShowAdditionalInfoSection = senior.remarks?.name || senior.releasedAt;
 
   return (
@@ -244,7 +248,6 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
       <DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl">Edit Senior Profile</DialogTitle>
-          {/* Display Registered On date here */}
           <p className="text-gray-500 text-sm mt-1">
             Registered On: <span className="font-medium">{formatDateTime(senior.createdAt)}</span>
           </p>
@@ -311,20 +314,16 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
                 />
               </div>
 
-              {/* PWD Status */}
+              {/* Senior Citizen Category */}
               <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                <EditableCheckboxField
-                  label="Are you a PWD?"
+                <EditableSelectField
+                  label="Senior Citizen Category"
                   id="pwd"
-                  checked={editData.pwd}
-                  onCheckedChange={(checked) => setEditData({ ...editData, pwd: !!checked })}
+                  value={editData.pwd ? 'true' : 'false'}
+                  onChange={(value) => setEditData({ ...editData, pwd: value === 'true' })}
+                  options={seniorCitizenCategoryOptions}
+                  placeholder="Select category"
                 />
-                {/* <EditableCheckboxField
-                  label="Are you a Low Income?"
-                  id="low_income"
-                  checked={editData.low_income}
-                  onCheckedChange={(checked) => setEditData({ ...editData, low_income: !!checked })}
-                /> */}
               </div>
             </div>
           </div>
@@ -392,7 +391,6 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
           </div>
 
           {/* Additional Information Section (Remarks and Released On) */}
-          {/* Hide the entire section if neither remarks nor releasedAt has a value */}
           {shouldShowAdditionalInfoSection && (
             <div className="border rounded-lg">
               <SectionHeader
@@ -407,18 +405,17 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
                       label="Remarks"
                       id="remarks"
                       value={senior.remarks.name}
-                      onChange={() => {}} // Read-only
+                      onChange={() => { }}
                       readOnly
                     />
                   )}
-                  {/* Conditionally render Released On field only if it has a value OR if the user is an admin */}
                   {(senior.releasedAt || isAdmin) && (
                     <EditableDateField
                       label="Released On"
                       id="releasedAt"
                       value={editData.releasedAt}
                       onChange={(date) => setEditData({ ...editData, releasedAt: date })}
-                      readOnly={!isAdmin} // Read-only if not an admin
+                      readOnly={!isAdmin}
                     />
                   )}
                 </div>

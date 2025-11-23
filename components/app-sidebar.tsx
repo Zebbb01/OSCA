@@ -105,7 +105,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         url: '/admin/government-fund',
                     },
                     {
-                        title: 'Monthly Release',
+                        title: 'Monthly Released',
                         url: '/admin/monthly-release',
                     },
                 ],

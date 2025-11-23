@@ -100,7 +100,12 @@ export default function GovernmentFundPage() {
     const { data: fundData } = useQuery({
         queryKey: ['government-fund'],
         queryFn: async () => {
-            return await apiService.get<{ id: number; currentBalance: number }>(
+            return await apiService.get<{
+                id: number;
+                currentBalance: number;
+                totalReleased: number;
+                availableBalance: number;
+            }>(
                 `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/government-fund`
             );
         },
@@ -120,10 +125,11 @@ export default function GovernmentFundPage() {
     const transactions: FinancialTransaction[] = React.useMemo(() => {
         const financialTransactions: FinancialTransaction[] = [];
 
+        // Add transactions from database (actual transactions)
         if (dbTransactions) {
             dbTransactions.forEach(tx => {
                 financialTransactions.push({
-                    id: tx.id.toString(),
+                    id: `db-${tx.id}`, // Prefix with 'db-' to identify actual transactions
                     date: tx.date instanceof Date ? tx.date.toISOString() : tx.date.toString(),
                     benefits: tx.benefits,
                     amount: tx.amount,
@@ -136,6 +142,7 @@ export default function GovernmentFundPage() {
             });
         }
 
+        // Add released seniors (for display purposes, but don't count in totalReleased)
         if (seniorsData) {
             seniorsData.forEach(senior => {
                 if (senior.releasedAt && senior.Applications && senior.Applications.length > 0) {
@@ -154,6 +161,7 @@ export default function GovernmentFundPage() {
             });
         }
 
+        // Add pending applications
         if (applicationsData) {
             applicationsData.forEach(app => {
                 if (app.status.name === 'PENDING' || app.status.name === 'APPROVED') {
@@ -174,11 +182,7 @@ export default function GovernmentFundPage() {
         return financialTransactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }, [seniorsData, applicationsData, dbTransactions]);
 
-    const totalReleased = React.useMemo(() => {
-        return transactions
-            .filter(t => t.type === 'released')
-            .reduce((sum, t) => sum + t.amount, 0);
-    }, [transactions]);
+    const totalReleased = fundData?.totalReleased || 0;
 
     const totalPending = React.useMemo(() => {
         return transactions
@@ -199,17 +203,17 @@ export default function GovernmentFundPage() {
         if (!fundHistory || fundHistory.length === 0) return [];
 
         // Sort by date descending (newest first)
-        const sorted = [...fundHistory].sort((a, b) => 
+        const sorted = [...fundHistory].sort((a, b) =>
             new Date(b.date).getTime() - new Date(a.date).getTime()
         );
 
         // Calculate running balances from current available balance going backwards
         let runningBalance = availableBalance;
-        
+
         return sorted.map((record, index) => {
             const previousBalance = runningBalance;
             const newBalance = runningBalance + record.amount;
-            
+
             // Update running balance for next iteration (going backwards in time)
             runningBalance = newBalance;
 
@@ -327,7 +331,7 @@ export default function GovernmentFundPage() {
                                 icon={ArrowUpCircle}
                                 iconColor="text-green-600"
                             />
-                            
+
                             <OverviewCard
                                 title="Total Pending"
                                 value={`₱${totalPending.toLocaleString('en-PH', {
@@ -342,9 +346,9 @@ export default function GovernmentFundPage() {
 
                         {/* Tabs Section */}
                         <Tabs defaultValue="fund-history" className="w-full">
-                            <TabsList className="grid w-full grid-cols-2">
+                            <TabsList className="grid w-full grid-cols-1">
                                 <TabsTrigger value="fund-history">Transaction History</TabsTrigger>
-                                <TabsTrigger value="disbursement-history">Disbursement History</TabsTrigger>
+                                {/* <TabsTrigger value="disbursement-history">Disbursement History</TabsTrigger> */}
                             </TabsList>
 
                             {/* Fund History Tab Content */}

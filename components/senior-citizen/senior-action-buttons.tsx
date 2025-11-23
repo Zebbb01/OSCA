@@ -44,7 +44,7 @@ export const SeniorActionButtons: React.FC<SeniorActionButtonsProps> = ({
       <SeniorViewDialog senior={senior} />
 
       {/* Edit Dialog - Now using the separate component */}
-      <SeniorEditDialog senior={senior} queryClient={queryClient} userRole={userRole} />
+      {userRole !== 'ADMIN' && (<SeniorEditDialog senior={senior} queryClient={queryClient} userRole={userRole} />)}
 
       {/* Delete - Only show if not USER */}
       {userRole !== 'USER' && (

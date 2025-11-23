@@ -1,3 +1,4 @@
+// app\admin\(applications)\monthly-release\page.tsx
 'use client'
 
 import React, { useState } from 'react';
@@ -37,7 +38,7 @@ export type MonthlyRelease = {
 
 export default function MonthlyReleasePage() {
     const [selectedMonthId, setSelectedMonthId] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<string>('release-history'); // 👈 NEW state
+    const [activeTab, setActiveTab] = useState<string>('release-history');
 
     // Fetch seniors data
     const { data: seniorsData, isLoading: seniorsLoading } = useQuery<Seniors[]>({
@@ -84,6 +85,7 @@ export default function MonthlyReleasePage() {
 
             const details: MonthlyReleaseDetail[] = [];
 
+            // Add claimed/released seniors with their actual release dates
             monthReleasedSeniors.forEach(senior => {
                 details.push({
                     beneficiaryName: `${senior.firstname} ${senior.lastname}`,
@@ -95,6 +97,7 @@ export default function MonthlyReleasePage() {
                 });
             });
 
+            // Add unclaimed/approved applications
             const approvedApps = monthApplications.filter(app => app.status.name === 'APPROVED');
             approvedApps.slice(0, Math.min(3, approvedApps.length)).forEach(app => {
                 const alreadyReleased = monthReleasedSeniors.some(senior => senior.id === app.senior_id);
@@ -104,7 +107,7 @@ export default function MonthlyReleasePage() {
                         amount: 1000,
                         status: 'Unclaimed',
                         seniorId: app.senior_id,
-                        releaseDate: format(monthEnd, 'yyyy-MM-dd'),
+                        releaseDate: app.createdAt, // Use application creation date instead of month end
                     });
                 }
             });
@@ -115,10 +118,19 @@ export default function MonthlyReleasePage() {
                 i === 1 ? 'Pending' :
                 'Released';
 
+            // Use the first detail's date as the representative release date for the month
+            // Or use the earliest date in the month if there are multiple releases
+            const earliestDate = details.length > 0
+                ? details.reduce((earliest, detail) => {
+                    const detailDate = new Date(detail.releaseDate || detail.claimDate || monthEnd);
+                    return detailDate < new Date(earliest) ? detailDate.toISOString() : earliest;
+                }, details[0].releaseDate || details[0].claimDate || format(monthEnd, 'yyyy-MM-dd'))
+                : format(monthEnd, 'yyyy-MM-dd');
+
             releases.push({
                 id: monthKey,
                 month: monthLabel,
-                releaseDate: format(monthEnd, 'yyyy-MM-dd'),
+                releaseDate: earliestDate, // Use earliest actual release date
                 totalAmountReleased: totalAmount,
                 numberOfBeneficiaries: details.length,
                 status,
@@ -138,7 +150,7 @@ export default function MonthlyReleasePage() {
 
     const handleViewDetails = (releaseId: string) => {
         setSelectedMonthId(releaseId);
-        setActiveTab('release-details'); // 👈 Switch tab automatically
+        setActiveTab('release-details');
     };
 
     const calculateTotalClaimed = (release: MonthlyRelease): number => {
@@ -382,7 +394,7 @@ export default function MonthlyReleasePage() {
                                             </>
                                         ) : (
                                             <div className="h-[200px] flex items-center justify-center text-muted-foreground">
-                                                Select a month from “Release History” to view details.
+                                                Select a month from "Release History" to view details.
                                             </div>
                                         )}
                                     </CardContent>

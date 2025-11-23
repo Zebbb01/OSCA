@@ -28,6 +28,14 @@ type ContactAddressProps = {
     handleNumberInputChange: (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof SeniorsFormData) => void;
 }
 
+const allowOnlyNumbers = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+  if (allowedKeys.includes(e.key)) return;
+
+  if (!/^[0-9]$/.test(e.key)) e.preventDefault();
+};
+
+
 export const ContactAddress = ({ handleNumberInputChange }: ContactAddressProps) => {
     const form = useFormContext<SeniorsFormData>()
 
@@ -57,6 +65,7 @@ export const ContactAddress = ({ handleNumberInputChange }: ContactAddressProps)
                                         maxLength={11}
                                         placeholder="09123456789"
                                         {...field}
+                                        onKeyDown={allowOnlyNumbers}
                                         onChange={(e) => {
                                             // Call the passed handler first
                                             handleNumberInputChange(e, 'contactNumber');
@@ -86,6 +95,7 @@ export const ContactAddress = ({ handleNumberInputChange }: ContactAddressProps)
                                         maxLength={11}
                                         placeholder="09123456789"
                                         {...field}
+                                        onKeyDown={allowOnlyNumbers}
                                         onChange={(e) => {
                                             handleNumberInputChange(e, 'emergencyNumber');
                                             field.onChange(e);

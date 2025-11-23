@@ -14,6 +14,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
 
 /**
+ * Model NotificationStatus
+ * 
+ */
+export type NotificationStatus = $Result.DefaultSelection<Prisma.$NotificationStatusPayload>
+/**
  * Model User
  * 
  */
@@ -127,8 +132,8 @@ export const Gender: typeof $Enums.Gender
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * // Fetch zero or more NotificationStatuses
+ * const notificationStatuses = await prisma.notificationStatus.findMany()
  * ```
  *
  *
@@ -148,8 +153,8 @@ export class PrismaClient<
    * @example
    * ```
    * const prisma = new PrismaClient()
-   * // Fetch zero or more Users
-   * const users = await prisma.user.findMany()
+   * // Fetch zero or more NotificationStatuses
+   * const notificationStatuses = await prisma.notificationStatus.findMany()
    * ```
    *
    *
@@ -239,6 +244,16 @@ export class PrismaClient<
   }>>
 
       /**
+   * `prisma.notificationStatus`: Exposes CRUD operations for the **NotificationStatus** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NotificationStatuses
+    * const notificationStatuses = await prisma.notificationStatus.findMany()
+    * ```
+    */
+  get notificationStatus(): Prisma.NotificationStatusDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.user`: Exposes CRUD operations for the **User** model.
     * Example usage:
     * ```ts
@@ -807,6 +822,7 @@ export namespace Prisma {
 
 
   export const ModelName: {
+    NotificationStatus: 'NotificationStatus',
     User: 'User',
     Session: 'Session',
     Senior: 'Senior',
@@ -838,10 +854,84 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "session" | "senior" | "registrationDocument" | "remarks" | "seniorCategory" | "status" | "benefits" | "benefitRequirements" | "applications" | "transaction" | "governmentFund" | "fundHistory"
+      modelProps: "notificationStatus" | "user" | "session" | "senior" | "registrationDocument" | "remarks" | "seniorCategory" | "status" | "benefits" | "benefitRequirements" | "applications" | "transaction" | "governmentFund" | "fundHistory"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
+      NotificationStatus: {
+        payload: Prisma.$NotificationStatusPayload<ExtArgs>
+        fields: Prisma.NotificationStatusFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NotificationStatusFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationStatusPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NotificationStatusFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationStatusPayload>
+          }
+          findFirst: {
+            args: Prisma.NotificationStatusFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationStatusPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NotificationStatusFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationStatusPayload>
+          }
+          findMany: {
+            args: Prisma.NotificationStatusFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationStatusPayload>[]
+          }
+          create: {
+            args: Prisma.NotificationStatusCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationStatusPayload>
+          }
+          createMany: {
+            args: Prisma.NotificationStatusCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NotificationStatusCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationStatusPayload>[]
+          }
+          delete: {
+            args: Prisma.NotificationStatusDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationStatusPayload>
+          }
+          update: {
+            args: Prisma.NotificationStatusUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationStatusPayload>
+          }
+          deleteMany: {
+            args: Prisma.NotificationStatusDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NotificationStatusUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NotificationStatusUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationStatusPayload>[]
+          }
+          upsert: {
+            args: Prisma.NotificationStatusUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationStatusPayload>
+          }
+          aggregate: {
+            args: Prisma.NotificationStatusAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNotificationStatus>
+          }
+          groupBy: {
+            args: Prisma.NotificationStatusGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NotificationStatusGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NotificationStatusCountArgs<ExtArgs>
+            result: $Utils.Optional<NotificationStatusCountAggregateOutputType> | number
+          }
+        }
+      }
       User: {
         payload: Prisma.$UserPayload<ExtArgs>
         fields: Prisma.UserFieldRefs
@@ -1896,6 +1986,7 @@ export namespace Prisma {
     omit?: Prisma.GlobalOmitConfig
   }
   export type GlobalOmitConfig = {
+    notificationStatus?: NotificationStatusOmit
     user?: UserOmit
     session?: SessionOmit
     senior?: SeniorOmit
@@ -1990,10 +2081,12 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     sessions: number
+    notificationStatus: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
+    notificationStatus?: boolean | UserCountOutputTypeCountNotificationStatusArgs
   }
 
   // Custom InputTypes
@@ -2012,6 +2105,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SessionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountNotificationStatusArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationStatusWhereInput
   }
 
 
@@ -2222,6 +2322,1124 @@ export namespace Prisma {
   /**
    * Models
    */
+
+  /**
+   * Model NotificationStatus
+   */
+
+  export type AggregateNotificationStatus = {
+    _count: NotificationStatusCountAggregateOutputType | null
+    _avg: NotificationStatusAvgAggregateOutputType | null
+    _sum: NotificationStatusSumAggregateOutputType | null
+    _min: NotificationStatusMinAggregateOutputType | null
+    _max: NotificationStatusMaxAggregateOutputType | null
+  }
+
+  export type NotificationStatusAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type NotificationStatusSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type NotificationStatusMinAggregateOutputType = {
+    id: number | null
+    userId: string | null
+    notificationId: string | null
+    isRead: boolean | null
+    readAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NotificationStatusMaxAggregateOutputType = {
+    id: number | null
+    userId: string | null
+    notificationId: string | null
+    isRead: boolean | null
+    readAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NotificationStatusCountAggregateOutputType = {
+    id: number
+    userId: number
+    notificationId: number
+    isRead: number
+    readAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type NotificationStatusAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type NotificationStatusSumAggregateInputType = {
+    id?: true
+  }
+
+  export type NotificationStatusMinAggregateInputType = {
+    id?: true
+    userId?: true
+    notificationId?: true
+    isRead?: true
+    readAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NotificationStatusMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    notificationId?: true
+    isRead?: true
+    readAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NotificationStatusCountAggregateInputType = {
+    id?: true
+    userId?: true
+    notificationId?: true
+    isRead?: true
+    readAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type NotificationStatusAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NotificationStatus to aggregate.
+     */
+    where?: NotificationStatusWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationStatuses to fetch.
+     */
+    orderBy?: NotificationStatusOrderByWithRelationInput | NotificationStatusOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NotificationStatusWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationStatuses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationStatuses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NotificationStatuses
+    **/
+    _count?: true | NotificationStatusCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: NotificationStatusAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: NotificationStatusSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NotificationStatusMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NotificationStatusMaxAggregateInputType
+  }
+
+  export type GetNotificationStatusAggregateType<T extends NotificationStatusAggregateArgs> = {
+        [P in keyof T & keyof AggregateNotificationStatus]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNotificationStatus[P]>
+      : GetScalarType<T[P], AggregateNotificationStatus[P]>
+  }
+
+
+
+
+  export type NotificationStatusGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationStatusWhereInput
+    orderBy?: NotificationStatusOrderByWithAggregationInput | NotificationStatusOrderByWithAggregationInput[]
+    by: NotificationStatusScalarFieldEnum[] | NotificationStatusScalarFieldEnum
+    having?: NotificationStatusScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NotificationStatusCountAggregateInputType | true
+    _avg?: NotificationStatusAvgAggregateInputType
+    _sum?: NotificationStatusSumAggregateInputType
+    _min?: NotificationStatusMinAggregateInputType
+    _max?: NotificationStatusMaxAggregateInputType
+  }
+
+  export type NotificationStatusGroupByOutputType = {
+    id: number
+    userId: string
+    notificationId: string
+    isRead: boolean
+    readAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: NotificationStatusCountAggregateOutputType | null
+    _avg: NotificationStatusAvgAggregateOutputType | null
+    _sum: NotificationStatusSumAggregateOutputType | null
+    _min: NotificationStatusMinAggregateOutputType | null
+    _max: NotificationStatusMaxAggregateOutputType | null
+  }
+
+  type GetNotificationStatusGroupByPayload<T extends NotificationStatusGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NotificationStatusGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NotificationStatusGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NotificationStatusGroupByOutputType[P]>
+            : GetScalarType<T[P], NotificationStatusGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NotificationStatusSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    notificationId?: boolean
+    isRead?: boolean
+    readAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notificationStatus"]>
+
+  export type NotificationStatusSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    notificationId?: boolean
+    isRead?: boolean
+    readAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notificationStatus"]>
+
+  export type NotificationStatusSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    notificationId?: boolean
+    isRead?: boolean
+    readAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notificationStatus"]>
+
+  export type NotificationStatusSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    notificationId?: boolean
+    isRead?: boolean
+    readAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type NotificationStatusOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "notificationId" | "isRead" | "readAt" | "createdAt" | "updatedAt", ExtArgs["result"]["notificationStatus"]>
+  export type NotificationStatusInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type NotificationStatusIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type NotificationStatusIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $NotificationStatusPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NotificationStatus"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      userId: string
+      notificationId: string
+      isRead: boolean
+      readAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["notificationStatus"]>
+    composites: {}
+  }
+
+  type NotificationStatusGetPayload<S extends boolean | null | undefined | NotificationStatusDefaultArgs> = $Result.GetResult<Prisma.$NotificationStatusPayload, S>
+
+  type NotificationStatusCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NotificationStatusFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NotificationStatusCountAggregateInputType | true
+    }
+
+  export interface NotificationStatusDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NotificationStatus'], meta: { name: 'NotificationStatus' } }
+    /**
+     * Find zero or one NotificationStatus that matches the filter.
+     * @param {NotificationStatusFindUniqueArgs} args - Arguments to find a NotificationStatus
+     * @example
+     * // Get one NotificationStatus
+     * const notificationStatus = await prisma.notificationStatus.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NotificationStatusFindUniqueArgs>(args: SelectSubset<T, NotificationStatusFindUniqueArgs<ExtArgs>>): Prisma__NotificationStatusClient<$Result.GetResult<Prisma.$NotificationStatusPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one NotificationStatus that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NotificationStatusFindUniqueOrThrowArgs} args - Arguments to find a NotificationStatus
+     * @example
+     * // Get one NotificationStatus
+     * const notificationStatus = await prisma.notificationStatus.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NotificationStatusFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationStatusFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationStatusClient<$Result.GetResult<Prisma.$NotificationStatusPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NotificationStatus that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationStatusFindFirstArgs} args - Arguments to find a NotificationStatus
+     * @example
+     * // Get one NotificationStatus
+     * const notificationStatus = await prisma.notificationStatus.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NotificationStatusFindFirstArgs>(args?: SelectSubset<T, NotificationStatusFindFirstArgs<ExtArgs>>): Prisma__NotificationStatusClient<$Result.GetResult<Prisma.$NotificationStatusPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NotificationStatus that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationStatusFindFirstOrThrowArgs} args - Arguments to find a NotificationStatus
+     * @example
+     * // Get one NotificationStatus
+     * const notificationStatus = await prisma.notificationStatus.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NotificationStatusFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationStatusFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationStatusClient<$Result.GetResult<Prisma.$NotificationStatusPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more NotificationStatuses that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationStatusFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NotificationStatuses
+     * const notificationStatuses = await prisma.notificationStatus.findMany()
+     * 
+     * // Get first 10 NotificationStatuses
+     * const notificationStatuses = await prisma.notificationStatus.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const notificationStatusWithIdOnly = await prisma.notificationStatus.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NotificationStatusFindManyArgs>(args?: SelectSubset<T, NotificationStatusFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationStatusPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a NotificationStatus.
+     * @param {NotificationStatusCreateArgs} args - Arguments to create a NotificationStatus.
+     * @example
+     * // Create one NotificationStatus
+     * const NotificationStatus = await prisma.notificationStatus.create({
+     *   data: {
+     *     // ... data to create a NotificationStatus
+     *   }
+     * })
+     * 
+     */
+    create<T extends NotificationStatusCreateArgs>(args: SelectSubset<T, NotificationStatusCreateArgs<ExtArgs>>): Prisma__NotificationStatusClient<$Result.GetResult<Prisma.$NotificationStatusPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many NotificationStatuses.
+     * @param {NotificationStatusCreateManyArgs} args - Arguments to create many NotificationStatuses.
+     * @example
+     * // Create many NotificationStatuses
+     * const notificationStatus = await prisma.notificationStatus.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NotificationStatusCreateManyArgs>(args?: SelectSubset<T, NotificationStatusCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NotificationStatuses and returns the data saved in the database.
+     * @param {NotificationStatusCreateManyAndReturnArgs} args - Arguments to create many NotificationStatuses.
+     * @example
+     * // Create many NotificationStatuses
+     * const notificationStatus = await prisma.notificationStatus.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many NotificationStatuses and only return the `id`
+     * const notificationStatusWithIdOnly = await prisma.notificationStatus.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NotificationStatusCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationStatusCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationStatusPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a NotificationStatus.
+     * @param {NotificationStatusDeleteArgs} args - Arguments to delete one NotificationStatus.
+     * @example
+     * // Delete one NotificationStatus
+     * const NotificationStatus = await prisma.notificationStatus.delete({
+     *   where: {
+     *     // ... filter to delete one NotificationStatus
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NotificationStatusDeleteArgs>(args: SelectSubset<T, NotificationStatusDeleteArgs<ExtArgs>>): Prisma__NotificationStatusClient<$Result.GetResult<Prisma.$NotificationStatusPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one NotificationStatus.
+     * @param {NotificationStatusUpdateArgs} args - Arguments to update one NotificationStatus.
+     * @example
+     * // Update one NotificationStatus
+     * const notificationStatus = await prisma.notificationStatus.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NotificationStatusUpdateArgs>(args: SelectSubset<T, NotificationStatusUpdateArgs<ExtArgs>>): Prisma__NotificationStatusClient<$Result.GetResult<Prisma.$NotificationStatusPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more NotificationStatuses.
+     * @param {NotificationStatusDeleteManyArgs} args - Arguments to filter NotificationStatuses to delete.
+     * @example
+     * // Delete a few NotificationStatuses
+     * const { count } = await prisma.notificationStatus.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NotificationStatusDeleteManyArgs>(args?: SelectSubset<T, NotificationStatusDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NotificationStatuses.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationStatusUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NotificationStatuses
+     * const notificationStatus = await prisma.notificationStatus.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NotificationStatusUpdateManyArgs>(args: SelectSubset<T, NotificationStatusUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NotificationStatuses and returns the data updated in the database.
+     * @param {NotificationStatusUpdateManyAndReturnArgs} args - Arguments to update many NotificationStatuses.
+     * @example
+     * // Update many NotificationStatuses
+     * const notificationStatus = await prisma.notificationStatus.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more NotificationStatuses and only return the `id`
+     * const notificationStatusWithIdOnly = await prisma.notificationStatus.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NotificationStatusUpdateManyAndReturnArgs>(args: SelectSubset<T, NotificationStatusUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationStatusPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one NotificationStatus.
+     * @param {NotificationStatusUpsertArgs} args - Arguments to update or create a NotificationStatus.
+     * @example
+     * // Update or create a NotificationStatus
+     * const notificationStatus = await prisma.notificationStatus.upsert({
+     *   create: {
+     *     // ... data to create a NotificationStatus
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NotificationStatus we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NotificationStatusUpsertArgs>(args: SelectSubset<T, NotificationStatusUpsertArgs<ExtArgs>>): Prisma__NotificationStatusClient<$Result.GetResult<Prisma.$NotificationStatusPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of NotificationStatuses.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationStatusCountArgs} args - Arguments to filter NotificationStatuses to count.
+     * @example
+     * // Count the number of NotificationStatuses
+     * const count = await prisma.notificationStatus.count({
+     *   where: {
+     *     // ... the filter for the NotificationStatuses we want to count
+     *   }
+     * })
+    **/
+    count<T extends NotificationStatusCountArgs>(
+      args?: Subset<T, NotificationStatusCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NotificationStatusCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NotificationStatus.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationStatusAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NotificationStatusAggregateArgs>(args: Subset<T, NotificationStatusAggregateArgs>): Prisma.PrismaPromise<GetNotificationStatusAggregateType<T>>
+
+    /**
+     * Group by NotificationStatus.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationStatusGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NotificationStatusGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NotificationStatusGroupByArgs['orderBy'] }
+        : { orderBy?: NotificationStatusGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NotificationStatusGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationStatusGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NotificationStatus model
+   */
+  readonly fields: NotificationStatusFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NotificationStatus.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NotificationStatusClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NotificationStatus model
+   */
+  interface NotificationStatusFieldRefs {
+    readonly id: FieldRef<"NotificationStatus", 'Int'>
+    readonly userId: FieldRef<"NotificationStatus", 'String'>
+    readonly notificationId: FieldRef<"NotificationStatus", 'String'>
+    readonly isRead: FieldRef<"NotificationStatus", 'Boolean'>
+    readonly readAt: FieldRef<"NotificationStatus", 'DateTime'>
+    readonly createdAt: FieldRef<"NotificationStatus", 'DateTime'>
+    readonly updatedAt: FieldRef<"NotificationStatus", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NotificationStatus findUnique
+   */
+  export type NotificationStatusFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationStatus
+     */
+    select?: NotificationStatusSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationStatus
+     */
+    omit?: NotificationStatusOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationStatusInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationStatus to fetch.
+     */
+    where: NotificationStatusWhereUniqueInput
+  }
+
+  /**
+   * NotificationStatus findUniqueOrThrow
+   */
+  export type NotificationStatusFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationStatus
+     */
+    select?: NotificationStatusSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationStatus
+     */
+    omit?: NotificationStatusOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationStatusInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationStatus to fetch.
+     */
+    where: NotificationStatusWhereUniqueInput
+  }
+
+  /**
+   * NotificationStatus findFirst
+   */
+  export type NotificationStatusFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationStatus
+     */
+    select?: NotificationStatusSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationStatus
+     */
+    omit?: NotificationStatusOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationStatusInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationStatus to fetch.
+     */
+    where?: NotificationStatusWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationStatuses to fetch.
+     */
+    orderBy?: NotificationStatusOrderByWithRelationInput | NotificationStatusOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NotificationStatuses.
+     */
+    cursor?: NotificationStatusWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationStatuses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationStatuses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NotificationStatuses.
+     */
+    distinct?: NotificationStatusScalarFieldEnum | NotificationStatusScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationStatus findFirstOrThrow
+   */
+  export type NotificationStatusFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationStatus
+     */
+    select?: NotificationStatusSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationStatus
+     */
+    omit?: NotificationStatusOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationStatusInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationStatus to fetch.
+     */
+    where?: NotificationStatusWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationStatuses to fetch.
+     */
+    orderBy?: NotificationStatusOrderByWithRelationInput | NotificationStatusOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NotificationStatuses.
+     */
+    cursor?: NotificationStatusWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationStatuses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationStatuses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NotificationStatuses.
+     */
+    distinct?: NotificationStatusScalarFieldEnum | NotificationStatusScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationStatus findMany
+   */
+  export type NotificationStatusFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationStatus
+     */
+    select?: NotificationStatusSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationStatus
+     */
+    omit?: NotificationStatusOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationStatusInclude<ExtArgs> | null
+    /**
+     * Filter, which NotificationStatuses to fetch.
+     */
+    where?: NotificationStatusWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NotificationStatuses to fetch.
+     */
+    orderBy?: NotificationStatusOrderByWithRelationInput | NotificationStatusOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NotificationStatuses.
+     */
+    cursor?: NotificationStatusWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NotificationStatuses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NotificationStatuses.
+     */
+    skip?: number
+    distinct?: NotificationStatusScalarFieldEnum | NotificationStatusScalarFieldEnum[]
+  }
+
+  /**
+   * NotificationStatus create
+   */
+  export type NotificationStatusCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationStatus
+     */
+    select?: NotificationStatusSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationStatus
+     */
+    omit?: NotificationStatusOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationStatusInclude<ExtArgs> | null
+    /**
+     * The data needed to create a NotificationStatus.
+     */
+    data: XOR<NotificationStatusCreateInput, NotificationStatusUncheckedCreateInput>
+  }
+
+  /**
+   * NotificationStatus createMany
+   */
+  export type NotificationStatusCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NotificationStatuses.
+     */
+    data: NotificationStatusCreateManyInput | NotificationStatusCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NotificationStatus createManyAndReturn
+   */
+  export type NotificationStatusCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationStatus
+     */
+    select?: NotificationStatusSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationStatus
+     */
+    omit?: NotificationStatusOmit<ExtArgs> | null
+    /**
+     * The data used to create many NotificationStatuses.
+     */
+    data: NotificationStatusCreateManyInput | NotificationStatusCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationStatusIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NotificationStatus update
+   */
+  export type NotificationStatusUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationStatus
+     */
+    select?: NotificationStatusSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationStatus
+     */
+    omit?: NotificationStatusOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationStatusInclude<ExtArgs> | null
+    /**
+     * The data needed to update a NotificationStatus.
+     */
+    data: XOR<NotificationStatusUpdateInput, NotificationStatusUncheckedUpdateInput>
+    /**
+     * Choose, which NotificationStatus to update.
+     */
+    where: NotificationStatusWhereUniqueInput
+  }
+
+  /**
+   * NotificationStatus updateMany
+   */
+  export type NotificationStatusUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NotificationStatuses.
+     */
+    data: XOR<NotificationStatusUpdateManyMutationInput, NotificationStatusUncheckedUpdateManyInput>
+    /**
+     * Filter which NotificationStatuses to update
+     */
+    where?: NotificationStatusWhereInput
+    /**
+     * Limit how many NotificationStatuses to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NotificationStatus updateManyAndReturn
+   */
+  export type NotificationStatusUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationStatus
+     */
+    select?: NotificationStatusSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationStatus
+     */
+    omit?: NotificationStatusOmit<ExtArgs> | null
+    /**
+     * The data used to update NotificationStatuses.
+     */
+    data: XOR<NotificationStatusUpdateManyMutationInput, NotificationStatusUncheckedUpdateManyInput>
+    /**
+     * Filter which NotificationStatuses to update
+     */
+    where?: NotificationStatusWhereInput
+    /**
+     * Limit how many NotificationStatuses to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationStatusIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NotificationStatus upsert
+   */
+  export type NotificationStatusUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationStatus
+     */
+    select?: NotificationStatusSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationStatus
+     */
+    omit?: NotificationStatusOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationStatusInclude<ExtArgs> | null
+    /**
+     * The filter to search for the NotificationStatus to update in case it exists.
+     */
+    where: NotificationStatusWhereUniqueInput
+    /**
+     * In case the NotificationStatus found by the `where` argument doesn't exist, create a new NotificationStatus with this data.
+     */
+    create: XOR<NotificationStatusCreateInput, NotificationStatusUncheckedCreateInput>
+    /**
+     * In case the NotificationStatus was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NotificationStatusUpdateInput, NotificationStatusUncheckedUpdateInput>
+  }
+
+  /**
+   * NotificationStatus delete
+   */
+  export type NotificationStatusDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationStatus
+     */
+    select?: NotificationStatusSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationStatus
+     */
+    omit?: NotificationStatusOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationStatusInclude<ExtArgs> | null
+    /**
+     * Filter which NotificationStatus to delete.
+     */
+    where: NotificationStatusWhereUniqueInput
+  }
+
+  /**
+   * NotificationStatus deleteMany
+   */
+  export type NotificationStatusDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NotificationStatuses to delete
+     */
+    where?: NotificationStatusWhereInput
+    /**
+     * Limit how many NotificationStatuses to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * NotificationStatus without action
+   */
+  export type NotificationStatusDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationStatus
+     */
+    select?: NotificationStatusSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationStatus
+     */
+    omit?: NotificationStatusOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationStatusInclude<ExtArgs> | null
+  }
+
 
   /**
    * Model User
@@ -2468,6 +3686,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     sessions?: boolean | User$sessionsArgs<ExtArgs>
+    notificationStatus?: boolean | User$notificationStatusArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2528,6 +3747,7 @@ export namespace Prisma {
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "middleName" | "contactNo" | "bday" | "username" | "email" | "password" | "emailVerified" | "verificationToken" | "tokenExpires" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
+    notificationStatus?: boolean | User$notificationStatusArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2537,6 +3757,7 @@ export namespace Prisma {
     name: "User"
     objects: {
       sessions: Prisma.$SessionPayload<ExtArgs>[]
+      notificationStatus: Prisma.$NotificationStatusPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2949,6 +4170,7 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    notificationStatus<T extends User$notificationStatusArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationStatusArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationStatusPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3402,6 +4624,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SessionScalarFieldEnum | SessionScalarFieldEnum[]
+  }
+
+  /**
+   * User.notificationStatus
+   */
+  export type User$notificationStatusArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NotificationStatus
+     */
+    select?: NotificationStatusSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NotificationStatus
+     */
+    omit?: NotificationStatusOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationStatusInclude<ExtArgs> | null
+    where?: NotificationStatusWhereInput
+    orderBy?: NotificationStatusOrderByWithRelationInput | NotificationStatusOrderByWithRelationInput[]
+    cursor?: NotificationStatusWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationStatusScalarFieldEnum | NotificationStatusScalarFieldEnum[]
   }
 
   /**
@@ -17097,6 +18343,19 @@ export namespace Prisma {
   export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+  export const NotificationStatusScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    notificationId: 'notificationId',
+    isRead: 'isRead',
+    readAt: 'readAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type NotificationStatusScalarFieldEnum = (typeof NotificationStatusScalarFieldEnum)[keyof typeof NotificationStatusScalarFieldEnum]
+
+
   export const UserScalarFieldEnum: {
     id: 'id',
     firstName: 'firstName',
@@ -17317,6 +18576,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
    * Reference to a field of type 'String'
    */
   export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String'>
@@ -17327,6 +18600,13 @@ export namespace Prisma {
    * Reference to a field of type 'String[]'
    */
   export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -17359,20 +18639,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Gender'
    */
   export type EnumGenderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Gender'>
@@ -17383,13 +18649,6 @@ export namespace Prisma {
    * Reference to a field of type 'Gender[]'
    */
   export type ListEnumGenderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Gender[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -17424,6 +18683,74 @@ export namespace Prisma {
    */
 
 
+  export type NotificationStatusWhereInput = {
+    AND?: NotificationStatusWhereInput | NotificationStatusWhereInput[]
+    OR?: NotificationStatusWhereInput[]
+    NOT?: NotificationStatusWhereInput | NotificationStatusWhereInput[]
+    id?: IntFilter<"NotificationStatus"> | number
+    userId?: StringFilter<"NotificationStatus"> | string
+    notificationId?: StringFilter<"NotificationStatus"> | string
+    isRead?: BoolFilter<"NotificationStatus"> | boolean
+    readAt?: DateTimeNullableFilter<"NotificationStatus"> | Date | string | null
+    createdAt?: DateTimeFilter<"NotificationStatus"> | Date | string
+    updatedAt?: DateTimeFilter<"NotificationStatus"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type NotificationStatusOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationId?: SortOrder
+    isRead?: SortOrder
+    readAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type NotificationStatusWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    userId_notificationId?: NotificationStatusUserIdNotificationIdCompoundUniqueInput
+    AND?: NotificationStatusWhereInput | NotificationStatusWhereInput[]
+    OR?: NotificationStatusWhereInput[]
+    NOT?: NotificationStatusWhereInput | NotificationStatusWhereInput[]
+    userId?: StringFilter<"NotificationStatus"> | string
+    notificationId?: StringFilter<"NotificationStatus"> | string
+    isRead?: BoolFilter<"NotificationStatus"> | boolean
+    readAt?: DateTimeNullableFilter<"NotificationStatus"> | Date | string | null
+    createdAt?: DateTimeFilter<"NotificationStatus"> | Date | string
+    updatedAt?: DateTimeFilter<"NotificationStatus"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId_notificationId">
+
+  export type NotificationStatusOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationId?: SortOrder
+    isRead?: SortOrder
+    readAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: NotificationStatusCountOrderByAggregateInput
+    _avg?: NotificationStatusAvgOrderByAggregateInput
+    _max?: NotificationStatusMaxOrderByAggregateInput
+    _min?: NotificationStatusMinOrderByAggregateInput
+    _sum?: NotificationStatusSumOrderByAggregateInput
+  }
+
+  export type NotificationStatusScalarWhereWithAggregatesInput = {
+    AND?: NotificationStatusScalarWhereWithAggregatesInput | NotificationStatusScalarWhereWithAggregatesInput[]
+    OR?: NotificationStatusScalarWhereWithAggregatesInput[]
+    NOT?: NotificationStatusScalarWhereWithAggregatesInput | NotificationStatusScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"NotificationStatus"> | number
+    userId?: StringWithAggregatesFilter<"NotificationStatus"> | string
+    notificationId?: StringWithAggregatesFilter<"NotificationStatus"> | string
+    isRead?: BoolWithAggregatesFilter<"NotificationStatus"> | boolean
+    readAt?: DateTimeNullableWithAggregatesFilter<"NotificationStatus"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"NotificationStatus"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"NotificationStatus"> | Date | string
+  }
+
   export type UserWhereInput = {
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
@@ -17444,6 +18771,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     sessions?: SessionListRelationFilter
+    notificationStatus?: NotificationStatusListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -17463,6 +18791,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     sessions?: SessionOrderByRelationAggregateInput
+    notificationStatus?: NotificationStatusOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -17485,6 +18814,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     sessions?: SessionListRelationFilter
+    notificationStatus?: NotificationStatusListRelationFilter
   }, "id" | "username" | "email" | "verificationToken">
 
   export type UserOrderByWithAggregationInput = {
@@ -18411,6 +19741,72 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"FundHistory"> | Date | string
   }
 
+  export type NotificationStatusCreateInput = {
+    notificationId: string
+    isRead?: boolean
+    readAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutNotificationStatusInput
+  }
+
+  export type NotificationStatusUncheckedCreateInput = {
+    id?: number
+    userId: string
+    notificationId: string
+    isRead?: boolean
+    readAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationStatusUpdateInput = {
+    notificationId?: StringFieldUpdateOperationsInput | string
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutNotificationStatusNestedInput
+  }
+
+  export type NotificationStatusUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    notificationId?: StringFieldUpdateOperationsInput | string
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationStatusCreateManyInput = {
+    id?: number
+    userId: string
+    notificationId: string
+    isRead?: boolean
+    readAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationStatusUpdateManyMutationInput = {
+    notificationId?: StringFieldUpdateOperationsInput | string
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationStatusUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: StringFieldUpdateOperationsInput | string
+    notificationId?: StringFieldUpdateOperationsInput | string
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     firstName: string
@@ -18428,6 +19824,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    notificationStatus?: NotificationStatusCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -18447,6 +19844,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    notificationStatus?: NotificationStatusUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -18466,6 +19864,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    notificationStatus?: NotificationStatusUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -18485,6 +19884,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    notificationStatus?: NotificationStatusUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -19462,6 +20862,17 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -19475,6 +20886,156 @@ export namespace Prisma {
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
     not?: NestedStringFilter<$PrismaModel> | string
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type DateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
+  export type NotificationStatusUserIdNotificationIdCompoundUniqueInput = {
+    userId: string
+    notificationId: string
+  }
+
+  export type NotificationStatusCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationId?: SortOrder
+    isRead?: SortOrder
+    readAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationStatusAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type NotificationStatusMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationId?: SortOrder
+    isRead?: SortOrder
+    readAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationStatusMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    notificationId?: SortOrder
+    isRead?: SortOrder
+    readAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NotificationStatusSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type StringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type StringNullableFilter<$PrismaModel = never> = {
@@ -19492,28 +21053,6 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
-  export type DateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type EnumRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
     in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
@@ -19527,12 +21066,17 @@ export namespace Prisma {
     none?: SessionWhereInput
   }
 
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
+  export type NotificationStatusListRelationFilter = {
+    every?: NotificationStatusWhereInput
+    some?: NotificationStatusWhereInput
+    none?: NotificationStatusWhereInput
   }
 
   export type SessionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NotificationStatusOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -19590,24 +21134,6 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type StringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
-  }
-
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -19626,34 +21152,6 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
-  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
   export type EnumRoleWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
     in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
@@ -19662,11 +21160,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumRoleFilter<$PrismaModel>
     _max?: NestedEnumRoleFilter<$PrismaModel>
-  }
-
-  export type UserScalarRelationFilter = {
-    is?: UserWhereInput
-    isNot?: UserWhereInput
   }
 
   export type SessionCountOrderByAggregateInput = {
@@ -19693,27 +21186,11 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type EnumGenderFilter<$PrismaModel = never> = {
     equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel>
     in?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel>
     notIn?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel>
     not?: NestedEnumGenderFilter<$PrismaModel> | $Enums.Gender
-  }
-
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type RemarksScalarRelationFilter = {
@@ -19823,22 +21300,6 @@ export namespace Prisma {
     remarks_id?: SortOrder
   }
 
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-
   export type EnumGenderWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel>
     in?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel>
@@ -19847,14 +21308,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumGenderFilter<$PrismaModel>
     _max?: NestedEnumGenderFilter<$PrismaModel>
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type IntNullableFilter<$PrismaModel = never> = {
@@ -20386,11 +21839,56 @@ export namespace Prisma {
     newBalance?: SortOrder
   }
 
+  export type UserCreateNestedOneWithoutNotificationStatusInput = {
+    create?: XOR<UserCreateWithoutNotificationStatusInput, UserUncheckedCreateWithoutNotificationStatusInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationStatusInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type StringFieldUpdateOperationsInput = {
+    set?: string
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
+  }
+
+  export type UserUpdateOneRequiredWithoutNotificationStatusNestedInput = {
+    create?: XOR<UserCreateWithoutNotificationStatusInput, UserUncheckedCreateWithoutNotificationStatusInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationStatusInput
+    upsert?: UserUpsertWithoutNotificationStatusInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationStatusInput, UserUpdateWithoutNotificationStatusInput>, UserUncheckedUpdateWithoutNotificationStatusInput>
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type SessionCreateNestedManyWithoutUserInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
     createMany?: SessionCreateManyUserInputEnvelope
     connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+  }
+
+  export type NotificationStatusCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationStatusCreateWithoutUserInput, NotificationStatusUncheckedCreateWithoutUserInput> | NotificationStatusCreateWithoutUserInput[] | NotificationStatusUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationStatusCreateOrConnectWithoutUserInput | NotificationStatusCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationStatusCreateManyUserInputEnvelope
+    connect?: NotificationStatusWhereUniqueInput | NotificationStatusWhereUniqueInput[]
   }
 
   export type SessionUncheckedCreateNestedManyWithoutUserInput = {
@@ -20400,20 +21898,15 @@ export namespace Prisma {
     connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
   }
 
-  export type StringFieldUpdateOperationsInput = {
-    set?: string
+  export type NotificationStatusUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationStatusCreateWithoutUserInput, NotificationStatusUncheckedCreateWithoutUserInput> | NotificationStatusCreateWithoutUserInput[] | NotificationStatusUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationStatusCreateOrConnectWithoutUserInput | NotificationStatusCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationStatusCreateManyUserInputEnvelope
+    connect?: NotificationStatusWhereUniqueInput | NotificationStatusWhereUniqueInput[]
   }
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
-  }
-
-  export type DateTimeFieldUpdateOperationsInput = {
-    set?: Date | string
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type EnumRoleFieldUpdateOperationsInput = {
@@ -20434,6 +21927,20 @@ export namespace Prisma {
     deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
   }
 
+  export type NotificationStatusUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationStatusCreateWithoutUserInput, NotificationStatusUncheckedCreateWithoutUserInput> | NotificationStatusCreateWithoutUserInput[] | NotificationStatusUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationStatusCreateOrConnectWithoutUserInput | NotificationStatusCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationStatusUpsertWithWhereUniqueWithoutUserInput | NotificationStatusUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationStatusCreateManyUserInputEnvelope
+    set?: NotificationStatusWhereUniqueInput | NotificationStatusWhereUniqueInput[]
+    disconnect?: NotificationStatusWhereUniqueInput | NotificationStatusWhereUniqueInput[]
+    delete?: NotificationStatusWhereUniqueInput | NotificationStatusWhereUniqueInput[]
+    connect?: NotificationStatusWhereUniqueInput | NotificationStatusWhereUniqueInput[]
+    update?: NotificationStatusUpdateWithWhereUniqueWithoutUserInput | NotificationStatusUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationStatusUpdateManyWithWhereWithoutUserInput | NotificationStatusUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationStatusScalarWhereInput | NotificationStatusScalarWhereInput[]
+  }
+
   export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -20446,6 +21953,20 @@ export namespace Prisma {
     update?: SessionUpdateWithWhereUniqueWithoutUserInput | SessionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: SessionUpdateManyWithWhereWithoutUserInput | SessionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
+  }
+
+  export type NotificationStatusUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationStatusCreateWithoutUserInput, NotificationStatusUncheckedCreateWithoutUserInput> | NotificationStatusCreateWithoutUserInput[] | NotificationStatusUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationStatusCreateOrConnectWithoutUserInput | NotificationStatusCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationStatusUpsertWithWhereUniqueWithoutUserInput | NotificationStatusUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationStatusCreateManyUserInputEnvelope
+    set?: NotificationStatusWhereUniqueInput | NotificationStatusWhereUniqueInput[]
+    disconnect?: NotificationStatusWhereUniqueInput | NotificationStatusWhereUniqueInput[]
+    delete?: NotificationStatusWhereUniqueInput | NotificationStatusWhereUniqueInput[]
+    connect?: NotificationStatusWhereUniqueInput | NotificationStatusWhereUniqueInput[]
+    update?: NotificationStatusUpdateWithWhereUniqueWithoutUserInput | NotificationStatusUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationStatusUpdateManyWithWhereWithoutUserInput | NotificationStatusUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationStatusScalarWhereInput | NotificationStatusScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutSessionsInput = {
@@ -20500,10 +22021,6 @@ export namespace Prisma {
     set?: $Enums.Gender
   }
 
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
-  }
-
   export type RemarksUpdateOneRequiredWithoutSeniorsNestedInput = {
     create?: XOR<RemarksCreateWithoutSeniorsInput, RemarksUncheckedCreateWithoutSeniorsInput>
     connectOrCreate?: RemarksCreateOrConnectWithoutSeniorsInput
@@ -20538,14 +22055,6 @@ export namespace Prisma {
     update?: ApplicationsUpdateWithWhereUniqueWithoutSeniorInput | ApplicationsUpdateWithWhereUniqueWithoutSeniorInput[]
     updateMany?: ApplicationsUpdateManyWithWhereWithoutSeniorInput | ApplicationsUpdateManyWithWhereWithoutSeniorInput[]
     deleteMany?: ApplicationsScalarWhereInput | ApplicationsScalarWhereInput[]
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type RegistrationDocumentUncheckedUpdateManyWithoutSeniorNestedInput = {
@@ -20950,6 +22459,17 @@ export namespace Prisma {
     set?: $Enums.TransactionType
   }
 
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -20964,29 +22484,9 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type NestedDateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -21000,70 +22500,7 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type NestedEnumRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
-  }
-
-  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
-  }
-
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
-  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+  export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
     notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -21071,46 +22508,7 @@ export namespace Prisma {
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type NestedEnumRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumRoleWithAggregatesFilter<$PrismaModel> | $Enums.Role
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumRoleFilter<$PrismaModel>
-    _max?: NestedEnumRoleFilter<$PrismaModel>
-  }
-
-  export type NestedEnumGenderFilter<$PrismaModel = never> = {
-    equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel>
-    in?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel>
-    not?: NestedEnumGenderFilter<$PrismaModel> | $Enums.Gender
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -21140,14 +22538,21 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type NestedEnumGenderWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel>
-    in?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel>
-    notIn?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel>
-    not?: NestedEnumGenderWithAggregatesFilter<$PrismaModel> | $Enums.Gender
+  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumGenderFilter<$PrismaModel>
-    _max?: NestedEnumGenderFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
   }
 
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -21156,6 +22561,110 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedEnumRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumRoleFilter<$PrismaModel> | $Enums.Role
+  }
+
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Role | EnumRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Role[] | ListEnumRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumRoleWithAggregatesFilter<$PrismaModel> | $Enums.Role
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRoleFilter<$PrismaModel>
+    _max?: NestedEnumRoleFilter<$PrismaModel>
+  }
+
+  export type NestedEnumGenderFilter<$PrismaModel = never> = {
+    equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel>
+    in?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel>
+    not?: NestedEnumGenderFilter<$PrismaModel> | $Enums.Gender
+  }
+
+  export type NestedEnumGenderWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel>
+    in?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Gender[] | ListEnumGenderFieldRefInput<$PrismaModel>
+    not?: NestedEnumGenderWithAggregatesFilter<$PrismaModel> | $Enums.Gender
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumGenderFilter<$PrismaModel>
+    _max?: NestedEnumGenderFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -21218,6 +22727,98 @@ export namespace Prisma {
     _max?: NestedEnumTransactionTypeFilter<$PrismaModel>
   }
 
+  export type UserCreateWithoutNotificationStatusInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    middleName?: string | null
+    contactNo: string
+    bday: Date | string
+    username: string
+    email: string
+    password: string
+    emailVerified?: Date | string | null
+    verificationToken?: string | null
+    tokenExpires?: Date | string | null
+    role?: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutNotificationStatusInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    middleName?: string | null
+    contactNo: string
+    bday: Date | string
+    username: string
+    email: string
+    password: string
+    emailVerified?: Date | string | null
+    verificationToken?: string | null
+    tokenExpires?: Date | string | null
+    role?: $Enums.Role
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutNotificationStatusInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutNotificationStatusInput, UserUncheckedCreateWithoutNotificationStatusInput>
+  }
+
+  export type UserUpsertWithoutNotificationStatusInput = {
+    update: XOR<UserUpdateWithoutNotificationStatusInput, UserUncheckedUpdateWithoutNotificationStatusInput>
+    create: XOR<UserCreateWithoutNotificationStatusInput, UserUncheckedCreateWithoutNotificationStatusInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutNotificationStatusInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutNotificationStatusInput, UserUncheckedUpdateWithoutNotificationStatusInput>
+  }
+
+  export type UserUpdateWithoutNotificationStatusInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    middleName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactNo?: StringFieldUpdateOperationsInput | string
+    bday?: DateTimeFieldUpdateOperationsInput | Date | string
+    username?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    tokenExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutNotificationStatusInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    middleName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactNo?: StringFieldUpdateOperationsInput | string
+    bday?: DateTimeFieldUpdateOperationsInput | Date | string
+    username?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    tokenExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type SessionCreateWithoutUserInput = {
     sessionToken: string
     expires: Date | string
@@ -21239,6 +22840,33 @@ export namespace Prisma {
 
   export type SessionCreateManyUserInputEnvelope = {
     data: SessionCreateManyUserInput | SessionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationStatusCreateWithoutUserInput = {
+    notificationId: string
+    isRead?: boolean
+    readAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationStatusUncheckedCreateWithoutUserInput = {
+    id?: number
+    notificationId: string
+    isRead?: boolean
+    readAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NotificationStatusCreateOrConnectWithoutUserInput = {
+    where: NotificationStatusWhereUniqueInput
+    create: XOR<NotificationStatusCreateWithoutUserInput, NotificationStatusUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationStatusCreateManyUserInputEnvelope = {
+    data: NotificationStatusCreateManyUserInput | NotificationStatusCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -21269,6 +22897,35 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Session"> | Date | string
   }
 
+  export type NotificationStatusUpsertWithWhereUniqueWithoutUserInput = {
+    where: NotificationStatusWhereUniqueInput
+    update: XOR<NotificationStatusUpdateWithoutUserInput, NotificationStatusUncheckedUpdateWithoutUserInput>
+    create: XOR<NotificationStatusCreateWithoutUserInput, NotificationStatusUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationStatusUpdateWithWhereUniqueWithoutUserInput = {
+    where: NotificationStatusWhereUniqueInput
+    data: XOR<NotificationStatusUpdateWithoutUserInput, NotificationStatusUncheckedUpdateWithoutUserInput>
+  }
+
+  export type NotificationStatusUpdateManyWithWhereWithoutUserInput = {
+    where: NotificationStatusScalarWhereInput
+    data: XOR<NotificationStatusUpdateManyMutationInput, NotificationStatusUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type NotificationStatusScalarWhereInput = {
+    AND?: NotificationStatusScalarWhereInput | NotificationStatusScalarWhereInput[]
+    OR?: NotificationStatusScalarWhereInput[]
+    NOT?: NotificationStatusScalarWhereInput | NotificationStatusScalarWhereInput[]
+    id?: IntFilter<"NotificationStatus"> | number
+    userId?: StringFilter<"NotificationStatus"> | string
+    notificationId?: StringFilter<"NotificationStatus"> | string
+    isRead?: BoolFilter<"NotificationStatus"> | boolean
+    readAt?: DateTimeNullableFilter<"NotificationStatus"> | Date | string | null
+    createdAt?: DateTimeFilter<"NotificationStatus"> | Date | string
+    updatedAt?: DateTimeFilter<"NotificationStatus"> | Date | string
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id?: string
     firstName: string
@@ -21285,6 +22942,7 @@ export namespace Prisma {
     role?: $Enums.Role
     createdAt?: Date | string
     updatedAt?: Date | string
+    notificationStatus?: NotificationStatusCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -21303,6 +22961,7 @@ export namespace Prisma {
     role?: $Enums.Role
     createdAt?: Date | string
     updatedAt?: Date | string
+    notificationStatus?: NotificationStatusUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -21337,6 +22996,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notificationStatus?: NotificationStatusUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -21355,6 +23015,7 @@ export namespace Prisma {
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notificationStatus?: NotificationStatusUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type RemarksCreateWithoutSeniorsInput = {
@@ -22346,6 +24007,15 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type NotificationStatusCreateManyUserInput = {
+    id?: number
+    notificationId: string
+    isRead?: boolean
+    readAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type SessionUpdateWithoutUserInput = {
     sessionToken?: StringFieldUpdateOperationsInput | string
     expires?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22363,6 +24033,32 @@ export namespace Prisma {
   export type SessionUncheckedUpdateManyWithoutUserInput = {
     sessionToken?: StringFieldUpdateOperationsInput | string
     expires?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationStatusUpdateWithoutUserInput = {
+    notificationId?: StringFieldUpdateOperationsInput | string
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationStatusUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    notificationId?: StringFieldUpdateOperationsInput | string
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationStatusUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    notificationId?: StringFieldUpdateOperationsInput | string
+    isRead?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

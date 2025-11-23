@@ -86,7 +86,7 @@ export const getApplicantsColumns = (
       cell: ({ row }) => {
         const status = row.original.status.name;
         const statusStyles: Record<string, string> = {
-          PENDING: 'bg-yellow-500 text-white',
+          PENDING: 'bg-gray-500 text-white',
           APPROVED: 'bg-green-600 text-white',
           REJECT: 'bg-red-600 text-white',
           REJECTED: 'bg-red-600 text-white',

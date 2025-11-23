@@ -1,7 +1,7 @@
-// app/staff/senior-citizen/record/columns.tsx
+// app\admin\(senior-citizen)\record\columns.tsx
 'use client';
 
-import React from 'react'; // Import React for JSX elements in cell
+import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useQueryClient } from '@tanstack/react-query';
 import { DocumentViewDialog } from '@/components/senior-documents/document-view-dialog';
@@ -10,7 +10,7 @@ import { ReleaseActionButton } from '@/components/senior-citizen/release-action-
 import { formatDateOnly, formatDateTime } from '@/utils/format';
 import { Seniors } from '@/types/seniors';
 
-// Helper function to truncate text (kept for other columns)
+// Helper function to truncate text
 const truncateText = (text: string | number | null | undefined, limit: number = 20): string | number | null | undefined => {
   if (typeof text === 'string' && text.length > limit) {
     return text.substring(0, limit) + '...';
@@ -18,7 +18,7 @@ const truncateText = (text: string | number | null | undefined, limit: number = 
   return text;
 };
 
-// A new helper function to render icons
+// Helper function to render icons
 const renderBenefitStatusIcon = (statusName: string | undefined) => {
   if (statusName === 'APPROVED') {
     return <span className="text-green-600 font-bold text-xl ml-2">✔️</span>;
@@ -26,14 +26,16 @@ const renderBenefitStatusIcon = (statusName: string | undefined) => {
   if (statusName === 'REJECT') {
     return <span className="text-red-600 font-bold text-xl ml-2">❌</span>;
   }
-  return null; // Or some default icon for other statuses
+  return null;
 };
 
-// ---
-// Column Definitions
-// ---
-
-export const getSeniorRecordsColumns = (userRole: string | undefined, status: string): ColumnDef<Seniors>[] => {
+export const getSeniorRecordsColumns = (
+  userRole: string | undefined,
+  status: string,
+  showDocumentsOnly: boolean = false,
+  showReleaseButtonOnlyOnPending: boolean = false,  // Controls release button visibility
+  showReleaseButtonInActions: boolean = false  // NEW: Controls whether to show release button at all
+): ColumnDef<Seniors>[] => {
   console.log('Current User Role:', userRole);
   if (status === 'loading') {
     return [{
@@ -88,17 +90,16 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       cell: ({ row }) => truncateText(row.original.remarks?.name || 'N/A'),
       accessorFn: (row) => row.remarks?.name || 'N/A',
     },
-
     {
       accessorKey: 'senior_category',
       header: 'Category',
       cell: ({ row }) => {
-        const latestApplication = row.original.Applications?.[0]; // Assuming latest application is at index 0
+        const latestApplication = row.original.Applications?.[0];
         const categoryName = latestApplication?.category?.name || 'N/A';
 
         const categoryStyles: Record<string, string> = {
           'Regular senior citizens': 'bg-green-600 text-white',
-          'Special assistance cases': 'bg-yellow-500 text-black',
+          'Special assistance cases': 'bg-yellow-500 text-white',
           'Low income assistance': 'bg-blue-500 text-white',
           'Combined assistance cases': 'bg-purple-600 text-white',
         };
@@ -151,7 +152,6 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
       },
       accessorFn: (row) => row.Applications?.[0]?.benefit?.name || 'N/A',
     },
-
     {
       id: 'releaseStatus',
       accessorKey: 'releaseStatus',
@@ -223,29 +223,41 @@ export const getSeniorRecordsColumns = (userRole: string | undefined, status: st
           ...row.original,
           remarks_id: row.original.remarks_id ?? null,
         };
-        return <DocumentViewDialog senior={seniorWithRemarksId} />;
+        return <DocumentViewDialog senior={seniorWithRemarksId} iconOnly={showDocumentsOnly} />;
       },
     },
   ];
 
-  if (userRole === 'ADMIN' || userRole === 'USER') {
+  // Add action buttons only if NOT in documents-only mode
+  if (!showDocumentsOnly && (userRole === 'ADMIN' || userRole === 'USER')) {
     baseColumns.push({
       id: 'user-actions',
       header: 'Actions',
       cell: ({ row }) => {
         const senior = row.original;
         const queryClient = useQueryClient();
-        // Find the latest application for the senior
         const latestApplication = senior.Applications?.[0];
-
-        // Check the status of the latest application
         const applicationStatus = latestApplication?.status?.name;
-        const showReleaseButton = applicationStatus === 'APPROVED' || applicationStatus === 'REJECT';
+        
+        // Determine if release button should be shown based on pending status
+        const isPendingRelease = !senior.releasedAt && 
+          (applicationStatus === 'APPROVED' || applicationStatus === 'REJECT');
+        
+        // Show release button only when:
+        // 1. showReleaseButtonInActions is true (enables release button feature on this page)
+        // 2. If showReleaseButtonOnlyOnPending is true, only show for pending seniors
+        const shouldShowReleaseButton = showReleaseButtonInActions && 
+          (showReleaseButtonOnlyOnPending ? isPendingRelease : true);
 
         return (
           <div className="flex gap-2">
             <SeniorActionButtons senior={senior} queryClient={queryClient} userRole={userRole} />
-            {showReleaseButton && <ReleaseActionButton userRole={userRole} senior={senior} queryClient={queryClient} />}
+            <ReleaseActionButton 
+              userRole={userRole} 
+              senior={senior} 
+              queryClient={queryClient}
+              showReleaseButton={shouldShowReleaseButton}
+            />
           </div>
         );
       },

@@ -45,6 +45,7 @@ export default function MonitoringOverview({
 }: MonitoringOverviewProps) {
   const searchParams = useSearchParams();
   const tabFromUrl = searchParams.get('tab');
+  const seniorIdFromUrl = searchParams.get('seniorId');
 
   const [startDate, setStartDate] = useState<string>(format(new Date(new Date().getFullYear(), 0, 1), 'yyyy-MM-dd'));
   const [endDate, setEndDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
@@ -73,6 +74,7 @@ export default function MonitoringOverview({
     hasError,
   } = useOverviewData({ userRole, hideAdminActions });
 
+  // Handle tab and senior ID from URL
   useEffect(() => {
     if (tabFromUrl && ['barangay-summary', 'all-applications', 'released', 'pending'].includes(tabFromUrl)) {
       setActiveTab(tabFromUrl);
@@ -80,6 +82,25 @@ export default function MonitoringOverview({
       setActiveTab(defaultTab);
     }
   }, [tabFromUrl, defaultTab, setActiveTab]);
+
+  // Highlight specific senior row if seniorId is in URL
+  useEffect(() => {
+    if (seniorIdFromUrl) {
+      // Wait for the table to render, then scroll to and highlight the row
+      setTimeout(() => {
+        const seniorRow = document.querySelector(`[data-senior-id="${seniorIdFromUrl}"]`);
+        if (seniorRow) {
+          seniorRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          seniorRow.classList.add('bg-blue-100', 'dark:bg-blue-900/30', 'ring-2', 'ring-blue-500', 'ring-opacity-50');
+          
+          // Remove highlight after 3 seconds
+          setTimeout(() => {
+            seniorRow.classList.remove('bg-blue-100', 'dark:bg-blue-900/30', 'ring-2', 'ring-blue-500', 'ring-opacity-50');
+          }, 3000);
+        }
+      }, 500);
+    }
+  }, [seniorIdFromUrl, activeTab]);
 
   const filteredData = useMemo(() => {
     const filterByDate = (data: any[], dateField: string = 'createdAt') => {
@@ -409,6 +430,7 @@ export default function MonitoringOverview({
                 setIsFilterDropdownOpen={setIsFilterDropdownOpen}
                 initialVisibleColumns={seniorInitialVisibleColumns}
                 showColumnVisibility={false}
+                seniorIdToHighlight={seniorIdFromUrl ? parseInt(seniorIdFromUrl) : undefined}
               />
             </TabsContent>
 

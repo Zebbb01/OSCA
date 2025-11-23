@@ -1,7 +1,7 @@
-// app\admin\applications\pending-monitoring\page.tsx
+// app\admin\(applications)\pending-monitoring\page.tsx
 'use client';
 
-import React, { useMemo, useState, useEffect } from 'react'; // Import useState and useEffect
+import React, { useMemo, useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { ColumnFiltersState } from '@tanstack/react-table';
@@ -17,22 +17,20 @@ interface SeniorQueryParams {
   purok?: string;
   barangay?: string;
   remarks?: string;
-  // Note: We won't pass releaseStatus to the API for these pages
-  // as the filtering by releasedAt === null or !== null is done client-side.
 }
 
 const NotReleaseMonitoringPage = () => {
-  const { data: session, status: sessionStatus } = useSession(); // Use sessionStatus for clarity
+  const { data: session, status: sessionStatus } = useSession();
   const userRole = (session?.user as any)?.role || 'USER';
 
   // State for DataTable filtering and visibility
   const [globalFilter, setGlobalFilter] = useState('');
-  const [debouncedGlobalFilter, setDebouncedGlobalFilter] = useState(''); // New: Debounced global filter
+  const [debouncedGlobalFilter, setDebouncedGlobalFilter] = useState('');
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
 
-  // New: useEffect for debouncing globalFilter
+  // Debouncing globalFilter
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedGlobalFilter(globalFilter);
@@ -45,7 +43,13 @@ const NotReleaseMonitoringPage = () => {
 
   // Memoize the columns to prevent unnecessary re-renders of DataTable
   const columns = useMemo(() => {
-    return getSeniorRecordsColumns(userRole, sessionStatus);
+    return getSeniorRecordsColumns(
+      userRole,
+      sessionStatus,
+      false,               // showDocumentsOnly
+      true,                // showReleaseButtonOnlyOnPending - Show release only for pending
+      true                 // showReleaseButtonInActions - ENABLE release button feature
+    );
   }, [userRole, sessionStatus]);
 
   // Generate query parameters based on column filters
@@ -58,7 +62,7 @@ const NotReleaseMonitoringPage = () => {
 
           switch (filter.id) {
             case 'gender':
-              if (value === 'Male' || value === 'Female') { // Ensure it matches the actual string values from column.tsx
+              if (value === 'Male' || value === 'Female') {
                 params.gender = value.toLowerCase() as 'male' | 'female';
               }
               break;
@@ -68,10 +72,9 @@ const NotReleaseMonitoringPage = () => {
             case 'barangay':
               params.barangay = value as string;
               break;
-            case 'remarks': // Add remarks filter
+            case 'remarks':
               params.remarks = value as string;
               break;
-            // Add other filterable columns from senior/records/columns.tsx here if needed for API
           }
         }
       });
@@ -83,41 +86,56 @@ const NotReleaseMonitoringPage = () => {
 
   // Fetching all senior records
   const seniorQuery = useQuery<Seniors[]>({
-    queryKey: ['seniors', debouncedGlobalFilter, currentQueryParams], // Include debouncedGlobalFilter and currentQueryParams
+    queryKey: ['seniors', debouncedGlobalFilter, currentQueryParams],
     queryFn: async () => {
       const url = new URL(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors`, window.location.origin);
 
-      // Add global search parameter if available
       if (debouncedGlobalFilter) {
         url.searchParams.append('name', debouncedGlobalFilter);
       }
 
-      // Add column filter parameters if available
       Object.entries(currentQueryParams).forEach(([key, value]) => {
         if (value) {
           url.searchParams.append(key, String(value));
         }
       });
 
-      console.log('Fetching pendingd seniors with URL:', url.toString());
+      console.log('Fetching pending seniors with URL:', url.toString());
       const response = await apiService.get<Seniors[]>(url.toString());
-      return response; // Access data property from axios response
+      return response;
     },
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
 
   // Filter the data for 'Not Received' seniors (client-side filtering)
+  // Exclude seniors with rejected benefits
   const notReceivedSeniors = useMemo(() => {
     if (seniorQuery.data) {
-      return seniorQuery.data.filter(senior => senior.releasedAt === null);
+      return seniorQuery.data.filter(senior => {
+        // Check if senior has not been released
+        if (senior.releasedAt !== null) {
+          return false;
+        }
+        
+        // Check if the latest application status is not REJECT
+        const latestApplication = senior.Applications?.[0];
+        const applicationStatus = latestApplication?.status?.name;
+        
+        // Exclude if status is REJECT
+        if (applicationStatus === 'REJECT') {
+          return false;
+        }
+        
+        return true;
+      });
     }
     return [];
   }, [seniorQuery.data]);
 
   // Define filterable columns for this DataTable
   const filterableNotReleasedColumns = useMemo(() => {
-    const seniorsData = seniorQuery.data ?? []; // Use all fetched data for filter options
+    const seniorsData = seniorQuery.data ?? [];
 
     const uniqueBarangays = Array.from(new Set(seniorsData.map(senior => senior.barangay)))
       .filter(Boolean)
@@ -138,9 +156,8 @@ const NotReleaseMonitoringPage = () => {
       { id: 'gender', title: 'Gender', type: 'select' as const, options: [{ value: 'Male', label: 'Male' }, { value: 'Female', label: 'Female' }] },
       { id: 'purok', title: 'Purok', type: 'select' as const, options: uniquePuroks },
       { id: 'barangay', title: 'Barangay', type: 'select' as const, options: uniqueBarangays },
-      // { id: 'remarks', title: 'Remarks', type: 'select' as const, options: uniqueRemarks },
     ];
-  }, [seniorQuery.data]); // Depend on seniorQuery.data for dynamic options
+  }, [seniorQuery.data]);
 
   // Define initial visible columns for this DataTable
   const initialVisibleNotReleasedColumns = useMemo(() => {
@@ -167,9 +184,9 @@ const NotReleaseMonitoringPage = () => {
         </p>
       </div>
 
-      {seniorQuery.isLoading || sessionStatus === 'loading' ? ( // Use sessionStatus here
+      {seniorQuery.isLoading || sessionStatus === 'loading' ? (
         <div className="text-center py-10 text-gray-500 flex items-center justify-center">
-          <svg className="animate-spin h-6 w-6 mr-3 text-blue-500" viewBox="0 0 24 24">
+          <svg className="animate-spin h-6 w-6 mr-3 text-green-500" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
@@ -180,7 +197,9 @@ const NotReleaseMonitoringPage = () => {
           Error loading records: {seniorQuery.error?.message || 'An unexpected error occurred.'}
         </div>
       ) : notReceivedSeniors.length === 0 ? (
-        <div className="text-center py-10 text-gray-500">All senior citizens have released their benefits!</div>
+        <div className="text-center py-10 text-gray-500">
+          No pending benefits for release. All approved seniors have received their benefits or are awaiting approval!
+        </div>
       ) : (
         <DataTable
           columns={columns}

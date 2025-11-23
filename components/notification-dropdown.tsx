@@ -3,9 +3,10 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { BellRing } from 'lucide-react'
+import { BellRing, CheckCheck } from 'lucide-react'
 import { CheckCircle2, UserPlus } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useNotifications } from '@/hooks/use-notifications';
+import { cn } from '@/lib/utils';
 
 import { Button } from '@/components/ui/button'
 import {
@@ -19,67 +20,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { formatDateTime } from '@/utils/format'
-import { Seniors } from '@/types/seniors';
-import { Notification } from '@/types/notification';
 
 export function NotificationDropdown({ userRole }: { userRole: 'ADMIN' | 'USER' }) {
-    const fetchNotifications = async (): Promise<Notification[]> => {
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/seniors`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const seniorsData: Seniors[] = await response.json();
-
-            const generatedNotifications: Notification[] = seniorsData.flatMap(senior => {
-                const notifications: Notification[] = [];
-
-                // Notification for pending seniors - removed ** markdown
-                if (senior.remarks.name === 'Pending') {
-                    notifications.push({
-                        id: `pending-${senior.id}`,
-                        type: 'senior_pending',
-                        message: `New senior <strong>${senior.firstname} ${senior.lastname}</strong> pending verification.`,
-                        timestamp: new Date(senior.createdAt).toISOString(),
-                        link: `/admin/record?filter=pending&seniorId=${senior.id}`,
-                        seniorId: senior.id,
-                        seniorName: `${senior.firstname} ${senior.lastname}`,
-                    });
-                }
-
-                // Notification for recently released seniors - removed ** markdown
-                if (senior.releasedAt) {
-                    notifications.push({
-                        id: `released-${senior.id}`,
-                        type: 'release_approved',
-                        message: `Benefits released for <strong>${senior.firstname} ${senior.lastname}</strong>!`,
-                        timestamp: new Date(senior.releasedAt).toISOString(),
-                        link: `/admin/released-monitoring?status=released&seniorId=${senior.id}`,
-                        seniorId: senior.id,
-                        seniorName: `${senior.firstname} ${senior.lastname}`,
-                    });
-                }
-                return notifications;
-            }).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-
-            return generatedNotifications;
-
-        } catch (err) {
-            console.error("Failed to fetch seniors for notifications:", err);
-            throw err;
-        }
-    };
-
-    const { data: notifications, isLoading, error } = useQuery<Notification[]>({
-        queryKey: ['notifications'],
-        queryFn: fetchNotifications,
-        staleTime: 5 * 60 * 1000,
-        refetchInterval: 60 * 1000,
-    });
-
-    const pendingSeniorsCount = notifications?.filter(
-        (notif) => notif.type === 'senior_pending'
-    ).length || 0;
+    const { notifications, unreadCount, markAsRead, markAllAsRead, isLoading } = useNotifications();
 
     const getNotificationIcon = (type: string) => {
         switch (type) {
@@ -92,6 +35,26 @@ export function NotificationDropdown({ userRole }: { userRole: 'ADMIN' | 'USER' 
         }
     };
 
+    const handleNotificationClick = (notificationId: string, isRead: boolean) => {
+        console.log('Notification clicked:', { notificationId, isRead });
+        
+        // Only mark as read if it's unread
+        if (!isRead) {
+            markAsRead(notificationId);
+        }
+    };
+
+    const handleMarkAllAsRead = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        try {
+            await markAllAsRead();
+        } catch (error) {
+            console.error('Failed to mark all as read:', error);
+        }
+    };
+
     if (isLoading) {
         return (
             <Button variant="ghost" size="icon" className="relative text-white hover:bg-white/20 hover:text-white" disabled>
@@ -101,52 +64,75 @@ export function NotificationDropdown({ userRole }: { userRole: 'ADMIN' | 'USER' 
         );
     }
 
-    if (error) {
-        console.error("Error fetching notifications:", error);
-        return (
-            <Button variant="ghost" size="icon" className="relative text-white hover:bg-white/20 hover:text-white" title="Error loading notifications">
-                <BellRing className="h-5 w-5 text-red-400" />
-                <span className="sr-only">Error loading notifications</span>
-            </Button>
-        );
-    }
-
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative text-white hover:bg-white/20 hover:text-white">
                     <BellRing className="h-5 w-5" />
-                    {pendingSeniorsCount > 0 && (
+                    {unreadCount > 0 && (
                         <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
-                            {pendingSeniorsCount}
+                            {unreadCount}
                         </span>
                     )}
                     <span className="sr-only">Notifications</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-[350px] p-0" align="end" forceMount>
-                <DropdownMenuLabel className="font-semibold text-lg p-3 border-b">Notifications</DropdownMenuLabel>
+                <div className="flex items-center justify-between p-3 border-b">
+                    <DropdownMenuLabel className="font-semibold text-lg p-0">
+                        Notifications
+                    </DropdownMenuLabel>
+                    {unreadCount > 0 && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 text-xs"
+                            onClick={handleMarkAllAsRead}
+                        >
+                            <CheckCheck className="h-4 w-4 mr-1" />
+                            Mark all read
+                        </Button>
+                    )}
+                </div>
                 <ScrollArea className="h-[300px]">
                     <DropdownMenuGroup>
                         {notifications && notifications.length > 0 ? (
                             notifications.map((notification) => (
                                 <DropdownMenuItem key={notification.id} asChild>
                                     <Link
-                                        href={notification.link}
-                                        className="flex items-start gap-3 p-3 hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors duration-200"
+                                        href={
+                                            notification.type === 'release_approved'
+                                                ? userRole === 'USER'
+                                                    ? `/staff/overview?tab=released&seniorId=${notification.seniorId}`
+                                                    : `/admin/overview?tab=released&seniorId=${notification.seniorId}`
+                                                : notification.link
+                                        }
+                                        onClick={() => handleNotificationClick(notification.id, notification.isRead || false)}
+                                        className={cn(
+                                            "flex items-start gap-3 p-3 hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors duration-200",
+                                            !notification.isRead && "bg-blue-50 dark:bg-blue-950/20"
+                                        )}
                                     >
                                         <div className="flex-shrink-0 pt-1">
                                             {getNotificationIcon(notification.type)}
                                         </div>
                                         <div className="flex flex-col flex-grow">
                                             <div
-                                                className="font-medium text-sm leading-tight"
+                                                className={cn(
+                                                    "text-sm leading-tight",
+                                                    !notification.isRead && "font-semibold"
+                                                )}
                                                 dangerouslySetInnerHTML={{ __html: notification.message }}
                                             />
                                             <div className="text-xs text-muted-foreground mt-0.5">
                                                 {formatDateTime(notification.timestamp)}
                                             </div>
                                         </div>
+                                        {!notification.isRead && (
+                                            <div className="flex-shrink-0 pt-1">
+                                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                            </div>
+                                        )}
                                     </Link>
                                 </DropdownMenuItem>
                             ))
@@ -160,11 +146,11 @@ export function NotificationDropdown({ userRole }: { userRole: 'ADMIN' | 'USER' 
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                     {userRole === 'USER' ? (
-                        <Link href="/staff/released-monitoring" className="block text-center text-sm p-2 text-primary hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                        <Link href="/staff/overview?tab=released" className="block text-center text-sm p-2 text-primary hover:bg-accent hover:text-accent-foreground cursor-pointer">
                             View All 
                         </Link>
                     ) : (
-                        <Link href="/admin/released-monitoring" className="block text-center text-sm p-2 text-primary hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                        <Link href="/admin/overview?tab=released" className="block text-center text-sm p-2 text-primary hover:bg-accent hover:text-accent-foreground cursor-pointer">
                             View All 
                         </Link>
                     )}

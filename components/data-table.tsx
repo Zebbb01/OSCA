@@ -60,6 +60,7 @@ interface DataTableProps<TData, TValue> {
   setIsFilterDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
   initialVisibleColumns?: string[];
   showColumnVisibility?: boolean; // NEW PROP
+  seniorIdToHighlight?: number
 }
 
 export function DataTable<TData, TValue>({
@@ -74,6 +75,7 @@ export function DataTable<TData, TValue>({
   setIsFilterDropdownOpen,
   initialVisibleColumns = [],
   showColumnVisibility = true, // DEFAULT TO TRUE
+  seniorIdToHighlight,
 }: DataTableProps<TData, TValue>) {
 
   const initialColumnVisibility: VisibilityState = React.useMemo(() => {
@@ -161,7 +163,7 @@ export function DataTable<TData, TValue>({
                       <span>{filterableCol.title}</span>
                       {hasFilter(column.id) && (
                         <span className="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-500 text-white">
-                            {Array.isArray(currentFilterValue) ? currentFilterValue.length : 1}
+                          {Array.isArray(currentFilterValue) ? currentFilterValue.length : 1}
                         </span>
                       )}
                     </DropdownMenuSubTrigger>
@@ -278,7 +280,16 @@ export function DataTable<TData, TValue>({
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+                data-senior-id={(row.original as any).id} // NEW: Add data attribute for targeting
+                className={
+                  seniorIdToHighlight && (row.original as any).id === seniorIdToHighlight
+                    ? "transition-all duration-300" // NEW: Add transition for smooth highlighting
+                    : ""
+                }
+              >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="py-1">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

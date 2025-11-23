@@ -20,7 +20,27 @@ export async function GET() {
       });
     }
 
-    return NextResponse.json(fund, { status: 200 });
+    // Calculate actual total released from transactions table only
+    const releasedTransactions = await prisma.transaction.aggregate({
+      where: {
+        type: 'released',
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    const totalReleased = releasedTransactions._sum.amount || 0;
+
+    // Return fund data with calculated available balance
+    return NextResponse.json({
+      id: fund.id,
+      currentBalance: fund.currentBalance,
+      totalReleased,
+      availableBalance: fund.currentBalance - totalReleased,
+      createdAt: fund.createdAt,
+      updatedAt: fund.updatedAt,
+    }, { status: 200 });
   } catch (error: any) {
     console.error('[GET_FUND_ERROR]', error);
     return NextResponse.json(

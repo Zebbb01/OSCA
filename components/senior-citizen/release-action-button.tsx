@@ -1,4 +1,4 @@
-// components\senior-citizen\release-action-button.tsx
+// components/senior-citizen/release-action-button.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -20,14 +20,21 @@ import { Seniors } from '@/types/seniors';
 import { useSeniorMutations } from '@/hooks/mutations/use-senior-mutations';
 import { PaperPlaneIcon, DownloadIcon } from '@radix-ui/react-icons';
 import { PdfViewerModal } from './PdfViewerModal';
+import { Info } from "lucide-react"
 
 interface ReleaseActionButtonProps {
     senior: Seniors;
     queryClient: QueryClient;
     userRole: 'ADMIN' | 'USER';
+    showReleaseButton?: boolean;
 }
 
-export const ReleaseActionButton: React.FC<ReleaseActionButtonProps> = ({ userRole, senior, queryClient }) => {
+export const ReleaseActionButton: React.FC<ReleaseActionButtonProps> = ({ 
+    userRole, 
+    senior, 
+    queryClient,
+    showReleaseButton: showReleaseButtonProp = true
+}) => {
     const { releaseSeniorMutation } = useSeniorMutations(queryClient);
     const [showPdfModal, setShowPdfModal] = useState(false);
     const [seniorDataForPdf, setSeniorDataForPdf] = useState<Seniors | null>(null);
@@ -44,12 +51,11 @@ export const ReleaseActionButton: React.FC<ReleaseActionButtonProps> = ({ userRo
                 setShowPdfModal(true);
                 toast.success('Senior successfully marked as released!');
 
-                // --- IMPORTANT: Invalidate the notifications query ---
+                // Invalidate all relevant queries
                 queryClient.invalidateQueries({ queryKey: ['notifications'] });
-                // If you also have a query for individual senior details that might
-                // be affected, you should invalidate that too.
+                queryClient.invalidateQueries({ queryKey: ['notificationStatus'] }); // NEW: Invalidate status
                 queryClient.invalidateQueries({ queryKey: ['seniors', updatedSenior.id] });
-                queryClient.invalidateQueries({ queryKey: ['seniors'] }); // Invalidate all seniors list
+                queryClient.invalidateQueries({ queryKey: ['seniors'] });
             },
             onError: (error) => {
                 toast.error(`Failed to release senior: ${error.message || 'An unexpected error occurred.'}`);
@@ -62,12 +68,12 @@ export const ReleaseActionButton: React.FC<ReleaseActionButtonProps> = ({ userRo
         setShowPdfModal(true);
     };
 
-    const showReleaseButton = !senior.releasedAt && userRole !== 'USER';
-    const showDownloadButton = senior.releasedAt;
+    const shouldShowReleaseButton = showReleaseButtonProp && !senior.releasedAt && userRole !== 'USER';
+    const shouldShowDownloadButton = senior.releasedAt;
 
     return (
         <>
-            {showDownloadButton && (
+            {shouldShowDownloadButton && (
                 <Button
                     variant="ghost"
                     size="icon"
@@ -79,7 +85,7 @@ export const ReleaseActionButton: React.FC<ReleaseActionButtonProps> = ({ userRo
                 </Button>
             )}
 
-            {showReleaseButton && (
+            {shouldShowReleaseButton && (
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button
@@ -94,15 +100,25 @@ export const ReleaseActionButton: React.FC<ReleaseActionButtonProps> = ({ userRo
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>Confirm Release</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                Are you sure you want to mark <span className='font-semibold'>{senior.firstname} {senior.lastname}</span> as released? This action will record the current date and time as their release date.
+                            <AlertDialogTitle className="text-xl text-black">
+                                Are you sure you want to mark <span className='font-bold'>{senior.firstname} {senior.lastname}</span> as released?
+                            </AlertDialogTitle>
+
+                            <AlertDialogDescription className="mt-4 flex items-start gap-2 text-sm">
+                                <Info className="text-red-600 min-w-5 min-h-5" />
+                                <span>
+                                    This will record the current date and time as the senior's official release.
+                                </span>
                             </AlertDialogDescription>
                         </AlertDialogHeader>
+
                         <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleRelease} disabled={releaseSeniorMutation.isPending}>
-                                {releaseSeniorMutation.isPending ? 'Releasing...' : 'Release Senior'}
+                            <AlertDialogAction
+                                onClick={handleRelease}
+                                disabled={releaseSeniorMutation.isPending}
+                            >
+                                {releaseSeniorMutation.isPending ? "Releasing..." : "Released"}
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>

@@ -168,7 +168,7 @@ const DashboardPage = () => {
                 {/* 20% Quick Actions */}
                 <Card className="lg:w-1/5 w-full">
                     <CardHeader>
-                        <CardTitle className="text-center p-5"></CardTitle>
+                        <CardTitle className="text-center pt-10">Quick Actions</CardTitle>
                     </CardHeader>
 
                     <CardContent className="p-6 flex flex-col items-center space-y-4">

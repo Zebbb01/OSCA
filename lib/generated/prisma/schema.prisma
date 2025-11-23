@@ -14,21 +14,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model NotificationStatus {
+  id             Int       @id @default(autoincrement())
+  userId         String
+  notificationId String // e.g., "pending-123" or "released-456"
+  isRead         Boolean   @default(false)
+  readAt         DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, notificationId])
+  @@index([userId])
+  @@index([notificationId])
+  @@map("notification_status")
+}
+
 model User {
-  id                String    @id @default(cuid())
-  firstName         String
-  lastName          String
-  middleName        String?
-  contactNo         String
-  bday              DateTime
-  username          String    @unique
-  email             String    @unique
-  password          String
-  emailVerified     DateTime? // New: To store when the email was verified
-  verificationToken String?   @unique // New: To store the unique token for email verification
-  tokenExpires      DateTime? // New: To store the expiry of the verification token
-  role              Role      @default(USER)
-  sessions          Session[]
+  id                 String               @id @default(cuid())
+  firstName          String
+  lastName           String
+  middleName         String?
+  contactNo          String
+  bday               DateTime
+  username           String               @unique
+  email              String               @unique
+  password           String
+  emailVerified      DateTime?
+  verificationToken  String?              @unique
+  tokenExpires       DateTime?
+  role               Role                 @default(USER)
+  sessions           Session[]
+  notificationStatus NotificationStatus[] // ADD THIS LINE
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

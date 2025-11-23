@@ -31,24 +31,6 @@ const FormFieldView: React.FC<FormFieldViewProps> = ({ label, value, placeholder
   </div>
 );
 
-// Separate component for checkbox field display
-interface CheckboxFieldViewProps {
-  label: string;
-  checked: boolean;
-}
-
-const CheckboxFieldView: React.FC<CheckboxFieldViewProps> = ({ label, checked }) => (
-  <div>
-    <div className="flex items-center space-x-2 pt-2">
-      <div className={`w-4 h-4 rounded border ${checked ? 'bg-primary border-primary' : 'border-input'}`}>
-        {checked && <div className="w-full h-full flex items-center justify-center text-white text-xs">✓</div>}
-      </div>
-      {/* Moved the label span inside the flex container */}
-      <span className="text-sm">{label}</span> 
-    </div>
-  </div>
-);
-
 // Separate component for section headers
 interface SectionHeaderProps {
   icon: React.ReactNode;
@@ -96,7 +78,6 @@ export const SeniorViewDialog: React.FC<SeniorViewDialogProps> = ({
       <DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl">Senior Profile</DialogTitle>
-          {/* Display Registered On date here */}
           <p className="text-gray-500 text-sm mt-1">
             Registered On: <span className="font-medium">{formatDateTime(senior.createdAt)}</span>
           </p>
@@ -128,10 +109,12 @@ export const SeniorViewDialog: React.FC<SeniorViewDialogProps> = ({
                 <FormFieldView label="Gender" value={senior.gender} />
               </div>
 
-              {/* PWD Status */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <CheckboxFieldView label="Are you a PWD?" checked={senior.pwd} />
-                {/* <CheckboxFieldView label="Are you a Low Income?" checked={senior.low_income} /> */}
+              {/* Senior Citizen Category */}
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                <FormFieldView 
+                  label="Senior Citizen Category" 
+                  value={senior.pwd ? 'Special Cases' : 'Regular Senior Citizen'} 
+                />
               </div>
             </div>
           </div>

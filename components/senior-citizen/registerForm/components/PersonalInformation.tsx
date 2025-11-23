@@ -24,7 +24,6 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form'
-import { Checkbox } from '@/components/ui/checkbox'
 
 export const PersonalInformation = () => {
     const form = useFormContext<SeniorsFormData>()
@@ -93,7 +92,7 @@ export const PersonalInformation = () => {
                     />
                 </div>
 
-                {/* Age, Birth Date, Gender, and PWD Row */}
+                {/* Age, Birth Date, Gender Row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                         control={form.control}
@@ -191,50 +190,30 @@ export const PersonalInformation = () => {
                         control={form.control}
                         name="pwd"
                         render={({ field }) => (
-                            <FormItem className="flex flex-col justify-end">
-                                <div className="flex items-center space-x-2 pb-2">
-                                    <Checkbox
-                                        id="pwd"
-                                        checked={field.value}
-                                        onCheckedChange={(checked) =>
-                                            field.onChange(!!checked)
-                                        }
-                                    />
-                                    <label
-                                        htmlFor="pwd"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Are you a PWD?
-                                    </label>
-                                </div>
+                            <FormItem>
+                                <FormLabel>Senior Citizen Category</FormLabel>
+                                <Select
+                                    onValueChange={(value) => field.onChange(value === 'true')}
+                                    value={field.value ? 'true' : 'false'}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select category" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="false">
+                                            Regular Senior Citizen
+                                        </SelectItem>
+                                        <SelectItem value="true">
+                                            Special Cases
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    {/* <FormField
-                        control={form.control}
-                        name="lowIncome"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-col justify-end">
-                                <div className="flex items-center space-x-2 pb-2">
-                                    <Checkbox
-                                        id="lowIncome"
-                                        checked={field.value}
-                                        onCheckedChange={(checked) =>
-                                            field.onChange(!!checked)
-                                        }
-                                    />
-                                    <label
-                                        htmlFor="lowIncome"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Are you a Low Income?
-                                    </label>
-                                </div>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    /> */}
                 </div>
             </CardContent>
         </Card>

@@ -32,7 +32,9 @@ const renderBenefitStatusIcon = (statusName: string | undefined) => {
 export const getSeniorRecordsColumns = (
   userRole: string | undefined,
   status: string,
-  showDocumentsOnly: boolean = false // New parameter for overview pages
+  showDocumentsOnly: boolean = false,
+  showReleaseButtonOnlyOnPending: boolean = false,  // Controls release button visibility
+  showReleaseButtonInActions: boolean = false  // NEW: Controls whether to show release button at all
 ): ColumnDef<Seniors>[] => {
   console.log('Current User Role:', userRole);
   if (status === 'loading') {
@@ -97,7 +99,7 @@ export const getSeniorRecordsColumns = (
 
         const categoryStyles: Record<string, string> = {
           'Regular senior citizens': 'bg-green-600 text-white',
-          'Special assistance cases': 'bg-yellow-500 text-black',
+          'Special assistance cases': 'bg-yellow-500 text-white',
           'Low income assistance': 'bg-blue-500 text-white',
           'Combined assistance cases': 'bg-purple-600 text-white',
         };
@@ -236,12 +238,26 @@ export const getSeniorRecordsColumns = (
         const queryClient = useQueryClient();
         const latestApplication = senior.Applications?.[0];
         const applicationStatus = latestApplication?.status?.name;
-        const showReleaseButton = applicationStatus === 'APPROVED' || applicationStatus === 'REJECT';
+        
+        // Determine if release button should be shown based on pending status
+        const isPendingRelease = !senior.releasedAt && 
+          (applicationStatus === 'APPROVED' || applicationStatus === 'REJECT');
+        
+        // Show release button only when:
+        // 1. showReleaseButtonInActions is true (enables release button feature on this page)
+        // 2. If showReleaseButtonOnlyOnPending is true, only show for pending seniors
+        const shouldShowReleaseButton = showReleaseButtonInActions && 
+          (showReleaseButtonOnlyOnPending ? isPendingRelease : true);
 
         return (
           <div className="flex gap-2">
             <SeniorActionButtons senior={senior} queryClient={queryClient} userRole={userRole} />
-            {showReleaseButton && <ReleaseActionButton userRole={userRole} senior={senior} queryClient={queryClient} />}
+            <ReleaseActionButton 
+              userRole={userRole} 
+              senior={senior} 
+              queryClient={queryClient}
+              showReleaseButton={shouldShowReleaseButton}
+            />
           </div>
         );
       },

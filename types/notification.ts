@@ -1,10 +1,19 @@
-// types\notification.ts
+// types/notification.ts
 export interface Notification {
     id: string;
-    type: 'senior_pending' | 'release_approved'; // Define specific types
+    type: 'senior_pending' | 'release_approved';
     message: string;
     timestamp: string; // ISO string
     link: string;
-    seniorId?: number; // Optional: Link to a senior's ID
-    seniorName?: string; // Optional: For display purposes
+    seniorId?: number;
+    seniorName?: string;
+    isRead?: boolean; // NEW: Track read status
+    readAt?: string | null; // NEW: When it was read
+}
+
+export interface NotificationStatusMap {
+    [notificationId: string]: {
+        isRead: boolean;
+        readAt: Date | null;
+    };
 }

@@ -218,7 +218,7 @@ export function FundHistoryList({ fundHistory }: FundHistoryListProps) {
                                 <Eye className="h-4 w-4" />
                             </Button>
                         )}
-                        <Button
+                        {/* <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDeleteClick(record.id)}
@@ -226,7 +226,7 @@ export function FundHistoryList({ fundHistory }: FundHistoryListProps) {
                             title="Delete"
                         >
                             <Trash2 className="h-4 w-4" />
-                        </Button>
+                        </Button> */}
                     </div>
                 );
             },
