@@ -143,7 +143,7 @@ const DashboardPage = () => {
   return (
     <div className="p-6 space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
         {/* Total Seniors */}
         <Card>
@@ -176,14 +176,14 @@ const DashboardPage = () => {
         </Card>
 
         {/* PWD Seniors */}
-        <Card>
+        {/* <Card>
           <CardHeader className="pb-2">
             <CardDescription>PWD Seniors</CardDescription>
             <CardTitle className="text-3xl">
               {seniorCounts?.totalPwdSeniors ?? 0}
             </CardTitle>
           </CardHeader>
-        </Card>
+        </Card> */}
 
       </div>
 
@@ -208,17 +208,18 @@ const DashboardPage = () => {
                     data={categoriesData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
+                    innerRadius={55}
+                    outerRadius={95}
+                    paddingAngle={4}
                     dataKey="value"
+                    nameKey="name"
                   >
                     {categoriesData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell key={index} fill={entry.color} />
                     ))}
                   </Pie>
                   <Tooltip />
-                  <Legend />
+                  <Legend layout="vertical" align="right" verticalAlign="middle" />
                 </PieChart>
               </ResponsiveContainer>
             )}
@@ -242,12 +243,14 @@ const DashboardPage = () => {
         />
 
         <BarChartComponent
-          title="Barangay Distribution"
-          description="Seniors across barangays"
+          title="Barangay Distribution by Category"
+          description="Senior categories across barangays"
           chartData={barangayData as Record<string, unknown>[]}
           chartConfig={{
-            pwd: { label: 'PWD', color: '#8b5cf6' },
-            regular: { label: 'Regular', color: '#22c55e' }
+            'Regular (Below 80)': { label: 'Regular (Below 80)', color: '#22c55e' },
+            'Octogenarian (80-89)': { label: 'Octogenarian (80-89)', color: '#3b82f6' },
+            'Nonagenarian (90-99)': { label: 'Nonagenarian (90-99)', color: '#f59e0b' },
+            'Centenarian (100+)': { label: 'Centenarian (100+)', color: '#ef4444' }
           }}
           xAxisKey="barangay"
         />

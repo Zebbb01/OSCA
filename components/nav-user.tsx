@@ -1,3 +1,4 @@
+// components/nav-user.tsx
 'use client'
 
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react'
@@ -21,16 +22,28 @@ import {
 import { User } from '@/types/user'
 import Image from 'next/image'
 import { signOut } from 'next-auth/react'
+import { useNavigationWithLoading } from '@/components/providers/NavigationLoadingProvider'
 
 export function NavUser({ user }: { user: User }) {
     const { isMobile } = useSidebar()
+    const { push } = useNavigationWithLoading()
+
+    const handleLogout = async () => {
+        try {
+            // Show loading immediately
+            push('/')
+            // Sign out without redirect (we handle it manually)
+            await signOut({ redirect: false })
+        } catch (error) {
+            console.error('Logout error:', error)
+        }
+    }
 
     return (
         <SidebarMenu>
             <SidebarMenuItem>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-
                         <SidebarMenuButton
                             size="lg"
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
@@ -43,7 +56,6 @@ export function NavUser({ user }: { user: User }) {
                                     alt="OSCA Logo"
                                     className="rounded-full"
                                 />
-
                                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                             </Avatar>
 
@@ -53,8 +65,8 @@ export function NavUser({ user }: { user: User }) {
                             </div>
                             <ChevronsUpDown className="ml-auto size-4" />
                         </SidebarMenuButton>
-
                     </DropdownMenuTrigger>
+
                     <DropdownMenuContent
                         className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
                         side={isMobile ? 'bottom' : 'right'}
@@ -71,7 +83,6 @@ export function NavUser({ user }: { user: User }) {
                                         alt="OSCA Logo"
                                         className="rounded-full"
                                     />
-
                                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                                 </Avatar>
 
@@ -81,6 +92,9 @@ export function NavUser({ user }: { user: User }) {
                                 </div>
                             </div>
                         </DropdownMenuLabel>
+
+                        <DropdownMenuSeparator />
+
                         {/* <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
@@ -105,7 +119,7 @@ export function NavUser({ user }: { user: User }) {
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator /> */}
 
-                        <DropdownMenuItem onClick={() => signOut({redirectTo: '/'})}>
+                        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
                             <LogOut />
                             Log out
                         </DropdownMenuItem>

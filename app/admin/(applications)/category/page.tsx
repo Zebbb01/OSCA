@@ -7,16 +7,16 @@ import { useSession } from 'next-auth/react';
 import { ColumnFiltersState } from '@tanstack/react-table';
 
 import { DataTable } from '@/components/data-table';
-import { getApplicantsColumns } from '../applicants/columns'; // Re-use existing columns
+import { getApplicantsColumns } from '../applicants/columns';
 import { apiService } from '@/lib/axios';
 import { BenefitApplicationData } from '@/types/application';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'; // Assuming you have shadcn/ui tabs
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 const CategoryPage = () => {
   const { data: session, status: sessionStatus } = useSession();
   const userRole = (session?.user as any)?.role || 'USER';
 
-  const [activeTab, setActiveTab] = useState<string>('all'); // 'all', 'regular', 'special'
+  const [activeTab, setActiveTab] = useState<string>('all'); // 'all', 'octogenarian', 'nonagenarian', 'centenarian', 'regular'
   const [globalFilter, setGlobalFilter] = useState<string>('');
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState<boolean>(false);
@@ -28,7 +28,7 @@ const CategoryPage = () => {
     'status',
     'createdAt',
     'documents',
-    'actions', // If admin, actions will be visible
+    'actions',
   ];
 
   const benefitApplicationQuery = useQuery<BenefitApplicationData[]>({
@@ -47,10 +47,14 @@ const CategoryPage = () => {
 
   // Filter data based on active tab
   const filteredData = useMemo(() => {
-    if (activeTab === 'regular') {
-      return allApplicantsData.filter(app => app.category?.name === 'Regular senior citizens');
-    } else if (activeTab === 'special') {
-      return allApplicantsData.filter(app => app.category?.name === 'Special assistance cases');
+    if (activeTab === 'octogenarian') {
+      return allApplicantsData.filter(app => app.category?.name === 'Octogenarian (80-89)');
+    } else if (activeTab === 'nonagenarian') {
+      return allApplicantsData.filter(app => app.category?.name === 'Nonagenarian (90-99)');
+    } else if (activeTab === 'centenarian') {
+      return allApplicantsData.filter(app => app.category?.name === 'Centenarian (100+)');
+    } else if (activeTab === 'regular') {
+      return allApplicantsData.filter(app => !app.category); // No category means regular (below 80)
     }
     return allApplicantsData; // 'all' tab
   }, [activeTab, allApplicantsData]);
@@ -66,9 +70,11 @@ const CategoryPage = () => {
       .map(name => ({ value: name, label: name }));
 
     // Extract unique category names (for the 'All Applicants' tab's filter)
-    const categoryOptions = Array.from(new Set(allApplicantsData.map(app => app.category?.name || 'N/A')))
-      .filter(name => name !== 'N/A')
-      .map(name => ({ value: name, label: name }));
+    const categoryOptions = Array.from(
+      new Set(
+        allApplicantsData.map(app => app.category?.name || 'Regular (Below 80)')
+      )
+    ).map(name => ({ value: name, label: name }));
 
     // Extract unique status names
     const statusOptions = Array.from(new Set(allApplicantsData.map(app => app.status.name)))
@@ -84,7 +90,7 @@ const CategoryPage = () => {
       },
       {
         id: 'senior_category',
-        title: 'Category',
+        title: 'Age Category',
         type: 'select' as const,
         options: categoryOptions,
       },
@@ -118,17 +124,19 @@ const CategoryPage = () => {
   return (
     <div className="container mx-auto border-1 border-gray-400 p-5 rounded-md mt-8">
       <div className="flex flex-col justify-center mb-6">
-        <h1 className="text-2xl text-gray-600">Senior Citizen Applicants by Category</h1>
+        <h1 className="text-2xl text-gray-600">Senior Citizen Applicants by Age Category</h1>
         <p className="text-gray-500 text-sm">
-          View and manage applications categorized by senior citizen type.
+          View and manage applications categorized by senior citizen age groups.
         </p>
       </div>
 
       <Tabs defaultValue="all" className="w-full" onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="all">All Applicants Category</TabsTrigger>
-          <TabsTrigger value="regular">Regular Senior Citizens</TabsTrigger>
-          <TabsTrigger value="special">Special Assistance Cases</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="all">All Categories</TabsTrigger>
+          <TabsTrigger value="regular">Regular (Below 80)</TabsTrigger>
+          <TabsTrigger value="octogenarian">Octogenarian (80-89)</TabsTrigger>
+          <TabsTrigger value="nonagenarian">Nonagenarian (90-99)</TabsTrigger>
+          <TabsTrigger value="centenarian">Centenarian (100+)</TabsTrigger>
         </TabsList>
 
         {benefitApplicationQuery.isLoading || sessionStatus === 'loading' ? (
@@ -153,7 +161,13 @@ const CategoryPage = () => {
             <TabsContent value="regular">
               {renderDataTable(filteredData)}
             </TabsContent>
-            <TabsContent value="special">
+            <TabsContent value="octogenarian">
+              {renderDataTable(filteredData)}
+            </TabsContent>
+            <TabsContent value="nonagenarian">
+              {renderDataTable(filteredData)}
+            </TabsContent>
+            <TabsContent value="centenarian">
               {renderDataTable(filteredData)}
             </TabsContent>
           </>

@@ -1,4 +1,4 @@
-// src/app/admin/applications/applicants/columns.tsx
+// src/app/staff/(applications)/applicants/columns.tsx
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
@@ -58,14 +58,19 @@ export const getApplicantsColumns = (
     },
     {
       accessorKey: 'senior_category',
-      header: 'Category',
+      header: 'Age Category',
       cell: ({ row }) => {
         const category = row.original.category;
-        const categoryName = category ? category.name : 'N/A';
+        const categoryName = category ? category.name : 'Regular (Below 80)';
+        
+        // Updated category styles for age-based categories
         const categoryStyles: Record<string, string> = {
-          'Regular senior citizens': 'bg-green-600 text-white',
-          'Special assistance cases': 'bg-yellow-500 text-white',
+          'Octogenarian (80-89)': 'bg-blue-600 text-white',
+          'Nonagenarian (90-99)': 'bg-amber-500 text-white',
+          'Centenarian (100+)': 'bg-red-600 text-white',
+          'Regular (Below 80)': 'bg-green-600 text-white',
         };
+        
         return (
           <div>
             <span
@@ -78,7 +83,7 @@ export const getApplicantsColumns = (
           </div>
         );
       },
-      accessorFn: (row) => row.category?.name || 'N/A',
+      accessorFn: (row) => row.category?.name || 'Regular (Below 80)',
     },
     {
       accessorKey: 'status',

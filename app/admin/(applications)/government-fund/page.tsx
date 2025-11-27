@@ -129,7 +129,7 @@ export default function GovernmentFundPage() {
         if (dbTransactions) {
             dbTransactions.forEach(tx => {
                 financialTransactions.push({
-                    id: `db-${tx.id}`, // Prefix with 'db-' to identify actual transactions
+                    id: `db-${tx.id}`,
                     date: tx.date instanceof Date ? tx.date.toISOString() : tx.date.toString(),
                     benefits: tx.benefits,
                     amount: tx.amount,
@@ -147,13 +147,16 @@ export default function GovernmentFundPage() {
             seniorsData.forEach(senior => {
                 if (senior.releasedAt && senior.Applications && senior.Applications.length > 0) {
                     const latestApp = senior.Applications[0];
+                    // Updated: Handle age-based categories, default to 'Regular (Below 80)'
+                    const categoryName = latestApp.category?.name || 'Regular (Below 80)';
+
                     financialTransactions.push({
                         id: `released-${senior.id}`,
                         date: senior.releasedAt.toString(),
                         benefits: latestApp.benefit.name,
                         amount: 1000.00,
                         type: 'released',
-                        category: latestApp.category?.name || 'Regular senior citizens',
+                        category: categoryName,
                         seniorName: `${senior.firstname} ${senior.lastname}`,
                         barangay: senior.barangay
                     });
@@ -165,13 +168,16 @@ export default function GovernmentFundPage() {
         if (applicationsData) {
             applicationsData.forEach(app => {
                 if (app.status.name === 'PENDING' || app.status.name === 'APPROVED') {
+                    // Updated: Handle age-based categories, default to 'Regular (Below 80)'
+                    const categoryName = app.category?.name || 'Regular (Below 80)';
+
                     financialTransactions.push({
                         id: `pending-${app.id}`,
                         date: app.createdAt,
                         benefits: app.benefit.name,
                         amount: 1000.00,
                         type: 'pending',
-                        category: app.category?.name || 'Regular senior citizens',
+                        category: categoryName,
                         seniorName: `${app.senior.firstname} ${app.senior.lastname}`,
                         barangay: 'N/A'
                     });
@@ -346,9 +352,9 @@ export default function GovernmentFundPage() {
 
                         {/* Tabs Section */}
                         <Tabs defaultValue="fund-history" className="w-full">
-                            <TabsList className="grid w-full grid-cols-1">
+                            <TabsList className="grid w-full grid-cols-2">
                                 <TabsTrigger value="fund-history">Transaction History</TabsTrigger>
-                                {/* <TabsTrigger value="disbursement-history">Disbursement History</TabsTrigger> */}
+                                <TabsTrigger value="disbursement-history">Disbursement History</TabsTrigger>
                             </TabsList>
 
                             {/* Fund History Tab Content */}

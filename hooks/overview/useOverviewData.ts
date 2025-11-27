@@ -150,15 +150,18 @@ export const useOverviewData = ({ userRole, hideAdminActions = false }: UseOverv
 
   const allApplicantsData = benefitApplicationQuery.data ?? [];
 
+  // Updated to handle age-based categories
   const regularApplications = useMemo(() => {
-    return allApplicantsData.filter(app => app.category?.name === 'Regular senior citizens');
+    return allApplicantsData.filter(app => !app.category || app.category.name === 'Regular (Below 80)');
   }, [allApplicantsData]);
 
   const specialApplications = useMemo(() => {
-    return allApplicantsData.filter(app => app.category?.name === 'Special assistance cases');
+    // All seniors with age-based categories (80+, 90+, 100+)
+    return allApplicantsData.filter(app => 
+      app.category && ['Octogenarian (80-89)', 'Nonagenarian (90-99)', 'Centenarian (100+)'].includes(app.category.name)
+    );
   }, [allApplicantsData]);
 
-  // Pass true as third parameter to show only document icon (no action buttons)
   const seniorColumns = useMemo(() => {
     return getSeniorRecordsColumns(currentUserRole, sessionStatus, true);
   }, [currentUserRole, sessionStatus]);
@@ -196,9 +199,12 @@ export const useOverviewData = ({ userRole, hideAdminActions = false }: UseOverv
       .filter(Boolean)
       .map(name => ({ value: name, label: name }));
 
-    const categoryOptions = Array.from(new Set(allApplicantsData.map(app => app.category?.name || 'N/A')))
-      .filter(name => name !== 'N/A')
-      .map(name => ({ value: name, label: name }));
+    // Updated category options for age-based categories
+    const categoryOptions = Array.from(
+      new Set(
+        allApplicantsData.map(app => app.category?.name || 'Regular (Below 80)')
+      )
+    ).map(name => ({ value: name, label: name }));
 
     const statusOptions = Array.from(new Set(allApplicantsData.map(app => app.status.name)))
       .filter(Boolean)
@@ -206,7 +212,7 @@ export const useOverviewData = ({ userRole, hideAdminActions = false }: UseOverv
 
     return [
       { id: 'applied_benefit', title: 'Applied Benefit', type: 'select' as const, options: benefitOptions },
-      { id: 'senior_category', title: 'Category', type: 'select' as const, options: categoryOptions },
+      { id: 'senior_category', title: 'Age Category', type: 'select' as const, options: categoryOptions },
       { id: 'status', title: 'Status', type: 'select' as const, options: statusOptions },
     ];
   }, [allApplicantsData]);

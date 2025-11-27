@@ -11,9 +11,12 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { EyeIcon, UserIcon, PhoneIcon, StickyNoteIcon } from 'lucide-react';
 import { formatDateOnly, formatDateTime } from '@/utils/format';
 import { Seniors } from '@/types/seniors';
+import { determineCategoryByAge } from '@/lib/utils/category-helper';
+
 
 // Separate component for form-like field display
 interface FormFieldViewProps {
@@ -53,16 +56,19 @@ interface SeniorViewDialogProps {
   senior: Seniors;
   trigger?: React.ReactNode;
 }
-
-export const SeniorViewDialog: React.FC<SeniorViewDialogProps> = ({ 
-  senior, 
-  trigger 
+export const SeniorViewDialog: React.FC<SeniorViewDialogProps> = ({
+  senior,
+  trigger
 }) => {
   const [open, setOpen] = React.useState(false);
 
+  const calculatedCategory = determineCategoryByAge(Number(senior.age));
+
+
+
   const defaultTrigger = (
-    <Button 
-      variant="ghost" 
+    <Button
+      variant="ghost"
       size="icon"
       className="h-10 w-10 rounded-md bg-background cursor-pointer text-sm ring-offset-background hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
@@ -85,7 +91,7 @@ export const SeniorViewDialog: React.FC<SeniorViewDialogProps> = ({
             Full details of {senior.firstname} {senior.lastname}
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-8 p-1">
           {/* Personal Information Section */}
           <div className="border rounded-lg">
@@ -110,11 +116,24 @@ export const SeniorViewDialog: React.FC<SeniorViewDialogProps> = ({
               </div>
 
               {/* Senior Citizen Category */}
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+              {/* <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                 <FormFieldView 
                   label="Senior Citizen Category" 
                   value={senior.pwd ? 'Special Cases' : 'Regular Senior Citizen'} 
                 />
+              </div> */}
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <Label className="text-sm font-medium text-blue-900">
+                    Age Category
+                  </Label>
+                  <p className="text-lg font-semibold text-blue-700 mt-1">
+                    {calculatedCategory}
+                  </p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    Category is automatically determined by age
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -160,8 +179,8 @@ export const SeniorViewDialog: React.FC<SeniorViewDialogProps> = ({
                     <FormFieldView label="Remarks" value={senior.remarks.name} />
                   )}
                   {senior.releasedAt && (
-                    <FormFieldView 
-                      label="Released On" 
+                    <FormFieldView
+                      label="Released On"
                       value={formatDateOnly(senior.releasedAt)}
                     />
                   )}

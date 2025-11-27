@@ -1,3 +1,4 @@
+// components\senior-citizen\registerForm\components\PersonalInformation.tsx
 import React from 'react'
 import { useFormContext } from 'react-hook-form'
 import { format } from 'date-fns'
@@ -27,6 +28,21 @@ import {
 
 export const PersonalInformation = () => {
     const form = useFormContext<SeniorsFormData>()
+
+    const calculateAgeFromBirthdate = (date: Date | null) => {
+        if (!date) return 0;
+        const today = new Date();
+        let age = today.getFullYear() - date.getFullYear();
+        const monthDiff = today.getMonth() - date.getMonth();
+        const dayDiff = today.getDate() - date.getDate();
+
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+            age--;
+        }
+
+        return age;
+    };
+
 
     return (
         <Card>
@@ -104,9 +120,29 @@ export const PersonalInformation = () => {
                                     <Input
                                         type="number"
                                         min={60}
-                                        max={100}
+                                        max={120}
                                         placeholder="Enter age"
                                         {...field}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            field.onChange(value);
+
+                                            const num = parseInt(value, 10);
+                                            if (!isNaN(num)) {
+                                                const today = new Date();
+                                                const birthYear = today.getFullYear() - num;
+                                                const newBirthdate = new Date(
+                                                    birthYear,
+                                                    today.getMonth(),
+                                                    today.getDate()
+                                                );
+
+                                                // update birthdate in form
+                                                form.setValue("birthDate", format(newBirthdate, "MM/dd/yyyy"), {
+                                                    shouldValidate: true,
+                                                });
+                                            }
+                                        }}
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -127,11 +163,14 @@ export const PersonalInformation = () => {
                                                 : null
                                         }
                                         onChange={(date: Date | null) => {
-                                            field.onChange(
-                                                date
-                                                    ? format(date, 'MM/dd/yyyy')
-                                                    : ''
-                                            )
+                                            const formatted = date ? format(date, 'MM/dd/yyyy') : '';
+
+                                            // Save birthdate
+                                            field.onChange(formatted);
+
+                                            // Auto-update age field
+                                            const age = calculateAgeFromBirthdate(date);
+                                            form.setValue("age", age.toString(), { shouldValidate: true });
                                         }}
                                         dateFormat={[
                                             'MM/dd/yyyy',
@@ -186,7 +225,7 @@ export const PersonalInformation = () => {
                             </FormItem>
                         )}
                     />
-                    <FormField
+                    {/* <FormField
                         control={form.control}
                         name="pwd"
                         render={({ field }) => (
@@ -213,7 +252,7 @@ export const PersonalInformation = () => {
                                 <FormMessage />
                             </FormItem>
                         )}
-                    />
+                    /> */}
                 </div>
             </CardContent>
         </Card>

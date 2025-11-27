@@ -1,41 +1,88 @@
-// app\api\seniors\counts\route.ts
+// app/api/seniors/counts/route.ts
 import prisma from '@/lib/prisma'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
     try {
-        const totalSeniors = await prisma.senior.count()
+        const totalSeniors = await prisma.senior.count({
+            where: {
+                deletedAt: null
+            }
+        })
+        
         const totalPwdSeniors = await prisma.senior.count({
             where: {
                 pwd: true,
+                deletedAt: null
             },
         })
 
-        const specialCategory = await prisma.seniorCategory.findUnique({
-            where: { name: 'Special assistance cases' },
+        // Get age-based category counts
+        const octogenarianCategory = await prisma.seniorCategory.findUnique({
+            where: { name: 'Octogenarian (80-89)' },
             select: { id: true },
         })
 
-        const regularCategory = await prisma.seniorCategory.findUnique({
-            where: { name: 'Regular senior citizens' },
+        const nonagenariCategory = await prisma.seniorCategory.findUnique({
+            where: { name: 'Nonagenarian (90-99)' },
             select: { id: true },
         })
 
-        const specialSeniorsCount = specialCategory
+        const centenarianCategory = await prisma.seniorCategory.findUnique({
+            where: { name: 'Centenarian (100+)' },
+            select: { id: true },
+        })
+
+        const octogenarianCount = octogenarianCategory
             ? await prisma.applications.count({
-                where: { category_id: specialCategory.id },
+                where: { 
+                    category_id: octogenarianCategory.id,
+                    senior: {
+                        deletedAt: null
+                    }
+                },
             })
             : 0
 
-        const regularSeniorsCount = regularCategory
+        const nonagenariCount = nonagenariCategory
             ? await prisma.applications.count({
-                where: { category_id: regularCategory.id },
+                where: { 
+                    category_id: nonagenariCategory.id,
+                    senior: {
+                        deletedAt: null
+                    }
+                },
             })
             : 0
+
+        const centenarianCount = centenarianCategory
+            ? await prisma.applications.count({
+                where: { 
+                    category_id: centenarianCategory.id,
+                    senior: {
+                        deletedAt: null
+                    }
+                },
+            })
+            : 0
+
+        // Get count of seniors with no category (age < 80)
+        const regularSeniorsCount = await prisma.applications.count({
+            where: {
+                category_id: null,
+                senior: {
+                    deletedAt: null
+                }
+            }
+        })
 
         // --- COUNT SENIORS WHO APPLIED FOR BENEFITS ---
-        // Get unique senior IDs from Applications table
         const seniorsWithApplications = await prisma.applications.findMany({
+            where: {
+                senior: {
+                    deletedAt: null
+                }
+            },
             select: {
                 senior_id: true,
             },
@@ -47,6 +94,9 @@ export async function GET() {
         // --- BARANGAY COUNTS ---
         const seniorsByBarangay = await prisma.senior.groupBy({
             by: ['barangay'],
+            where: {
+                deletedAt: null
+            },
             _count: {
                 id: true,
             },
@@ -63,14 +113,15 @@ export async function GET() {
         }, {} as Record<string, number>)
 
         // --- NEWLY REGISTERED SENIORS ---
-        const twentyFourHoursAgo = new Date()
-        twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24 * 3) // 72 hours for testing
+        const seventyTwoHoursAgo = new Date()
+        seventyTwoHoursAgo.setHours(seventyTwoHoursAgo.getHours() - 72)
 
         const newlyRegisteredSeniors = await prisma.senior.count({
             where: {
                 createdAt: {
-                    gte: twentyFourHoursAgo,
+                    gte: seventyTwoHoursAgo,
                 },
+                deletedAt: null
             },
         })
 
@@ -78,10 +129,12 @@ export async function GET() {
             {
                 totalSeniors,
                 totalPwdSeniors,
-                totalSeniorsAppliedForBenefits, // NEW: Count of seniors who applied for benefits
+                totalSeniorsAppliedForBenefits,
                 categoryCounts: {
-                    Special: specialSeniorsCount,
                     Regular: regularSeniorsCount,
+                    'Octogenarian (80-89)': octogenarianCount,
+                    'Nonagenarian (90-99)': nonagenariCount,
+                    'Centenarian (100+)': centenarianCount,
                 },
                 barangayCounts,
                 newlyRegisteredSeniors,

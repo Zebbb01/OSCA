@@ -9,8 +9,7 @@ import { RegistrationTrendsChart } from '@/components/registration-trends-chart'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 import { Users, UserCheck, FileText, Shield, Loader2 } from 'lucide-react'
-import { useRouter } from "next/navigation"; // ADD THIS
-
+import { useRouter } from "next/navigation"
 
 interface CategoryData {
     name: string
@@ -20,9 +19,11 @@ interface CategoryData {
 
 interface BarangayData extends Record<string, unknown> {
     barangay: string
-    seniors: number
-    pwd: number
-    regular: number
+    total: number
+    'Regular (Below 80)': number
+    'Octogenarian (80-89)': number
+    'Nonagenarian (90-99)': number
+    'Centenarian (100+)': number
 }
 
 interface AgeDistributionData extends Record<string, unknown> {
@@ -31,32 +32,13 @@ interface AgeDistributionData extends Record<string, unknown> {
     female: number
 }
 
-const chartConfig = {
-    male: {
-        label: 'Male',
-        color: '#3b82f6',
-    },
-    female: {
-        label: 'Female',
-        color: '#ec4899',
-    },
-    pwd: {
-        label: 'PWD',
-        color: '#8b5cf6',
-    },
-    regular: {
-        label: 'Regular',
-        color: '#22c55e',
-    }
-} satisfies ChartConfig
-
 const DashboardPage = () => {
     const [categoriesData, setCategoriesData] = useState<CategoryData[]>([])
     const [barangayData, setBarangayData] = useState<BarangayData[]>([])
     const [ageDistributionData, setAgeDistributionData] = useState<AgeDistributionData[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const router = useRouter();
+    const router = useRouter()
 
     useEffect(() => {
         fetchDashboardData()
@@ -82,7 +64,7 @@ const DashboardPage = () => {
                 barangayRes.json(),
                 ageRes.json()
             ])
-
+            
             setCategoriesData(categories.data)
             setBarangayData(barangay.data)
             setAgeDistributionData(age.data)
@@ -124,7 +106,6 @@ const DashboardPage = () => {
         <div className="space-y-6 p-6">
             {/* First Row - Counts and Quick Actions */}
             <div className="flex flex-col lg:flex-row gap-6">
-
                 {/* 40% DashboardCountsCard */}
                 <Card className="lg:w-3/5 w-full">
                     <DashboardCountsCard />
@@ -148,17 +129,18 @@ const DashboardPage = () => {
                                         data={categoriesData}
                                         cx="50%"
                                         cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={100}
-                                        paddingAngle={5}
+                                        innerRadius={55}
+                                        outerRadius={95}
+                                        paddingAngle={4}
                                         dataKey="value"
+                                        nameKey="name"
                                     >
                                         {categoriesData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                            <Cell key={index} fill={entry.color} />
                                         ))}
                                     </Pie>
                                     <Tooltip />
-                                    <Legend />
+                                    <Legend layout="vertical" align="right" verticalAlign="middle" />
                                 </PieChart>
                             </ResponsiveContainer>
                         )}
@@ -170,9 +152,7 @@ const DashboardPage = () => {
                     <CardHeader>
                         <CardTitle className="text-center pt-10">Quick Actions</CardTitle>
                     </CardHeader>
-
                     <CardContent className="p-6 flex flex-col items-center space-y-4">
-
                         <button
                             onClick={() => router.push("/admin/applicants")}
                             className="w-full p-3 cursor-pointer bg-orange-50 hover:bg-orange-100 rounded-lg flex items-center justify-center space-x-3"
@@ -206,11 +186,9 @@ const DashboardPage = () => {
                         </button>
                     </CardContent>
                 </Card>
-
-
             </div>
 
-            {/* Second Row - Registration Trends (Combined Monthly/Yearly) */}
+            {/* Second Row - Registration Trends */}
             <div className="grid grid-cols-1 gap-6">
                 <RegistrationTrendsChart />
             </div>
@@ -229,12 +207,14 @@ const DashboardPage = () => {
                 />
 
                 <BarChartComponent
-                    title="Barangay Distribution"
-                    description="Seniors across barangays"
+                    title="Barangay Distribution by Category"
+                    description="Senior categories across barangays"
                     chartData={barangayData as Record<string, unknown>[]}
                     chartConfig={{
-                        pwd: { label: 'PWD', color: '#8b5cf6' },
-                        regular: { label: 'Regular', color: '#22c55e' }
+                        'Regular (Below 80)': { label: 'Regular (Below 80)', color: '#22c55e' },
+                        'Octogenarian (80-89)': { label: 'Octogenarian (80-89)', color: '#3b82f6' },
+                        'Nonagenarian (90-99)': { label: 'Nonagenarian (90-99)', color: '#f59e0b' },
+                        'Centenarian (100+)': { label: 'Centenarian (100+)', color: '#ef4444' }
                     }}
                     xAxisKey="barangay"
                 />

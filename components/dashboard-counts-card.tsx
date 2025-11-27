@@ -81,14 +81,14 @@ export const DashboardCountsCard = () => {
                             </p>
                         </div>
                         
-                        <div className="p-4 border rounded-lg text-center flex flex-col justify-center bg-purple-50">
+                        {/* <div className="p-4 border rounded-lg text-center flex flex-col justify-center bg-purple-50">
                             <h3 className="text-sm font-medium text-gray-700 mb-2">
                                 Number of PWD<br/>Senior Citizens
                             </h3>
                             <p className="text-4xl font-bold text-purple-600">
                                 {seniorCounts.totalPwdSeniors}
                             </p>
-                        </div>
+                        </div> */}
                         
                         <div className="p-4 border rounded-lg text-center flex flex-col justify-center bg-green-50">
                             <h3 className="text-sm font-medium text-gray-700 mb-2">
@@ -108,7 +108,8 @@ export const DashboardCountsCard = () => {
                             </p>
                         </div>
                         
-                        <div className="p-4 border rounded-lg text-center flex flex-col justify-center bg-orange-50 md:col-span-2">
+                        
+                        <div className="p-4 border rounded-lg text-center flex flex-col justify-center bg-orange-50">
                             <h3 className="text-sm font-medium text-gray-700 mb-2">Overall Total</h3>
                             <p className="text-4xl font-bold text-orange-600">
                                 {seniorCounts.totalSeniors}

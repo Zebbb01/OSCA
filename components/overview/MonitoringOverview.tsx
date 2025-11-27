@@ -165,8 +165,13 @@ export default function MonitoringOverview({
         if (status === 'APPROVED') group.approvedCount++;
         if (status === 'REJECT') group.rejectedCount++;
 
-        if (category === 'Regular senior citizens') group.regularCount++;
-        if (category === 'Special assistance cases') group.specialCount++;
+        // Count age-based categories
+        if (!category || category === 'Regular (Below 80)') {
+          group.regularCount++;
+        } else {
+          // Count all special age categories (80+, 90+, 100+) as "special"
+          group.specialCount++;
+        }
       }
     });
 
@@ -216,20 +221,20 @@ export default function MonitoringOverview({
         <div className="text-center text-red-600">{row.getValue('rejectedCount')}</div>
       ),
     },
-    {
-      accessorKey: 'regularCount',
-      header: () => <div className="text-center font-bold">Regular</div>,
-      cell: ({ row }: { row: Row<GroupedData> }) => (
-        <div className="text-center">{row.getValue('regularCount')}</div>
-      ),
-    },
-    {
-      accessorKey: 'specialCount',
-      header: () => <div className="text-center font-bold">Special Cases</div>,
-      cell: ({ row }: { row: Row<GroupedData> }) => (
-        <div className="text-center">{row.getValue('specialCount')}</div>
-      ),
-    },
+    // {
+    //   accessorKey: 'regularCount',
+    //   header: () => <div className="text-center font-bold">Regular (Below 80)</div>,
+    //   cell: ({ row }: { row: Row<GroupedData> }) => (
+    //     <div className="text-center">{row.getValue('regularCount')}</div>
+    //   ),
+    // },
+    // {
+    //   accessorKey: 'specialCount',
+    //   header: () => <div className="text-center font-bold">Age 80+</div>,
+    //   cell: ({ row }: { row: Row<GroupedData> }) => (
+    //     <div className="text-center">{row.getValue('specialCount')}</div>
+    //   ),
+    // },
   ], []);
 
   const handleTabChange = (value: string) => {

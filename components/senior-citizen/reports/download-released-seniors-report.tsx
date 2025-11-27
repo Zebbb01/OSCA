@@ -34,18 +34,17 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
     const doc = new jsPDF();
     doc.setProperties({
       title: 'Senior Citizens Report',
-      subject: 'Report of senior citizens by category',
+      subject: 'Report of senior citizens by age category',
       author: 'Senior Citizen Management System',
     });
 
     const boundaries = getContentBoundaries();
     let currentY = boundaries.topMargin + 10;
 
-    // Add header and footer to first page
     await addPdfHeaderAndFooter({
       doc,
       pageNumber: 1,
-      totalPages: 1, // Will be updated later
+      totalPages: 1,
       title: 'Senior Citizens Report',
       subtitle: `Comprehensive Analysis • Generated: ${formatDateTime(new Date().toISOString())}`
     });
@@ -57,18 +56,20 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
     doc.text('Executive Summary', boundaries.leftMargin, currentY);
     currentY += 10;
 
-    // Group seniors by category
+    // Group seniors by age-based category
     const seniorsByCategory: Record<string, Seniors[]> = {};
     data.forEach(senior => {
-      const categoryName = senior.Applications?.[0]?.category?.name || 'N/A';
+      const categoryName = senior.Applications?.[0]?.category?.name || 'Regular (Below 80)';
       if (!seniorsByCategory[categoryName]) {
         seniorsByCategory[categoryName] = [];
       }
       seniorsByCategory[categoryName].push(senior);
     });
 
-    const regularCount = seniorsByCategory['Regular senior citizens']?.length || 0;
-    const specialCount = seniorsByCategory['Special assistance cases']?.length || 0;
+    const regularCount = seniorsByCategory['Regular (Below 80)']?.length || 0;
+    const octogenarianCount = seniorsByCategory['Octogenarian (80-89)']?.length || 0;
+    const nonagenariCount = seniorsByCategory['Nonagenarian (90-99)']?.length || 0;
+    const centenarianCount = seniorsByCategory['Centenarian (100+)']?.length || 0;
     const releasedCount = data.filter(s => s.releasedAt).length;
     const pendingCount = data.filter(s => !s.releasedAt).length;
 
@@ -80,8 +81,10 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
       `Total Released Benefits: ${releasedCount}`,
       `Total Pending Benefits: ${pendingCount}`,
       `Total Applications: ${data.length}`,
-      `Regular Senior Citizens Applications: ${regularCount}`,
-      `Special Assistance Cases: ${specialCount}`,
+      `Regular Senior Citizens (Below 80): ${regularCount}`,
+      `Octogenarian (80-89): ${octogenarianCount}`,
+      `Nonagenarian (90-99): ${nonagenariCount}`,
+      `Centenarian (100+): ${centenarianCount}`,
     ];
 
     summaryData.forEach(item => {
@@ -91,8 +94,14 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
 
     currentY += 15;
 
-    // Sort categories
-    const categoryOrder = ['Special assistance cases', 'Regular senior citizens'];
+    // Sort categories by age order
+    const categoryOrder = [
+      'Centenarian (100+)',
+      'Nonagenarian (90-99)',
+      'Octogenarian (80-89)',
+      'Regular (Below 80)'
+    ];
+    
     const sortedCategories = Object.keys(seniorsByCategory).sort((a, b) => {
       const aIndex = categoryOrder.indexOf(a);
       const bIndex = categoryOrder.indexOf(b);
@@ -106,7 +115,6 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
     for (const catName of sortedCategories) {
       const catSeniors = seniorsByCategory[catName];
       
-      // Check if we need a new page
       if (currentY > 220) {
         doc.addPage();
         currentY = boundaries.topMargin + 10;
@@ -119,9 +127,9 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
       doc.text(`${catName}`, boundaries.leftMargin, currentY);
       currentY += 8;
 
-      // Prepare table
       const tableColumn = [
         'Full Name',
+        'Age',
         'Contact No.',
         'Barangay',
         'Purok',
@@ -139,6 +147,7 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
 
         return [
           fullName,
+          senior.age || 'N/A',
           senior.contact_no || 'N/A',
           senior.barangay || 'N/A',
           senior.purok || 'N/A',
@@ -149,7 +158,6 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
         ];
       });
 
-      // Generate table
       autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
@@ -176,7 +184,6 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
       currentY = (doc as any).lastAutoTable.finalY + 15;
     }
 
-    // Update total pages for all pages
     const totalPages = doc.internal.pages.length - 1;
     for (let i = 1; i <= totalPages; i++) {
       doc.setPage(i);
@@ -185,15 +192,13 @@ export const DownloadReleasedSeniorsReport: React.FC<DownloadReleasedSeniorsRepo
         pageNumber: i,
         totalPages: totalPages,
         title: 'Senior Citizens Report',
-        subtitle: `Comprehensive Analysis • Generated: ${formatDateTime(new Date().toISOString())}`
+        subtitle: `Age-Based Category Analysis • Generated: ${formatDateTime(new Date().toISOString())}`
       });
     }
 
-    // Add "Prepared by" section on the last page only
     doc.setPage(totalPages);
     addPreparedBySection(doc, 'OSCA Administrator');
 
-    // Output as Blob
     const blob = doc.output('blob');
     const url = URL.createObjectURL(blob);
     setPdfReportUrl(url);

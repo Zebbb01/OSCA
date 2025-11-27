@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { Gender } from '@/lib/generated/prisma';
 import { SeniorsFormDataType } from '@/types/seniors';
 import { uploadAndSaveDocument } from './helpers.service';
+import { getCategoryIdByAge } from '@/lib/utils/category-helper';
 
 /**
  * Creates a new senior record and uploads associated documents.
@@ -11,6 +12,7 @@ export async function createSenior(formData: FormData) {
   const birthDateStr = formData.get('birthDate') as string;
   const birthDate = new Date(birthDateStr);
   const ageFromForm = formData.get('age') as string;
+  const age = parseInt(ageFromForm, 10);
 
   const seniorData: Partial<SeniorsFormDataType> = {
     firstName: formData.get('firstName') as string,
@@ -38,10 +40,6 @@ export async function createSenior(formData: FormData) {
     throw new Error('Remarks "NEW" not found. Please ensure your database is seeded.');
   }
 
-  const initialCategoryId = seniorData.pwd
-    ? (await prisma.seniorCategory.findUnique({ where: { name: 'Special assistance cases' } }))?.id
-    : (await prisma.seniorCategory.findUnique({ where: { name: 'Regular senior citizens' } }))?.id;
-
   const senior = await prisma.senior.create({
     data: {
       firstname: seniorData.firstName || '',
@@ -64,7 +62,7 @@ export async function createSenior(formData: FormData) {
   });
 
   const uploadPromises: Promise<any>[] = [];
-  const fileTags = ['birth_certificate', 'certificate_of_residency', 'government_issued_id', 'membership_certificate', 'low_income'];
+  const fileTags = ['birth_certificate', 'certificate_of_residency', 'government_issued_id', 'membership_certificate', 'id_photo'];
 
   for (const tag of fileTags) {
     const file = formData.get(tag) as File | null;

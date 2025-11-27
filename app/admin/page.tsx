@@ -1,29 +1,33 @@
 // app/admin/page.tsx
 "use client"
-import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
-import { useSession } from 'next-auth/react' // Import useSession
+import { useSession } from 'next-auth/react'
+import { useNavigationWithLoading } from '@/components/providers/NavigationLoadingProvider'
+import { Loader2 } from 'lucide-react'
 
 const AdminRoot = () => {
-    const router = useRouter()
+    const { push } = useNavigationWithLoading()
     const { data: session, status } = useSession()
 
     useEffect(() => {
-        if (status === 'loading') return // Do nothing while session is loading
+        if (status === 'loading') return
 
-        const userRole = (session?.user as any)?.role || 'USER' // Get user's role
+        const userRole = (session?.user as any)?.role || 'USER'
 
         if (userRole === 'ADMIN') {
-            router.replace('/admin/dashboard')
-        } else if (userRole === 'USER') { // Assuming 'USER' role is for staff
-            router.replace('/staff/record')
+            push('/admin/dashboard')
+        } else if (userRole === 'USER') {
+            push('/staff/record')
         } else {
-            // Handle other roles or unauthenticated users, e.g., redirect to login
-            router.replace('/'); // Or your login page path
+            push('/')
         }
-    }, [router, session, status]) // Add session and status to dependencies
+    }, [session, status, push])
 
-    return null
+    return (
+        <div className="flex min-h-screen items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+        </div>
+    )
 }
 
 export default AdminRoot

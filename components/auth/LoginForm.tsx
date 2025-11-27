@@ -11,6 +11,7 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthErrors } from '@/hooks/useAuthErrors'
 import PrimaryButton from '../ui/primary-button'
+import { useNavigationWithLoading } from '@/components/providers/NavigationLoadingProvider'
 
 interface LoginFormProps {
     onGoToSignUp?: () => void
@@ -30,6 +31,7 @@ const LoginForm = ({ onGoToSignUp }: LoginFormProps) => {
     const [isLoggingIn, setIsLoggingIn] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
     const { getErrorMessage } = useAuthErrors()
+    const { push } = useNavigationWithLoading()
 
     const onLogin = async (data: LoginFormData) => {
         setIsLoggingIn(true)
@@ -43,23 +45,22 @@ const LoginForm = ({ onGoToSignUp }: LoginFormProps) => {
             })
 
             if (result?.error) {
-                const errorMessage = getErrorMessage(result.error); // "USER_NOT_FOUND" etc.
-                setError('root.serverError', { type: 'manual', message: errorMessage });
-                toast.error(errorMessage);
-                return;
+                const errorMessage = getErrorMessage(result.error)
+                setError('root.serverError', { type: 'manual', message: errorMessage })
+                toast.error(errorMessage)
+                setIsLoggingIn(false)
+                return
             }
-
 
             if (result?.ok) {
                 toast.success('Login successful!')
-                // Force a hard redirect to ensure proper navigation
-                window.location.href = '/admin'
+                // Use the loading navigation
+                push('/admin')
             }
         } catch (error) {
             const errorMessage = getErrorMessage('UNEXPECTED_ERROR')
             setError('root.serverError', { type: 'manual', message: errorMessage })
             toast.error(errorMessage)
-        } finally {
             setIsLoggingIn(false)
         }
     }
@@ -86,6 +87,7 @@ const LoginForm = ({ onGoToSignUp }: LoginFormProps) => {
                                 errors.username && 'border-red-500 focus:border-red-500 focus:ring-red-500'
                             )}
                             autoComplete="username"
+                            disabled={isLoggingIn}
                         />
                         {errors.username && (
                             <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>
@@ -120,12 +122,14 @@ const LoginForm = ({ onGoToSignUp }: LoginFormProps) => {
                                     'block w-full rounded-md border border-gray-300 px-4 py-2 text-base text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500',
                                     errors.password && 'border-red-500 focus:border-red-500 focus:ring-red-500'
                                 )}
+                                disabled={isLoggingIn}
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none disabled:opacity-50"
                                 tabIndex={-1}
+                                disabled={isLoggingIn}
                             >
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
@@ -170,7 +174,8 @@ const LoginForm = ({ onGoToSignUp }: LoginFormProps) => {
                     <button
                         type="button"
                         onClick={onGoToSignUp}
-                        className="font-semibold text-emerald-600 hover:text-emerald-500 transition duration-200 cursor-pointer underline"
+                        className="font-semibold text-emerald-600 hover:text-emerald-500 transition duration-200 cursor-pointer underline disabled:opacity-50"
+                        disabled={isLoggingIn}
                     >
                         Sign up here
                     </button>

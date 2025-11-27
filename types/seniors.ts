@@ -7,7 +7,7 @@ export const enum RegistrationDocumentTag {
     GOVERNMENT_ISSUED_ID = 'government_issued_id',
     MEMBERSHIP_CERTIFICATE = 'membership_certificate',
     MEDICAL_ASSISTANCE = 'medical_assistance',
-    LOW_INCOME = 'low_income'
+    ID_PHOTO = 'id_photo'
 }
 
 export interface SeniorsFormDataType {
@@ -178,6 +178,7 @@ export interface SeniorUpdateData {
     contact_person: string | null; // Optional in Prisma
     contact_relationship: string | null; // Optional in Prisma
     releasedAt?: string | null;
+    remarks_id?: number;
 }
 
 
@@ -209,6 +210,7 @@ export interface EditFormState {
     contact_person: string | null;
     contact_relationship: string | null;
     releasedAt: Date | null;
+    remarks_id?: number;
 }
 
 export interface EditableSelectFieldProps { // Add this new interface

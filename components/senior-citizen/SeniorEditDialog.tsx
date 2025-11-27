@@ -30,6 +30,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { SELECT_OPTIONS } from '@/constants/select-options';
 import { formatDateTime } from '@/utils/format';
+import { useRemarksOptions } from '@/hooks/queries/use-remarks';
+import { determineCategoryByAge } from '@/lib/utils/category-helper';
 
 const EditableFormField: React.FC<EditableFormFieldProps> = ({
   label,
@@ -145,6 +147,9 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
   const [open, setOpen] = React.useState(false);
   const isAdmin = userRole === 'ADMIN';
 
+  // Fetch remarks dynamically
+  const { options: remarksOptions, isLoading: isLoadingRemarks } = useRemarksOptions();
+
   const [editData, setEditData] = React.useState<EditFormState>({
     firstname: senior.firstname,
     middlename: senior.middlename,
@@ -162,7 +167,12 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
     contact_person: senior.contact_person || '',
     contact_relationship: senior.contact_relationship || '',
     releasedAt: senior.releasedAt ? new Date(senior.releasedAt) : null,
+    remarks_id: senior.remarks_id, // Added remarks_id
   });
+
+  const calculatedCategory = React.useMemo(() => {
+    return determineCategoryByAge(editData.age) || 'Regular (Below 80)';
+  }, [editData.age]);
 
   const { updateSeniorMutation } = useSeniorMutations(queryClient);
 
@@ -184,6 +194,7 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
       contact_person: senior.contact_person || '',
       contact_relationship: senior.contact_relationship || '',
       releasedAt: senior.releasedAt ? new Date(senior.releasedAt) : null,
+      remarks_id: senior.remarks_id, // Added remarks_id
     });
   }, [senior]);
 
@@ -208,6 +219,7 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
       low_income: editData.low_income,
       contact_person: editData.contact_person || '',
       contact_relationship: editData.contact_relationship || '',
+      remarks_id: editData.remarks_id, // Added remarks_id
       ...(isAdmin && { releasedAt: editData.releasedAt ? editData.releasedAt.toISOString() : null }),
     };
 
@@ -241,6 +253,19 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
   ];
 
   const shouldShowAdditionalInfoSection = senior.remarks?.name || senior.releasedAt;
+
+  function calculateAgeFromBirthdate(date: Date | null) {
+    if (!date) return 0;
+    const today = new Date();
+    let age = today.getFullYear() - date.getFullYear();
+    const monthDiff = today.getMonth() - date.getMonth();
+    const dayDiff = today.getDate() - date.getDate();
+
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+    return age;
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -293,14 +318,34 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
                   label="Age"
                   id="age"
                   value={editData.age?.toString()}
-                  onChange={(value) => setEditData({ ...editData, age: parseInt(value, 10) || 0 })}
+                  onChange={(value) => {
+                    const num = parseInt(value, 10) || 0;
+
+                    // Auto-calc birthdate from age
+                    const today = new Date();
+                    const newBirthYear = today.getFullYear() - num;
+                    const newBirthdate = new Date(newBirthYear, today.getMonth(), today.getDate());
+
+                    setEditData({
+                      ...editData,
+                      age: num,
+                      birthdate: newBirthdate,
+                    });
+                  }}
                   type="number"
                 />
                 <EditableDateField
                   label="Birth Date"
                   id="birthdate"
                   value={editData.birthdate}
-                  onChange={(date) => setEditData({ ...editData, birthdate: date })}
+                  onChange={(date) => {
+                    const newAge = calculateAgeFromBirthdate(date);
+                    setEditData({
+                      ...editData,
+                      birthdate: date,
+                      age: newAge,
+                    });
+                  }}
                 />
                 <EditableSelectField
                   label="Gender"
@@ -315,7 +360,7 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
               </div>
 
               {/* Senior Citizen Category */}
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+              {/* <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                 <EditableSelectField
                   label="Senior Citizen Category"
                   id="pwd"
@@ -324,6 +369,20 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
                   options={seniorCitizenCategoryOptions}
                   placeholder="Select category"
                 />
+              </div> */}
+
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <Label className="text-sm font-medium text-blue-900">
+                    Age Category
+                  </Label>
+                  <p className="text-lg font-semibold text-blue-700 mt-1">
+                    {calculatedCategory}
+                  </p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    Category is automatically determined by age
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -391,37 +450,36 @@ export const SeniorEditDialog: React.FC<SeniorEditDialogProps> = ({ userRole, se
           </div>
 
           {/* Additional Information Section (Remarks and Released On) */}
-          {shouldShowAdditionalInfoSection && (
-            <div className="border rounded-lg">
-              <SectionHeader
-                icon={<StickyNoteIcon className="h-5 w-5 text-green-600" />}
-                title="Additional Information"
-                description="Status information and release details."
-              />
-              <div className="px-6 pb-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {senior.remarks?.name && (
-                    <EditableFormField
-                      label="Remarks"
-                      id="remarks"
-                      value={senior.remarks.name}
-                      onChange={() => { }}
-                      readOnly
-                    />
-                  )}
-                  {(senior.releasedAt || isAdmin) && (
-                    <EditableDateField
-                      label="Released On"
-                      id="releasedAt"
-                      value={editData.releasedAt}
-                      onChange={(date) => setEditData({ ...editData, releasedAt: date })}
-                      readOnly={!isAdmin}
-                    />
-                  )}
-                </div>
+          <div className="border rounded-lg">
+            <SectionHeader
+              icon={<StickyNoteIcon className="h-5 w-5 text-green-600" />}
+              title="Additional Information"
+              description="Status information and release details."
+            />
+            <div className="px-6 pb-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Remarks Dropdown */}
+                <EditableSelectField
+                  label="Remarks"
+                  id="remarks"
+                  value={editData.remarks_id?.toString() || ''}
+                  onChange={(value) => setEditData({ ...editData, remarks_id: parseInt(value, 10) })}
+                  options={remarksOptions}
+                  placeholder="Select remarks"
+                />
+
+                {/* Released On Date (Admin only) */}
+                {isAdmin && (
+                  <EditableDateField
+                    label="Released On"
+                    id="releasedAt"
+                    value={editData.releasedAt}
+                    onChange={(date) => setEditData({ ...editData, releasedAt: date })}
+                  />
+                )}
               </div>
             </div>
-          )}
+          </div>
         </div>
 
         <DialogFooter>

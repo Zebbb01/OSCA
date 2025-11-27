@@ -14,7 +14,7 @@ type FileData = {
     certificate_of_residency: File | null
     government_issued_id: File | null
     membership_certificate: File | null
-    low_income: File | null
+    id_photo: File | null
 }
 
 type RegistrationDocumentsProps = {
@@ -51,9 +51,9 @@ const DOCUMENT_TYPES = [
         required: true,
     },
     {
-        key: 'low_income',
-        label: 'Low Income',
-        tag: RegistrationDocumentTag.LOW_INCOME,
+        key: 'id_photo',
+        label: '2x2 ID Photo',
+        tag: RegistrationDocumentTag.ID_PHOTO,
         required: false, // Mark as optional
     },
 ]

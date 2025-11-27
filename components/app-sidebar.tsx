@@ -1,3 +1,4 @@
+// components/app-sidebar.tsx
 'use client';
 
 import * as React from 'react';
@@ -19,14 +20,15 @@ import {
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { NavUser } from '@/components/nav-user';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useNavigationWithLoading } from '@/components/providers/NavigationLoadingProvider';
 
 interface NavSubItem {
     title: string;
     url: string;
     roles?: string[];
-    tabParam?: string; // New: for tab navigation
+    tabParam?: string;
 }
 
 interface NavMainItem {
@@ -39,7 +41,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { data: session, status } = useSession();
     const userRole = (session?.user as any)?.role || 'USER';
     const pathname = usePathname();
-    const router = useRouter();
+    const { push } = useNavigationWithLoading();
 
     const baseNavData: { navMain: NavMainItem[] } = {
         navMain: [
@@ -65,7 +67,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     },
                     {
                         title: 'Applicants',
-                        url: '/admin/applicants', // Separate route
+                        url: '/admin/applicants',
                         roles: ['ADMIN'],
                     },
                 ],
@@ -170,24 +172,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         })
         .filter(Boolean) as NavMainItem[];
 
-    // Helper function to check if a menu item should be highlighted
     const isItemActive = (itemUrl: string) => {
         return pathname === itemUrl;
     };
 
-    // Handle navigation with tab parameter
     const handleNavigation = (e: React.MouseEvent, url: string, tabParam?: string) => {
         e.preventDefault();
         if (tabParam) {
-            router.push(`${url}?tab=${tabParam}`);
+            push(`${url}?tab=${tabParam}`);
         } else {
-            router.push(url);
+            push(url);
         }
     };
 
     return (
         <Sidebar collapsible="icon" className="border-r border-gray-200" {...props}>
-            {/* HEADER */}
             <SidebarHeader className="border-b border-gray-200 bg-gradient-to-r from-green-50 to-green-100">
                 <SidebarMenuButton
                     size="lg"
@@ -211,46 +210,43 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarMenuButton>
             </SidebarHeader>
 
-            {/* CONTENT */}
             <SidebarContent className="bg-white">
-                {/* DASHBOARD */}
                 <SidebarGroup className="px-2 py-2">
                     <SidebarMenu>
                         <SidebarMenuItem>
                             {userRole === 'ADMIN' ? (
                                 <SidebarMenuButton
-                                    asChild
+                                    onClick={(e) => handleNavigation(e, '/admin/dashboard')}
                                     className={cn(
-                                        'hover:bg-green-50 hover:text-green-700 transition-colors',
+                                        'hover:bg-green-50 hover:text-green-700 transition-colors cursor-pointer',
                                         pathname === '/admin/dashboard' &&
                                         'bg-green-100 text-green-800 font-semibold'
                                     )}
                                 >
-                                    <a href={'/admin/dashboard'} className="flex items-center gap-3">
+                                    <div className="flex items-center gap-3">
                                         <LayoutDashboard className="h-4 w-4" />
                                         <span className="font-medium">Dashboard</span>
-                                    </a>
+                                    </div>
                                 </SidebarMenuButton>
                             ) : (
                                 <SidebarMenuButton
-                                    asChild
+                                    onClick={(e) => handleNavigation(e, '/staff/dashboard')}
                                     className={cn(
-                                        'hover:bg-green-50 hover:text-green-700 transition-colors',
+                                        'hover:bg-green-50 hover:text-green-700 transition-colors cursor-pointer',
                                         pathname === '/staff/dashboard' &&
                                         'bg-green-100 text-green-800 font-semibold'
                                     )}
                                 >
-                                    <a href={'/staff/dashboard'} className="flex items-center gap-3">
+                                    <div className="flex items-center gap-3">
                                         <LayoutDashboard className="h-4 w-4" />
                                         <span className="font-medium">Dashboard</span>
-                                    </a>
+                                    </div>
                                 </SidebarMenuButton>
                             )}
                         </SidebarMenuItem>
                     </SidebarMenu>
                 </SidebarGroup>
 
-                {/* OTHER GROUPS */}
                 {filteredNav.map((item) => (
                     <SidebarGroup key={item.title} className="px-2 py-1">
                         <SidebarGroupLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 py-1">
@@ -261,20 +257,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                 {item.items.map((subItem) => (
                                     <SidebarMenuItem key={subItem.title}>
                                         <SidebarMenuButton
-                                            asChild
+                                            onClick={(e) => handleNavigation(e, subItem.url, subItem.tabParam)}
                                             className={cn(
-                                                'hover:bg-green-50 hover:text-green-700 transition-colors',
+                                                'hover:bg-green-50 hover:text-green-700 transition-colors cursor-pointer',
                                                 isItemActive(subItem.url) &&
                                                 'bg-green-100 text-green-800 font-semibold'
                                             )}
                                         >
-                                            <a 
-                                                href={subItem.url} 
-                                                className="pl-6 py-2 text-sm font-medium"
-                                                onClick={(e) => handleNavigation(e, subItem.url, subItem.tabParam)}
-                                            >
+                                            <span className="pl-6 py-2 text-sm font-medium">
                                                 {subItem.title}
-                                            </a>
+                                            </span>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 ))}
@@ -284,7 +276,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 ))}
             </SidebarContent>
 
-            {/* FOOTER */}
             <SidebarFooter className="border-t border-gray-200 bg-gray-50">
                 {status === 'loading' ? (
                     <div className="p-4 text-sm text-gray-500">Loading user...</div>

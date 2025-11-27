@@ -3,6 +3,7 @@ import { benefitApplicationSchema } from '@/schema/benefit/benefit.schema';
 import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { uploadAndSaveDocument } from '@/app/api/seniors/services/helpers.service';
+import { getCategoryIdByAge } from '@/lib/utils/category-helper';
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,31 +40,7 @@ export async function POST(request: NextRequest) {
 
     const pendingStatusId = pendingStatus.id;
 
-    // Fetch both senior categories
-    const categories = await prisma.seniorCategory.findMany({
-      where: {
-        name: {
-          in: ['Regular senior citizens', 'Special assistance cases'],
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
-
-    const regularCategory = categories.find(cat => cat.name === 'Regular senior citizens');
-    const specialAssistanceCategory = categories.find(cat => cat.name === 'Special assistance cases');
-
-    if (!regularCategory || !specialAssistanceCategory) {
-      console.error("Error: Required senior categories not found in the database.");
-      return NextResponse.json(
-        { msg: 'Server configuration error: Required senior categories not found.', code: 500 },
-        { status: 500 }
-      );
-    }
-
-    // Fetch senior details for all selected_senior_ids to get PWD status
+    // Fetch senior details for all selected_senior_ids to get age
     const seniors = await prisma.senior.findMany({
       where: {
         id: {
@@ -72,25 +49,27 @@ export async function POST(request: NextRequest) {
       },
       select: {
         id: true,
-        pwd: true,
+        age: true,
       },
     });
 
     // Create applications for each selected senior
-    const applicationsData = selected_senior_ids.map((senior_id: number) => {
-      const senior = seniors.find(s => s.id === senior_id);
-      const isPwd = senior?.pwd === true;
-      
-      // Set category_id based on PWD status
-      const category_id = isPwd ? specialAssistanceCategory.id : regularCategory.id;
+    const applicationsData = await Promise.all(
+      selected_senior_ids.map(async (senior_id: number) => {
+        const senior = seniors.find(s => s.id === senior_id);
+        const age = senior ? parseInt(senior.age, 10) : 0;
+        
+        // Determine category based on age (80+, 90+, 100+)
+        const category_id = await getCategoryIdByAge(age, prisma);
 
-      return {
-        benefit_id,
-        senior_id,
-        status_id: pendingStatusId,
-        category_id: category_id,
-      };
-    });
+        return {
+          benefit_id,
+          senior_id,
+          status_id: pendingStatusId,
+          category_id: category_id, // Can be null if age < 80
+        };
+      })
+    );
 
     const createdApplications = await prisma.applications.createMany({
       data: applicationsData,
@@ -205,8 +184,8 @@ export async function GET(request: NextRequest) {
             lastname: true,
             email: true,
             pwd: true,
+            age: true, // Include age for display
             documents: {
-              // Get all documents, not just medical_assistance
               include: {
                 benefitRequirement: {
                   select: {

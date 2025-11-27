@@ -1,4 +1,4 @@
-// app\admin\(senior-citizen)\record\columns.tsx
+// app\staff\(senior-citizen)\record\columns.tsx
 'use client';
 
 import React from 'react';
@@ -33,8 +33,8 @@ export const getSeniorRecordsColumns = (
   userRole: string | undefined,
   status: string,
   showDocumentsOnly: boolean = false,
-  showReleaseButtonOnlyOnPending: boolean = false,  // Controls release button visibility
-  showReleaseButtonInActions: boolean = false  // NEW: Controls whether to show release button at all
+  showReleaseButtonOnlyOnPending: boolean = false,
+  showReleaseButtonInActions: boolean = false
 ): ColumnDef<Seniors>[] => {
   console.log('Current User Role:', userRole);
   if (status === 'loading') {
@@ -92,36 +92,38 @@ export const getSeniorRecordsColumns = (
     },
     {
       accessorKey: 'senior_category',
-      header: 'Category',
+      header: 'Age Category',
       cell: ({ row }) => {
         const latestApplication = row.original.Applications?.[0];
-        const categoryName = latestApplication?.category?.name || 'N/A';
+        const categoryName = latestApplication?.category?.name || 'Regular (Below 80)';
 
+        // Updated category styles for age-based categories
         const categoryStyles: Record<string, string> = {
-          'Regular senior citizens': 'bg-green-600 text-white',
-          'Special assistance cases': 'bg-yellow-500 text-white',
-          'Low income assistance': 'bg-blue-500 text-white',
-          'Combined assistance cases': 'bg-purple-600 text-white',
+          'Octogenarian (80-89)': 'bg-blue-600 text-white',
+          'Nonagenarian (90-99)': 'bg-amber-500 text-white',
+          'Centenarian (100+)': 'bg-red-600 text-white',
+          'Regular (Below 80)': 'bg-green-600 text-white',
         };
 
         return (
           <div>
             <span
-              className={`px-3 py-1 rounded-md text-xs font-semibold ${categoryStyles[categoryName] || 'bg-gray-400 text-white'
-                }`}
+              className={`px-3 py-1 rounded-md text-xs font-semibold ${
+                categoryStyles[categoryName] || 'bg-gray-400 text-white'
+              }`}
             >
               {truncateText(categoryName)}
             </span>
           </div>
         );
       },
-      accessorFn: (row) => row.Applications?.[0]?.category?.name || 'N/A',
+      accessorFn: (row) => row.Applications?.[0]?.category?.name || 'Regular (Below 80)',
       filterFn: (row, columnId, filterValue) => {
-        const latestCategoryName = row.original.Applications?.[0]?.category?.name;
+        const latestCategoryName = row.original.Applications?.[0]?.category?.name || 'Regular (Below 80)';
         if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) {
           return true;
         }
-        return (filterValue as string[]).includes(latestCategoryName || '');
+        return (filterValue as string[]).includes(latestCategoryName);
       },
     },
     {
@@ -168,8 +170,9 @@ export const getSeniorRecordsColumns = (
         return (
           <div>
             <span
-              className={`px-3 py-1 rounded-md text-xs font-semibold ${statusStyles[statusText] || 'bg-gray-400 text-white'
-                }`}
+              className={`px-3 py-1 rounded-md text-xs font-semibold ${
+                statusStyles[statusText] || 'bg-gray-400 text-white'
+              }`}
             >
               {statusText}
             </span>

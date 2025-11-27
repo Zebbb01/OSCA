@@ -27,7 +27,7 @@ type FileData = {
     certificate_of_residency: File | null
     government_issued_id: File | null
     membership_certificate: File | null
-    low_income: File | null
+    id_photo: File | null
 }
 
 // DOCUMENT_KEYS should list all possible document keys
@@ -36,7 +36,7 @@ const DOCUMENT_KEYS = [
     'certificate_of_residency',
     'government_issued_id',
     'membership_certificate',
-    'low_income', // Keep low_income here as it's a key in FileData
+    'id_photo', // Keep id_photo here as it's a key in FileData
 ] as const;
 
 // Define required document keys separately
@@ -64,7 +64,7 @@ const RegisterFormComponents = ({
         certificate_of_residency: null,
         government_issued_id: null,
         membership_certificate: null,
-        low_income: null,
+        id_photo: null,
     })
     const [isUploadError, setIsUploadError] = useState<boolean>(false)
 
@@ -128,7 +128,7 @@ const RegisterFormComponents = ({
                 certificate_of_residency: null,
                 government_issued_id: null,
                 membership_certificate: null,
-                low_income: null
+                id_photo: null
             });
             setShowRegistrationModal(false)
             toast.success('Senior registered successfully!')

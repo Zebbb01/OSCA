@@ -1,7 +1,8 @@
+// prisma\seeders\remarks.ts
 import prisma from "../../lib/prisma"
 
 export async function seedRemarks() {
-    const remarks = ['NEW', 'TRANSFER', 'UPDATED', 'DECEASED']
+    const remarks = ['NEW', 'TRANSFER', 'UPDATED', 'DECEASED','LOSS']
 
     await Promise.all(
         remarks.map((name, index) =>

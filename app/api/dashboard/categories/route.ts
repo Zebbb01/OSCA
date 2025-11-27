@@ -1,89 +1,66 @@
 // app/api/dashboard/categories/route.ts
 import prisma from '@/lib/prisma'
 import { NextResponse } from 'next/server'
+import { determineCategoryByAge } from '@/lib/utils/category-helper'
 
-export async function GET(request: Request) {
+export async function GET() {
     try {
-        // Get all senior categories with their counts
-        const categories = await prisma.seniorCategory.findMany({
-            orderBy: { order: 'asc' }
+        // 1. Load categories from DB (sorted by `order`)
+        const categoryList = await prisma.seniorCategory.findMany({
+            orderBy: { order: 'asc' },
         })
 
-        // Get count for each category
-        const categoriesWithCount = await Promise.all(
-            categories.map(async (category) => {
-                const count = await prisma.applications.count({
-                    where: {
-                        category_id: category.id,
-                        senior: {
-                            deletedAt: null
-                        }
-                    }
-                })
+        // Prepare count container
+        const categoryCounts: Record<string, number> = {}
+        categoryList.forEach(cat => {
+            categoryCounts[cat.name] = 0
+        })
 
-                return {
-                    name: category.name,
-                    value: count,
-                    color: getCategoryColor(category.name)
-                }
-            })
-        )
-
-        // Also get PWD and Low Income counts
-        const [pwdCount, lowIncomeCount] = await Promise.all([
-            prisma.senior.count({
-                where: {
-                    deletedAt: null,
-                    pwd: true
-                }
-            }),
-            prisma.senior.count({
-                where: {
-                    deletedAt: null,
-                    low_income: true
-                }
-            })
-        ])
-
-        // Get regular seniors (not PWD, not low income, not in special categories)
-        const regularCount = await prisma.senior.count({
-            where: {
-                deletedAt: null,
-                pwd: false,
-                low_income: false
+        // 2. Get all non-deleted seniors
+        const seniors = await prisma.senior.findMany({
+            where: { deletedAt: null },
+            select: {
+                age: true,
             }
         })
 
-        const categoriesData = [
-            { name: 'Regular', value: regularCount, color: '#22c55e' },
-            ...categoriesWithCount.filter(c => 
-                !['Regular senior citizens', 'PWD', 'Low Income'].includes(c.name)
-            )
-        ]
+        // 3. Count seniors by age category
+        seniors.forEach(senior => {
+            const age = parseInt(senior.age, 10)
+            const categoryName = determineCategoryByAge(age)
 
-        return NextResponse.json({
-            success: true,
-            data: categoriesData
-        }, { status: 200 })
+            // Categorize by age regardless of application status
+            if (categoryName && categoryCounts.hasOwnProperty(categoryName)) {
+                categoryCounts[categoryName]++
+            } else {
+                // Fallback if category determination fails
+                console.warn(`Could not determine category for age ${age}`)
+                categoryCounts['Regular (Below 80)']++
+            }
+        })
+
+        // 4. Build final sorted dataset
+        const categoriesData = categoryList.map(cat => ({
+            name: cat.name,
+            value: categoryCounts[cat.name] || 0,
+            color:
+                cat.name === 'Regular (Below 80)' ? '#22c55e' :
+                cat.name === 'Octogenarian (80-89)' ? '#3b82f6' :
+                cat.name === 'Nonagenarian (90-99)' ? '#f59e0b' :
+                cat.name === 'Centenarian (100+)' ? '#ef4444' :
+                '#6b7280'
+        }))
+
+        return NextResponse.json(
+            { success: true, data: categoriesData },
+            { status: 200 }
+        )
 
     } catch (error) {
         console.error('GET /api/dashboard/categories error:', error)
         return NextResponse.json(
-            {
-                success: false,
-                message: 'Failed to fetch category distribution',
-                error: String(error),
-            },
+            { success: false, message: 'Failed to fetch category distribution' },
             { status: 500 }
         )
     }
-}
-
-function getCategoryColor(categoryName: string): string {
-    const colorMap: Record<string, string> = {
-        'Regular senior citizens': '#22c55e',
-        'Special assistance cases': '#ef4444',
-
-    }
-    return colorMap[categoryName] || '#6b7280'
 }
